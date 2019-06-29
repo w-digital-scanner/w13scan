@@ -25,7 +25,10 @@ class PluginBase(object):
         netloc = "http"
         if self.requests.https:
             netloc = "https"
-        url = "{0}://{1}:{2}{3}".format(netloc, self.requests.hostname, self.requests.port, self.requests.path)
+        if (netloc == "https" and int(self.requests.port) == 443) or (netloc == "http" and int(self.requests.port) == 80):
+            url = "{0}://{1}{2}".format(netloc, self.requests.hostname, self.requests.path)
+        else:
+            url = "{0}://{1}:{2}{3}".format(netloc, self.requests.hostname, self.requests.port, self.requests.path)
         return url
 
     def execute(self, request: Request, response: Response):

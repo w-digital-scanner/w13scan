@@ -19,11 +19,11 @@ class W13SCAN(PluginBase):
                     '/.rediscli_history',
                     '/.bash_history', '/.bashrc', '/.DS_Store', '/../../../../../../../../../../etc/passwd',
                     '/.bash_logout',
-                    '/.vimrc', '/.htaccess', '/admin.html', '/examples/', '/.htaccess.bak',
+                    '/.vimrc', '/.htaccess', '/examples/', '/.htaccess.bak',
                     '/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/etc/passwd',
                     '/db.conf', '/.history', '/composer.json',
                     '/requirements.txt', '/.htpasswd', '/composer.lock', '/web.config', '/login.php',
-                    '/login.html', '/nohup.out',
+                    '/nohup.out',
                     '/htpasswd.bak', '/httpd.conf', '/.mysql_history', '/login.asp', '/database.yml',
                     '/.ssh/known_hosts',
                     '/.ssh/id_rsa', '/.ssh/id_dsa', '/id_dsa',
@@ -33,7 +33,7 @@ class W13SCAN(PluginBase):
                     '/readme.txt', '/README.md', '/README', '/README.txt', '/LICENSE.txt', '/LICENSE.md', '/LICENSE',
                     '/CHANGELOG.md', '/CHANGELOG.txt', '/CHANGELOG', '/changelog.md', '/changelog.txt', '/changelog',
                     '/CONTRIBUTING.md', '/CONTRIBUTING.txt', '/CONTRIBUTING', '/install.md', '/install.txt', '/install',
-                    '/INSTALL.md', '/INSTALL.txt', '/INSTALL', '/readme.html', '/data.txt',
+                    '/INSTALL.md', '/INSTALL.txt', '/INSTALL', '/data.txt',
                     '/install.sh', '/deploy.sh', '/upload.sh', '/setup.sh', '/backup.sh', '/rsync.sh', '/sync.sh',
                     '/test.sh',
                     '/run.sh', '/config.php', '/config.inc',
@@ -66,6 +66,7 @@ class W13SCAN(PluginBase):
 
         for p in urls:
             filename = self.file()
+            success = []
             for f in filename:
                 _ = p.rstrip('/') + f
                 if not Share.in_url(_):
@@ -74,7 +75,24 @@ class W13SCAN(PluginBase):
                         r = requests.get(_, headers=headers)
                         # out.log(_)
                         if r.status_code == 200:
+                            success.append({"url": _, "code": len(r.text)})
                             # print(self.name)
-                            out.success(_, self.name)
                     except Exception as e:
                         pass
+            if len(success) < 5:
+                for i in success:
+                    out.success(i["url"], self.name)
+            else:
+                result = {}
+                for item in success:
+                    length = item.get("len", 0)
+                    if length not in result:
+                        result[length] = list()
+                    result[length].append(item["url"])
+
+                for k, v in result.items():
+                    if len(v) > 3:
+                        continue
+
+                    for i in v:
+                        out.success(i, self.name)

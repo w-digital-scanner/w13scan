@@ -41,8 +41,8 @@ class W13SCAN(PluginBase):
                 try:
                     r = requests.get(p, headers=headers)
                     for i in flag_list:
-                        if i.lower() in r.text:
-                            out.success(_, self.name)
+                        if i in r.text.lower():
+                            out.success(p, self.name)
                             break
                 except Exception as e:
                     pass

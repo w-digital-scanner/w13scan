@@ -39,7 +39,7 @@ def get_parent_paths(path, domain=True):
     if not path or path[0] != '/':
         return paths
     # paths.append(path)
-    if path == '/':
+    if path[-1] == '/':
         paths.append(netloc + path)
     tph = path
     if path[-1] == '/':
@@ -66,7 +66,7 @@ def get_links(content, domain, limit=True):
     for i in match:
         _domain = urljoin(netloc, i[1])
         if limit:
-            if p.netloc not in _domain:
+            if p.netloc.split(":")[0] not in _domain:
                 continue
         urls.append(_domain)
     return urls
