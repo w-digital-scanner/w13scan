@@ -35,7 +35,7 @@ def run_threads(num_threads, thread_function, args: tuple = ()):
     KB["running"] = 0
 
     try:
-        info_msg = "staring {0} threads".format(num_threads)
+        info_msg = "Staring {0} threads".format(num_threads)
         Share.logger.info(info_msg)
 
         # Start the threads

@@ -436,7 +436,10 @@ class ProxyHandle(BaseHTTPRequestHandler):
             response = Response(request, self._proxy_sock)
 
             if response:
-                self.request.sendall(response.to_data())
+                try:
+                    self.request.sendall(response.to_data())
+                except BrokenPipeError:
+                    pass
             else:
                 self.send_error(404, 'response is None')
             if not self._is_replay():

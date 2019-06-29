@@ -23,7 +23,6 @@ class W13SCAN(PluginBase):
                     '/db.conf', '/examples/servlets/servlet/SessionExample', '/manager/html', '/.history', '/admin.php',
                     '/admin.jsp', '/admin', '/login', '/composer.json', '/server-status', '/signin', '/admin.do',
                     '/requirements.txt', '/solr/', '/.htpasswd', '/composer.lock', '/web.config', '/login.php',
-                    '/admin/',
                     '/login.html', '/config/database.yml', '/nohup.out', '/login.jsp', '/.htpasswd.bak', '/login.do',
                     '/admin.asp',
                     '/htpasswd.bak', '/httpd.conf', '/.mysql_history', '/login.asp', '/database.yml',

@@ -38,6 +38,7 @@ def _init_plugins():
                 KB["registered"][_] = mod
             except AttributeError:
                 Share.logger.error('Filename:{} not class "{}"'.format(_, 'W13SCAN'))
+    Share.logger.info('Load plugin:{}'.format(len(KB["registered"])))
 
 
 def init(root):
