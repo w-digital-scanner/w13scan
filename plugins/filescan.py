@@ -6,6 +6,7 @@
 from lib.common import get_parent_paths
 from lib.plugins import PluginBase
 from lib.data import Share
+from lib.output import out
 import requests
 
 
@@ -30,8 +31,8 @@ class W13SCAN(PluginBase):
                     '/cacti/', '/zabbix/', '/jenkins/script', '/memadmin/index.php', '/phpmyadmin/index.php',
                     '/phpMyAdmin/index.php', '/ganglia/', '/_phpmyadmin/index.php', '/pma/index.php',
                     '/resin-doc/resource/tutorial/jndi-appconfig/test%3FinputFile=/etc/profile', '/resin-admin/',
-                    '/resin-doc/viewfile/%3Fcontextpath=/&servletpath=&file=index.jsp', '/.svn/entries', '/.git/index',
-                    '/.git/config', '/.git/HEAD', '/.ssh/known_hosts', '/.ssh/id_rsa', '/.ssh/id_dsa', '/id_dsa',
+                    '/resin-doc/viewfile/%3Fcontextpath=/&servletpath=&file=index.jsp', '/.ssh/known_hosts',
+                    '/.ssh/id_rsa', '/.ssh/id_dsa', '/id_dsa',
                     '/id_rsa',
                     '/.ssh/id_rsa.pub', '/.ssh/id_dsa.pub', '/id_rsa.pub', '/.ssh/authorized_keys', '/readme.md',
                     '/readme',
@@ -126,7 +127,6 @@ class W13SCAN(PluginBase):
         resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
         resp_headers = self.response.get_headers()  # 返回头 dict类型
 
-        Share.logger.info(method + " " + url)
         path1 = get_parent_paths(url)
         for p in path1:
             filename = self.file()
@@ -136,7 +136,8 @@ class W13SCAN(PluginBase):
                     Share.add_url(_)
                     try:
                         r = requests.get(_, headers=headers)
+                        # out.log(_)
                         if r.status_code == 200:
-                            Share.logger.info("Success:" + _)
-                    except:
+                            out.success("Success:" + _)
+                    except Exception as e:
                         pass
