@@ -7,7 +7,7 @@ import os
 
 from config import VERSION, REPOSITORY
 from lib.common import dataToStdout
-from lib.data import PATH, KB, Share
+from lib.data import PATH, KB, logger
 from lib.loader import load_file_to_module
 from thirdpart.requests import patch_all
 from queue import Queue
@@ -37,8 +37,8 @@ def _init_plugins():
                 mod = mod.W13SCAN()
                 KB["registered"][_] = mod
             except AttributeError:
-                Share.logger.error('Filename:{} not class "{}"'.format(_, 'W13SCAN'))
-    Share.logger.info('Load plugin:{}'.format(len(KB["registered"])))
+                logger.error('Filename:{} not class "{}"'.format(_, 'W13SCAN'))
+    logger.info('Load plugin:{}'.format(len(KB["registered"])))
 
 
 def init(root):

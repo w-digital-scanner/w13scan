@@ -2,7 +2,6 @@
 import os
 import re
 import select
-import ssl
 import time
 import zlib
 from http.client import HTTPResponse
@@ -11,13 +10,13 @@ from socket import socket
 from socketserver import ThreadingMixIn
 from ssl import wrap_socket, SSLError
 from urllib.parse import urlparse, ParseResult, urlunparse
-from lib.data import PATH, Share, KB
-from config import EXCLUDES, INCLUDES
-from tld import get_fld
 
 import chardet
 from OpenSSL.crypto import load_certificate, FILETYPE_PEM, TYPE_RSA, PKey, X509, X509Extension, dump_privatekey, \
     dump_certificate, load_privatekey, X509Req
+
+from config import EXCLUDES, INCLUDES
+from lib.data import PATH, KB, logger
 
 __author__ = 'qiye'
 __date__ = '2018/6/15 11:45'
@@ -578,7 +577,7 @@ class MitmProxy(HTTPServer):
 
     def __init__(self, server_addr=('', 8788), request_handler_class=ProxyHandle, bind_and_activate=True, https=True):
         HTTPServer.__init__(self, server_addr, request_handler_class, bind_and_activate)
-        Share.logger.info('HTTPServer is running at address( %s , %d )......' % (server_addr[0], server_addr[1]))
+        logger.info('HTTPServer is running at address( %s , %d )......' % (server_addr[0], server_addr[1]))
         self.req_plugs = []
         self.ca = CAAuth(ca_file="ca.pem", cert_file='ca.crt')
         self.https = https

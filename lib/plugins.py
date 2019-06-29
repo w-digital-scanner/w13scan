@@ -7,7 +7,7 @@ from requests import ConnectTimeout, HTTPError, TooManyRedirects
 
 from lib.baseproxy import Request, Response
 from config import RETRY
-from lib.data import Share
+from lib.data import logger
 
 
 class PluginBase(object):
@@ -37,33 +37,33 @@ class PluginBase(object):
         try:
             output = self.audit()
         except NotImplementedError:
-            Share.logger.error('Plugin: {0} not defined "{1} mode'.format(self.name, 'audit'))
+            logger.error('Plugin: {0} not defined "{1} mode'.format(self.name, 'audit'))
 
         except ConnectTimeout:
             retry = RETRY
             while retry > 0:
-                Share.logger.debug('Plugin: {0} timeout, start it over.'.format(self.name))
+                logger.debug('Plugin: {0} timeout, start it over.'.format(self.name))
                 try:
                     output = self.audit()
                     break
                 except ConnectTimeout:
-                    Share.logger.debug('POC: {0} time-out retry failed!'.format(self.name))
+                    logger.debug('POC: {0} time-out retry failed!'.format(self.name))
                 retry -= 1
             else:
                 msg = "connect target '{0}' failed!".format(self.target)
-                Share.logger.error(msg)
+                logger.error(msg)
 
         except HTTPError as e:
-            Share.logger.warning('Plugin: {0} HTTPError occurs, start it over.'.format(self.name))
+            logger.warning('Plugin: {0} HTTPError occurs, start it over.'.format(self.name))
 
         except ConnectionError as e:
             msg = "connect target '{0}' failed!".format(self.target)
-            Share.logger.error(msg)
+            logger.error(msg)
 
         except TooManyRedirects as e:
-            Share.logger.error(str(e))
+            logger.error(str(e))
 
         except Exception as e:
-            Share.logger.error(str(e))
+            logger.error(str(e))
 
         return output

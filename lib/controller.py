@@ -5,7 +5,7 @@
 # @File    : controller.py
 import copy
 
-from lib.data import Share, KB
+from lib.data import logger, KB, Share
 from config import THREAD_NUM
 import time
 import threading
@@ -36,7 +36,7 @@ def run_threads(num_threads, thread_function, args: tuple = ()):
 
     try:
         info_msg = "Staring {0} threads".format(num_threads)
-        Share.logger.info(info_msg)
+        logger.info(info_msg)
 
         # Start the threads
         for num_threads in range(num_threads):
@@ -47,7 +47,7 @@ def run_threads(num_threads, thread_function, args: tuple = ()):
                 thread.start()
             except Exception as ex:
                 err_msg = "error occurred while starting new thread ('{0}')".format(str(ex))
-                Share.logger.critical(err_msg)
+                logger.critical(err_msg)
                 break
 
             threads.append(thread)
@@ -64,7 +64,7 @@ def run_threads(num_threads, thread_function, args: tuple = ()):
     except KeyboardInterrupt as ex:
         KB['continue'] = False
         if num_threads > 1:
-            Share.logger.info("waiting for threads to finish{0}".format(
+            logger.info("waiting for threads to finish{0}".format(
                 " (Ctrl+C was pressed)" if isinstance(ex, KeyboardInterrupt) else ""))
         try:
             while threading.activeCount() > 1:
@@ -73,7 +73,7 @@ def run_threads(num_threads, thread_function, args: tuple = ()):
             raise
 
     except Exception as ex:
-        Share.logger.error("thread {0}: {1}".format(threading.currentThread().getName(), str(ex)))
+        logger.error("thread {0}: {1}".format(threading.currentThread().getName(), str(ex)))
         traceback.print_exc()
     finally:
         Share.dataToStdout('\n')

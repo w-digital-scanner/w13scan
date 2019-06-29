@@ -7,7 +7,7 @@ import importlib
 import os
 from importlib.abc import Loader
 
-from lib.data import Share
+from lib.data import logger
 
 
 def get_filename(filepath, with_ext=True):
@@ -27,7 +27,7 @@ def load_file_to_module(file_path):
 
     except ImportError:
         error_msg = "load module failed! '{}'".format(file_path)
-        Share.logger.error(error_msg)
+        logger.error(error_msg)
         raise
 
 
