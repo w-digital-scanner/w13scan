@@ -1,0 +1,12 @@
+asn1crypto==0.24.0
+certifi==2019.6.16
+cffi==1.12.3
+chardet==3.0.4
+cryptography==2.7
+idna==2.8
+pycparser==2.19
+pyOpenSSL==18.0.0
+requests==2.22.0
+six==1.12.0
+tld==0.9.3
+urllib3==1.25.3
