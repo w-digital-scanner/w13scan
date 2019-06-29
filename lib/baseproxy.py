@@ -439,6 +439,8 @@ class ProxyHandle(BaseHTTPRequestHandler):
                     self.request.sendall(response.to_data())
                 except BrokenPipeError:
                     pass
+                except OSError:
+                    pass
             else:
                 self.send_error(404, 'response is None')
             if not self._is_replay():
@@ -546,6 +548,8 @@ class ProxyHandle(BaseHTTPRequestHandler):
                     else:
                         break
                 except ConnectionResetError:
+                    break
+                except TimeoutError:
                     break
         self.request.close()
         self._proxy_sock.close()

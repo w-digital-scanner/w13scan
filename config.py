@@ -7,9 +7,10 @@
 REPOSITORY = "https://github.com/boy-hack/w13scan.git"
 VERSION = '0.1'
 
-THREAD_NUM = 6  # 线程数量
+THREAD_NUM = 20  # 线程数量
 
-EXCLUDES = [".*\.google", ".*\.lastpass", 'hacking8']  # 扫描排除网址(正则表达式)
+EXCLUDES = [".*\.google", ".*\.lastpass", 'baidu\.com']  # 扫描排除网址(正则表达式)
 INCLUDES = [".*"]  # 扫描允许网址(正则表达式)
 
 RETRY = 2  # 超时重试次数
+TIMEOUT = 10  # 超时时间

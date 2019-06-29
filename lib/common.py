@@ -3,8 +3,9 @@
 # @Time    : 2019/6/28 10:01 PM
 # @Author  : w8ay
 # @File    : common.py
+import re
 import sys
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
 
 def dataToStdout(data, bold=False):
@@ -48,3 +49,24 @@ def get_parent_paths(path, domain=True):
         paths.append(netloc + tph)
         tph = tph[:-1]
     return paths
+
+
+def get_links(content, domain, limit=True):
+    '''
+    从网页源码中匹配链接
+    :param content: html源码
+    :param domain: 当前网址domain
+    :param limit: 是否限定于此域名
+    :return:
+    '''
+    p = urlparse(domain)
+    netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
+    match = re.findall(r'''(href|src)=["'](.*?)["']''', content, re.S | re.I)
+    urls = []
+    for i in match:
+        _domain = urljoin(netloc, i[1])
+        if limit:
+            if p.netloc not in _domain:
+                continue
+        urls.append(_domain)
+    return urls

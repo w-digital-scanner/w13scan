@@ -15,7 +15,6 @@ class PluginBase(object):
     def __init__(self):
         self.type = None
         self.target = None
-        self.name = None
         self.requests: Request = None
         self.response: Response = None
 

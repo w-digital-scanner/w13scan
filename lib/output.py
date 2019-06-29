@@ -5,7 +5,7 @@
 # @File    : output.py
 
 from lib.controller import printProgress
-from lib.data import Share, KB
+from lib.data import Share
 
 
 class OutPut(object):
@@ -13,13 +13,21 @@ class OutPut(object):
     def __init__(self):
         self.collect = []
 
-    def success(self, msg):
-        self.collect.append(msg)
+    def success(self, url, plugin, **kw):
+        report = {
+            "url": url,
+            "plugin": plugin
+        }
+        report.update(kw)
+        msg = ''
+        for k, v in report.items():
+            msg += "{}:{}  ".format(k, str(v))
+        self.collect.append(report)
         self.log(msg)
 
     def log(self, msg):
         # Share.dataToStdout(value + '\n')
-        Share.dataToStdout('\r' + msg + ' ' * (KB["console_width"][0] - len(msg)) + '\n\r')
+        Share.dataToStdout('\r' + msg + '\n\r')
         printProgress()
 
 

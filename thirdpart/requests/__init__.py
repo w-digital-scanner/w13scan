@@ -17,6 +17,8 @@ from requests.sessions import merge_setting, merge_cookies
 from requests.utils import get_encodings_from_content
 from urllib3 import disable_warnings
 
+from config import TIMEOUT
+
 
 def patch_all():
     disable_warnings()
@@ -56,7 +58,7 @@ def session_request(self, method, url,
 
     # Send the request.
     send_kwargs = {
-        'timeout': timeout,
+        'timeout': TIMEOUT,
         'allow_redirects': allow_redirects,
     }
     send_kwargs.update(settings)

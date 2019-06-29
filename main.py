@@ -20,7 +20,7 @@ def main():
         baseproxy = AsyncMitmProxy(server_addr=('127.0.0.1', 7778), https=True)
         baseproxy.serve_forever()
     except KeyboardInterrupt:
-        print("[*] User quit")
+        print("\n[*] User quit")
         exit(0)
 
 

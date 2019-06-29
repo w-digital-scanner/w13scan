@@ -5,8 +5,8 @@
 # @File    : test_get_parent_paths.py
 import unittest
 from urllib.parse import urlparse
-
-from lib.common import get_parent_paths
+import requests
+from lib.common import get_parent_paths, get_links
 
 
 class TestCase(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestCase(unittest.TestCase):
     def test_get_parent_paths(self):
         url = "https://github.com/w-digital-scanner/w9scan/blob/master/plugins/spider_file/bcrpscan.py"
         p = urlparse(url)
-        r = get_parent_paths(p.path,False)
+        r = get_parent_paths(p.path, False)
         d = ['/w-digital-scanner/w9scan/blob/master/plugins/spider_file/',
              '/w-digital-scanner/w9scan/blob/master/plugins/', '/w-digital-scanner/w9scan/blob/master/',
              '/w-digital-scanner/w9scan/blob/', '/w-digital-scanner/w9scan/', '/w-digital-scanner/', '/']
@@ -31,3 +31,9 @@ class TestCase(unittest.TestCase):
               'https://github.com/w-digital-scanner/w9scan/blob/', 'https://github.com/w-digital-scanner/w9scan/',
               'https://github.com/w-digital-scanner/', 'https://github.com/']
         self.assertTrue(r == d2)
+
+    def test_get_links(self):
+        domain = "https://x.hacking8.com"
+        r = requests.get(domain)
+        links = get_links(r.text, domain)
+        self.assertTrue(len(links) > 0)
