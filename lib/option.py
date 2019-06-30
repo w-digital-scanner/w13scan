@@ -5,7 +5,7 @@
 # @File    : option.py
 import os
 
-from config import VERSION, REPOSITORY, EXCLUDE_PLUGINS
+from config import VERSION, REPOSITORY, EXCLUDE_PLUGINS, INCLUDE_PLUGINS
 from lib.common import dataToStdout
 from lib.data import PATH, KB, logger
 from lib.loader import load_file_to_module
@@ -33,6 +33,11 @@ def _init_plugins():
     for root, dirs, files in os.walk(PATH['plugins']):
         files = filter(lambda x: not x.startswith("__") and x.endswith(".py"), files)
         for _ in files:
+            if len(INCLUDE_PLUGINS) == 1 and INCLUDE_PLUGINS[0] == 'all':
+                pass
+            else:
+                if _ not in INCLUDE_PLUGINS:
+                    continue
             if _ in EXCLUDE_PLUGINS:
                 continue
             filename = os.path.join(PATH['plugins'], _)

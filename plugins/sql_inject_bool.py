@@ -33,8 +33,7 @@ class W13SCAN(PluginBase):
 
         if method == 'GET':
             # 从源码中获取更多链接
-            links = get_links(resp_str, url, True)
-            links.append(url)
+            links = [url]
             for link in set(links):
                 # 只接收指定类型的SQL注入
                 p = urlparse(link)

@@ -432,7 +432,10 @@ class ProxyHandle(BaseHTTPRequestHandler):
                 request.set_https(True)
             self._proxy_sock.sendall(request.to_data())
             # 将响应信息返回给客户端
-            response = Response(request, self._proxy_sock)
+            try:
+                response = Response(request, self._proxy_sock)
+            except ConnectionResetError:
+                response = None
 
             if response:
                 try:
