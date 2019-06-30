@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 
 import requests
 
+from lib.common import prepare_url
+from lib.data import Share
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -49,8 +51,12 @@ class W13SCAN(PluginBase):
             del data[k]
             data[k + "[]"] = v
             try:
-                r = requests.get(netloc, headers=headers, params=data)
+                _ = prepare_url(netloc, params=data)
+                if Share.in_url(_):
+                    continue
+                Share.add_url(_)
+                r = requests.get(_, headers=headers)
                 if "Warning" in r.text and "array given" in r.text:
-                    out.success(r.url, self.name)
+                    out.success(_, self.name)
             except:
                 pass

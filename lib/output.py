@@ -13,7 +13,7 @@ class OutPut(object):
     def __init__(self):
         self.collect = []
 
-    def success(self, url, plugin, **kw):
+    def success(self, url, plugin='unknown', **kw):
         report = {
             "url": url,
             "plugin": plugin

@@ -10,6 +10,8 @@ import string
 import sys
 from urllib.parse import urlparse, urljoin
 
+import requests
+
 
 def dataToStdout(data, bold=False):
     """
@@ -102,3 +104,9 @@ def get_middle_text(text, prefix, suffix, index=0):
         # logger.log(CUSTOM_LOGGING.ERROR, "text not found pro:{} suffix:{}".format(prefix, suffix))
         return ''
     return text[index_1 + len(prefix):index_2]
+
+
+def prepare_url(url, params):
+    req = requests.Request('GET', url, params=params)
+    r = req.prepare()
+    return r.url
