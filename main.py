@@ -1,4 +1,5 @@
 import os
+import signal
 import threading
 
 from lib.baseproxy import AsyncMitmProxy
@@ -10,6 +11,7 @@ def main():
     # init
     root = os.path.dirname(os.path.abspath(__file__))
     init(root)
+
     try:
         # 启动漏洞扫描器线程
         scanner = threading.Thread(target=start)
@@ -21,7 +23,7 @@ def main():
         baseproxy.serve_forever()
     except KeyboardInterrupt:
         print("\n[*] User quit")
-        exit(0)
+        os.kill(os.getpid(), signal.SIGHUP)
 
 
 if __name__ == '__main__':

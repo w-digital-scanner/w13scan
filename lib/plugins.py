@@ -5,9 +5,9 @@
 # @File    : plugins.py
 from requests import ConnectTimeout, HTTPError, TooManyRedirects
 
-from lib.baseproxy import Request, Response
 from config import RETRY
-from lib.data import logger
+from lib.baseproxy import Request, Response
+from lib.data import Share
 
 
 class PluginBase(object):
@@ -25,7 +25,8 @@ class PluginBase(object):
         netloc = "http"
         if self.requests.https:
             netloc = "https"
-        if (netloc == "https" and int(self.requests.port) == 443) or (netloc == "http" and int(self.requests.port) == 80):
+        if (netloc == "https" and int(self.requests.port) == 443) or (
+                netloc == "http" and int(self.requests.port) == 80):
             url = "{0}://{1}{2}".format(netloc, self.requests.hostname, self.requests.path)
         else:
             url = "{0}://{1}:{2}{3}".format(netloc, self.requests.hostname, self.requests.port, self.requests.path)
@@ -39,33 +40,39 @@ class PluginBase(object):
         try:
             output = self.audit()
         except NotImplementedError:
-            logger.error('Plugin: {0} not defined "{1} mode'.format(self.name, 'audit'))
+            msg = 'Plugin: {0} not defined "{1} mode'.format(self.name, 'audit')
+            Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
 
         except ConnectTimeout:
             retry = RETRY
             while retry > 0:
-                logger.debug('Plugin: {0} timeout, start it over.'.format(self.name))
+                msg = 'Plugin: {0} timeout, start it over.'.format(self.name)
+                Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
                 try:
                     output = self.audit()
                     break
                 except ConnectTimeout:
-                    logger.debug('POC: {0} time-out retry failed!'.format(self.name))
+                    msg = 'POC: {0} time-out retry failed!'.format(self.name)
+                    Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
                 retry -= 1
             else:
                 msg = "connect target '{0}' failed!".format(self.target)
-                logger.error(msg)
+                Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
 
         except HTTPError as e:
-            logger.warning('Plugin: {0} HTTPError occurs, start it over.'.format(self.name))
+            msg = 'Plugin: {0} HTTPError occurs, start it over.'.format(self.name)
+            Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
 
         except ConnectionError as e:
             msg = "connect target '{0}' failed!".format(self.target)
-            logger.error(msg)
+            Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
 
         except TooManyRedirects as e:
-            logger.error(str(e))
+            if e:
+                Share.dataToStdout(Share.dataToStdout('\r' + str(e) + '\n\r'))
 
         except Exception as e:
-            logger.error(str(e))
+            if e:
+                Share.dataToStdout(Share.dataToStdout('\r' + str(e) + '\n\r'))
 
         return output

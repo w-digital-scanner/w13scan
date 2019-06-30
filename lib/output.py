@@ -5,7 +5,7 @@
 # @File    : output.py
 
 from lib.controller import printProgress
-from lib.data import Share
+from lib.data import Share, KB
 
 
 class OutPut(object):
@@ -27,6 +27,11 @@ class OutPut(object):
 
     def log(self, msg):
         # Share.dataToStdout(value + '\n')
+        width = KB["console_width"][0]
+        while len(msg) > width:
+            _ = msg[:width]
+            Share.dataToStdout('\r' + _ + '\n\r')
+            msg = msg[width:]
         Share.dataToStdout('\r' + msg + '\n\r')
         printProgress()
 
