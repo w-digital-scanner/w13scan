@@ -11,8 +11,8 @@ from urllib.parse import urlparse
 
 import requests
 
-from lib.common import get_links, prepare_url
-from lib.const import acceptedExt
+from lib.common import prepare_url
+from lib.const import acceptedExt, ignoreParams
 from lib.data import Share
 from lib.helper.diifpage import fuzzy_equal
 from lib.output import out
@@ -54,6 +54,8 @@ class W13SCAN(PluginBase):
                 netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
 
                 for k, v in params.items():
+                    if k.lower() in ignoreParams:
+                        continue
                     if not re.search('^-?\d+(\.\d+)?$', v):
                         continue
                     data = copy.deepcopy(params)
@@ -68,7 +70,7 @@ class W13SCAN(PluginBase):
                     Share.add_url(url1)
                     r = requests.get(url1, headers=headers)
                     html1 = r.text
-                    if fuzzy_equal(resp_str, html1, 0.8):
+                    if fuzzy_equal(resp_str, html1, 0.97):
                         continue
                     payload2 = "{0}+{1}-{1}".format(v, random.randint(10, 100))
                     data[k] = payload2

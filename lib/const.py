@@ -16,6 +16,14 @@ acceptedExt = [
     '.do', ''
 ]
 
+ignoreParams = [
+    'submit',
+    '_',
+    '_t',
+    'rand',
+    'hash'
+]
+
 
 # We define some constants
 class DBMS:

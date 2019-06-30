@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 import requests
 
 from lib.common import get_links, prepare_url
-from lib.const import acceptedExt
+from lib.const import acceptedExt, ignoreParams
 from lib.data import Share
 from lib.output import out
 from lib.plugins import PluginBase
@@ -57,6 +57,8 @@ class W13SCAN(PluginBase):
                     '"and(select+sleep({time})union/**/select+1)="'
                 ]
                 for k, v in params.items():
+                    if k.lower() in ignoreParams:
+                        continue
                     data = copy.deepcopy(params)
                     for flag in sql_flag:
                         # first request

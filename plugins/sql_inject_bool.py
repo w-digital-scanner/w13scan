@@ -9,8 +9,8 @@ from urllib.parse import urlparse
 
 import requests
 
-from lib.common import get_links, prepare_url, random_str
-from lib.const import acceptedExt
+from lib.common import prepare_url, random_str
+from lib.const import acceptedExt, ignoreParams
 from lib.data import Share
 from lib.helper.diifpage import GetRatio
 from lib.output import out
@@ -56,6 +56,8 @@ class W13SCAN(PluginBase):
                     '"and"{0}"="{1}'
                 ]
                 for k, v in params.items():
+                    if k.lower() in ignoreParams:
+                        continue
                     data = copy.deepcopy(params)
                     for flag in sql_flag:
                         # true page
@@ -68,7 +70,8 @@ class W13SCAN(PluginBase):
                         Share.add_url(url1)
                         r = requests.get(url1, headers=headers)
                         html1 = r.text
-                        if GetRatio(resp_str, html1) < 0.78:  # 相似度随手一设～
+                        radio = GetRatio(resp_str, html1)
+                        if radio < 0.88:  # 相似度随手一设～
                             continue
 
                         # false page
@@ -76,7 +79,8 @@ class W13SCAN(PluginBase):
                         data[k] = v + payload2
                         r2 = requests.get(netloc, params=data, headers=headers)
                         html2 = r2.text
-                        if GetRatio(resp_str, html2) < 0.22:  # 相似度随手设置
+                        radio = GetRatio(resp_str, html2)
+                        if radio < 0.68:  # 相似度随手设置
                             msg = " {k}:{v} !== {k}:{v1} and {k}:{v} === {k}:{v2}".format(k=k, v=v, v1=payload1,
                                                                                           v2=payload2)
                             # out.log(msg)

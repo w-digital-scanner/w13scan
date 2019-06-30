@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 import requests
 
 from lib.common import get_links, prepare_url
-from lib.const import acceptedExt
+from lib.const import acceptedExt, ignoreParams
 from lib.data import Share
 from lib.helper.helper_sqli import Get_sql_errors
 from lib.output import out
@@ -54,6 +54,8 @@ class W13SCAN(PluginBase):
 
                 sql_flag = '鎈\'"\('
                 for k, v in params.items():
+                    if k.lower() in ignoreParams:
+                        continue
                     data = copy.deepcopy(params)
                     data[k] = v + sql_flag
                     url1 = prepare_url(netloc, params=data)
@@ -65,5 +67,6 @@ class W13SCAN(PluginBase):
                     for sql_regex, dbms_type in Get_sql_errors():
                         match = sql_regex.search(html)
                         if match:
+                            print(sql_regex.pattern, dbms_type)
                             out.success(link, self.name, payload="{}={}".format(k, data[k]))
                             break

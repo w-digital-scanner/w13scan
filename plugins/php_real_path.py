@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 import requests
 
 from lib.common import prepare_url
+from lib.const import ignoreParams
 from lib.data import Share
 from lib.output import out
 from lib.plugins import PluginBase
@@ -47,6 +48,8 @@ class W13SCAN(PluginBase):
                 pass
         netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
         for k, v in params.items():
+            if k.lower() in ignoreParams:
+                continue
             data = copy.deepcopy(params)
             del data[k]
             data[k + "[]"] = v
