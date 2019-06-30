@@ -3,7 +3,10 @@
 # @Time    : 2019/6/28 10:01 PM
 # @Author  : w8ay
 # @File    : common.py
+import hashlib
+import random
 import re
+import string
 import sys
 from urllib.parse import urlparse, urljoin
 
@@ -70,3 +73,32 @@ def get_links(content, domain, limit=True):
                 continue
         urls.append(_domain)
     return urls
+
+
+def random_str(length=10, chars=string.ascii_letters + string.digits):
+    return ''.join(random.sample(chars, length))
+
+
+def md5(src):
+    m2 = hashlib.md5()
+    m2.update(src)
+    return m2.hexdigest()
+
+
+def get_middle_text(text, prefix, suffix, index=0):
+    """
+    获取中间文本的简单实现
+
+    :param text:要获取的全文本
+    :param prefix:要获取文本的前部分
+    :param suffix:要获取文本的后半部分
+    :param index:从哪个位置获取
+    :return:
+    """
+    try:
+        index_1 = text.index(prefix, index)
+        index_2 = text.index(suffix, index_1 + len(prefix))
+    except ValueError:
+        # logger.log(CUSTOM_LOGGING.ERROR, "text not found pro:{} suffix:{}".format(prefix, suffix))
+        return ''
+    return text[index_1 + len(prefix):index_2]

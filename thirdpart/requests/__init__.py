@@ -28,7 +28,7 @@ def patch_all():
 
 def session_request(self, method, url,
                     params=None, data=None, headers=None, cookies=None, files=None, auth=None,
-                    timeout=10,
+                    timeout=None,
                     allow_redirects=True, proxies=None, hooks=None, stream=None, verify=False, cert=None, json=None):
     # Create the Request.
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
@@ -58,7 +58,7 @@ def session_request(self, method, url,
 
     # Send the request.
     send_kwargs = {
-        'timeout': TIMEOUT,
+        'timeout': timeout or TIMEOUT,
         'allow_redirects': allow_redirects,
     }
     send_kwargs.update(settings)

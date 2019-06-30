@@ -37,6 +37,7 @@ def _init_plugins():
             mod = load_file_to_module(filename)
             try:
                 mod = mod.W13SCAN()
+                getattr(mod, 'name', 'unknown plugin')
                 KB["registered"][_] = mod
             except AttributeError:
                 logger.error('Filename:{} not class "{}"'.format(_, 'W13SCAN'))

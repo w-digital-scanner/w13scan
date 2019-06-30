@@ -31,9 +31,12 @@ class W13SCAN(PluginBase):
             urls |= set(path1)
 
         flag_list = [
-            "index of",
             "directory listing for",
-            " - /"
+            "<title>directory",
+            "<head><title>index of",
+            '<table summary="directory listing"',
+            'last modified</a>',
+
         ]
         for p in urls:
             if not Share.in_url(p):
