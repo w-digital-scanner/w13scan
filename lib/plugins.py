@@ -47,32 +47,32 @@ class PluginBase(object):
             retry = RETRY
             while retry > 0:
                 msg = 'Plugin: {0} timeout, start it over.'.format(self.name)
-                Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
+                Share.dataToStdout('\r' + msg + '\n\r')
                 try:
                     output = self.audit()
                     break
                 except ConnectTimeout:
                     msg = 'POC: {0} time-out retry failed!'.format(self.name)
-                    Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
+                    Share.dataToStdout('\r' + msg + '\n\r')
                 retry -= 1
             else:
                 msg = "connect target '{0}' failed!".format(self.target)
-                Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
+                Share.dataToStdout('\r' + msg + '\n\r')
 
         except HTTPError as e:
             msg = 'Plugin: {0} HTTPError occurs, start it over.'.format(self.name)
-            Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
+            Share.dataToStdout('\r' + msg + '\n\r')
 
         except ConnectionError as e:
             msg = "connect target '{0}' failed!".format(self.target)
-            Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
+            Share.dataToStdout('\r' + msg + '\n\r')
 
         except TooManyRedirects as e:
             if e:
-                Share.dataToStdout(Share.dataToStdout('\r' + str(e) + '\n\r'))
+                Share.dataToStdout('\r' + str(e) + '\n\r')
 
         except Exception as e:
             if e:
-                Share.dataToStdout(Share.dataToStdout('\r' + str(e) + '\n\r'))
+                Share.dataToStdout('\r' + str(e) + '\n\r')
 
         return output
