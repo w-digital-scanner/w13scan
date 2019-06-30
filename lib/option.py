@@ -11,6 +11,7 @@ from lib.data import PATH, KB, logger
 from lib.loader import load_file_to_module
 from thirdpart.requests import patch_all
 from queue import Queue
+import platform
 
 
 def _set_path(root):
@@ -23,6 +24,7 @@ def _init_kb():
     KB['continue'] = True
     KB['registered'] = dict()
     KB['task_queue'] = Queue()
+    KB["is_win"] = platform.system() == 'Windows'
 
 
 def _init_plugins():

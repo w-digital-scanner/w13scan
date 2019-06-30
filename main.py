@@ -4,6 +4,7 @@ import threading
 
 from lib.baseproxy import AsyncMitmProxy
 from lib.controller import start
+from lib.data import KB
 from lib.option import init
 
 
@@ -23,7 +24,8 @@ def main():
         baseproxy.serve_forever()
     except KeyboardInterrupt:
         print("\n[*] User quit")
-        os.kill(os.getpid(), signal.SIGHUP)
+        if not KB["is_win"]:
+            os.kill(os.getpid(), signal.SIGHUP)
 
 
 if __name__ == '__main__':
