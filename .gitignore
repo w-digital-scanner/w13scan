@@ -103,3 +103,4 @@ venv.bak/
 .mypy_cache/
 .idea/
 certs/
+tests/test/

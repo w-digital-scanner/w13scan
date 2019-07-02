@@ -35,5 +35,12 @@ class OutPut(object):
         Share.dataToStdout('\r' + msg + '\n\r')
         printProgress()
 
+    def output(self):
+        '''
+        todo output file
+        :return:
+        '''
+        pass
+
 
 out = OutPut()

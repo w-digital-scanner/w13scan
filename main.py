@@ -2,6 +2,7 @@ import os
 import signal
 import threading
 
+from config import SERVER_ADDR
 from lib.baseproxy import AsyncMitmProxy
 from lib.controller import start
 from lib.data import KB
@@ -20,7 +21,7 @@ def main():
         scanner.start()
 
         # 启动代理服务器
-        baseproxy = AsyncMitmProxy(server_addr=('127.0.0.1', 7778), https=True)
+        baseproxy = AsyncMitmProxy(server_addr=SERVER_ADDR, https=True)
         baseproxy.serve_forever()
     except KeyboardInterrupt:
         print("\n[*] User quit")
