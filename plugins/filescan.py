@@ -72,9 +72,9 @@ class W13SCAN(PluginBase):
                 if not Share.in_url(_):
                     Share.add_url(_)
                     try:
-                        r = requests.get(_, headers=headers)
+                        r = requests.get(_, headers=headers, allow_redirects=False)
                         # out.log(_)
-                        if r.status_code == 200:
+                        if r.status_code != 404:
                             success.append({"url": _, "code": len(r.text)})
                             # print(self.name)
                     except Exception as e:
