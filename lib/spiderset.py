@@ -29,6 +29,9 @@ class SpiderSet(object):
         if not (isinstance(netloc, str) and isinstance(plugin, str)):
             netloc = str(netloc)
             plugin = str(plugin)
+        if not isinstance(params, list):
+            params = list(params)
+        params = ','.join(params)
         _ = "{}:{}:{}".format(netloc, params, plugin)
         _ = md5(_.encode('utf-8'))
         self.lock.acquire()

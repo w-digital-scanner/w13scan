@@ -155,7 +155,7 @@ class W13SCAN(PluginBase):
             except:
                 continue
 
-            if KB["spiderset"].add(req.netloc, req.params, 'PerFile'):
+            if KB["spiderset"].add(req.netloc, req.params.keys(), 'PerFile'):
                 task_push('PerFile', req, resp)
 
         # Collect directory from response
@@ -167,5 +167,5 @@ class W13SCAN(PluginBase):
                 resp = FakeResp(r)
             except:
                 continue
-            if KB["spiderset"].add(req.netloc, req.params, 'PerFolder'):
+            if KB["spiderset"].add(req.netloc, req.params.keys(), 'PerFolder'):
                 task_push('PerFolder', req, resp)

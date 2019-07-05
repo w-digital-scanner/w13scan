@@ -57,7 +57,7 @@ class W13SCAN(PluginBase):
                 url1 = prepare_url(netloc, params=data)
                 r = requests.get(url1, headers=headers)
                 html1 = r.text
-                if fuzzy_equal(resp_str, html1, 0.97):
+                if fuzzy_equal(resp_str, html1, 0.87):
                     continue
                 payload2 = "{0}+{1}-{1}".format(v, random.randint(10, 100))
                 data[k] = payload2

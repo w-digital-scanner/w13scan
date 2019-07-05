@@ -166,6 +166,7 @@ def relative_distance_boolean(a_str, b_str, threshold=0.6):
         simalar = SequenceMatcher(None,
                                   split_by_sep(a_str),
                                   split_by_sep(b_str)).quick_ratio()
+        # print(simalar)
         return threshold <= simalar
 
 
