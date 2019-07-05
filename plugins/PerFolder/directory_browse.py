@@ -18,17 +18,14 @@ class W13SCAN(PluginBase):
         method = self.requests.command  # 请求方式 GET or POST
         headers = self.requests.get_headers()  # 请求头 dict类型
         url = self.build_url()  # 请求完整URL
-        data = self.requests.get_body_data().decode()  # POST 数据
 
         resp_data = self.response.get_body_data()  # 返回数据 byte类型
         resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
         resp_headers = self.response.get_headers()  # 返回头 dict类型
 
-        path1 = get_parent_paths(url)
-        urls = set(path1)
-        for link in get_links(resp_str, url, True):
-            path1 = get_parent_paths(link)
-            urls |= set(path1)
+        p = self.requests.urlparse
+        params = self.requests.params
+        netloc = self.requests.netloc
 
         flag_list = [
             "directory listing for",
@@ -38,14 +35,7 @@ class W13SCAN(PluginBase):
             'last modified</a>',
 
         ]
-        for p in urls:
-            if not Share.in_url(p):
-                Share.add_url(p)
-                try:
-                    r = requests.get(p, headers=headers)
-                    for i in flag_list:
-                        if i in r.text.lower():
-                            out.success(p, self.name)
-                            break
-                except Exception as e:
-                    pass
+        for i in flag_list:
+            if i in resp_str.lower():
+                out.success(p, self.name)
+                break

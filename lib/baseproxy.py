@@ -36,7 +36,8 @@ __all__ = [
     'MitmProxy',
     'AsyncMitmProxy',
     'Request',
-    'Response'
+    'Response',
+    'HttpTransfer'
 ]
 
 
@@ -145,6 +146,13 @@ class Request(HttpTransfer):
         self.path = req.path
         self.https = False
         self.request_version = req.request_version
+
+        self.post_hint = None  # post数据类型
+        self.post_data = None
+
+        self.urlparse = None
+        self.netloc = None
+        self.params = None
 
         self.set_headers(req.headers)
 
@@ -447,8 +455,10 @@ class ProxyHandle(BaseHTTPRequestHandler):
             else:
                 self.send_error(404, 'response is None')
             if not self._is_replay():
-                for _ in KB["registered"].keys():
-                    KB['task_queue'].put((_, request, response))
+                KB['task_queue'].put(('loader', request, response))
+
+                # for _ in KB["registered"].keys():
+                #     KB['task_queue'].put((_, request, response))
                 # self.mitm_request(request, response)
         else:
             self.send_error(404, 'request is None')

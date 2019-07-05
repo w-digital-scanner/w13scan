@@ -82,35 +82,20 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
   - 去重策略：作为被动型的扫描器，去重策略也是很重要的点，我不能让同一个网站进行相同两次的扫描。初步设想是去重策略在插件系统完成，插件系统内部过滤完再发送给相应插件，为此有必要单独为它写一个类。
 
     - 去重的核心是把url解析获得`scheme`、`netloc`、`params`、`path`和对应`plugin`,数据结构如何排还没有想好，如何快速的查找重复和能够存储大量的数据是核心
+  
 - 2019.7.4 周四 加入了`命令注入`(php代码注入,asp代码注入，系统命令注入)模块。今天看了AWVS对参数的解析模块，除了一般的解析外，它还会判断参数是否是base64编码，是否是a Java serialized object,是否是PHP serialized object 或 base64+serialized的形式，Python serialized object, base64+serialized的形式，W13SCAN也准备加入这个功能。
 
+- 2019.7.5 周五 仿照Awvs重新设计了插件了目录，类别以及流程图，应该能很直观的明白运行方式吧。
+    
+    - ![W13SCAN 流程设计](doc/W13SCAN 流程设计.jpg)
+    - 值得注意的是此次架构改造完毕后，`W13SCAN`将不再是简单的被动扫描器了，它还会从返回包中自动寻找网址，进行同样的扫描操作。可以说它现在说`主动+被动`结合的扫描器了，当然，自动爬取可能会误触到`注销`之类的按钮，所以爬虫不会爬带logout
+    - 今天一天都在重构插件框架，已经差不多了，但晚上要去看电影，估计今天是完不成了，今天完成
+        * [x] post包组合通用函数
+        * [x] respos解析中request response组合
+        * [x] 去重策略
+        * [x] 插件改造
+    - 明天又是一个周末，想搭个靶机测测具体效果～然后url通用解码函数和POST插件的编写。
 
-## 如何编写插件
-以内置的文件扫描插件为例
-```python
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# @Time    : 2019/6/29 12:16 AM
-# @Author  : w8ay
-# @File    : filescan.py
-from lib.plugins import PluginBase
-import requests
 
 
-class W13SCAN(PluginBase):
-    name = '为插件起个名字？'
-    desc = '''基于流量动态生成敏感目录及文件，进行扫描'''
-
-    def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-        data = self.requests.get_body_data().decode()  # POST 数据
-
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-```
-需要声明名称为`W13SCAN`的类名，并基于`PluginBase`类，在其中声明`audit`方法，即可获得请求内容以及返回内容。
 

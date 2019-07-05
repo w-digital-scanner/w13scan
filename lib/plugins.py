@@ -73,6 +73,6 @@ class PluginBase(object):
 
         except Exception as e:
             if e:
-                Share.dataToStdout('\r' + str(e) + '\n\r')
+                Share.dataToStdout('\r' + "[x]{} report:".format(self.name) + str(e) + '\n\r')
 
         return output

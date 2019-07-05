@@ -4,6 +4,7 @@
 # @Author  : w8ay
 # @File    : common.py
 import hashlib
+import json
 import random
 import re
 import string
@@ -11,6 +12,8 @@ import sys
 from urllib.parse import urlparse, urljoin
 
 import requests
+
+from lib.const import PLACE, DEFAULT_GET_POST_DELIMITER, DEFAULT_COOKIE_DELIMITER, POST_HINT
 
 
 def dataToStdout(data, bold=False):
@@ -110,3 +113,108 @@ def prepare_url(url, params):
     req = requests.Request('GET', url, params=params)
     r = req.prepare()
     return r.url
+
+
+def paramToDict(parameters, place=PLACE.GET, hint=POST_HINT.NORMAL) -> dict:
+    """
+    Split the parameters into names and values, check if these parameters
+    are within the testable parameters and return in a dictionary.
+    """
+
+    testableParameters = {}
+    if place == PLACE.COOKIE:
+        splitParams = parameters.split(DEFAULT_COOKIE_DELIMITER)
+        hint = POST_HINT.NORMAL
+    # elif (place == PLACE.GET or PLACE == PLACE.POST) and (hint == POST_HINT.NORMAL or hint == POST_HINT.ARRAY_LIKE):
+    #     splitParams = parameters.split(DEFAULT_GET_POST_DELIMITER)
+    elif place == PLACE.GET:
+        splitParams = parameters.split(DEFAULT_GET_POST_DELIMITER)
+        for element in splitParams:
+            parts = element.split("=")
+            if len(parts) >= 2:
+                testableParameters[parts[0]] = ''.join(parts[1:])
+    elif place == PLACE.POST:
+        if hint == POST_HINT.NORMAL:
+            splitParams = parameters.split(DEFAULT_GET_POST_DELIMITER)
+            for element in splitParams:
+                parts = element.split("=")
+                if len(parts) >= 2:
+                    testableParameters[parts[0]] = ''.join(parts[1:])
+        elif hint == POST_HINT.JSON:
+            data = json.loads(parameters)
+            if isListLike(data):
+                for i in data:
+                    testableParameters[i] = ''
+            elif isinstance(data, dict):
+                testableParameters.update(data)
+        elif hint == POST_HINT.ARRAY_LIKE:
+            splitParams = parameters.split(DEFAULT_GET_POST_DELIMITER)
+            for element in splitParams:
+                parts = element.split("=")
+                if len(parts) >= 2:
+                    key = parts[0]
+                    value = ''.join(parts[1:])
+                    if key in testableParameters:
+                        testableParameters[key] = [testableParameters[key]]
+                        testableParameters[key].append(value)
+                    else:
+                        testableParameters[key] = value
+    return testableParameters
+
+
+def postParamsCombination(data, hint=POST_HINT.NORMAL):
+    """
+    组合POST参数,将相关类型参数组合成requests认识的
+
+    :param data:
+    :param hint:
+    :return:
+    """
+    if hint == POST_HINT.NORMAL:
+        return data
+    elif hint == POST_HINT.JSON:
+        return json.dumps(data)
+    elif hint == POST_HINT.ARRAY_LIKE:
+        return data
+
+
+def isListLike(value):
+    """
+    Returns True if the given value is a list-like instance
+
+    >>> isListLike([1, 2, 3])
+    True
+    >>> isListLike('2')
+    False
+    """
+
+    return isinstance(value, (list, tuple, set))
+
+
+def findMultipartPostBoundary(post):
+    """
+    Finds value for a boundary parameter in given multipart POST body
+
+    >>> findMultipartPostBoundary("-----------------------------9051914041544843365972754266\\nContent-Disposition: form-data; name=text\\n\\ndefault")
+    '9051914041544843365972754266'
+    """
+
+    retVal = None
+
+    done = set()
+    candidates = []
+
+    for match in re.finditer(r"(?m)^--(.+?)(--)?$", post or ""):
+        _ = match.group(1).strip().strip('-')
+
+        if _ in done:
+            continue
+        else:
+            candidates.append((post.count(_), _))
+            done.add(_)
+
+    if candidates:
+        candidates.sort(key=lambda _: _[0], reverse=True)
+        retVal = candidates[0][1]
+
+    return retVal

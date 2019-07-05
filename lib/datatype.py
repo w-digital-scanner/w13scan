@@ -25,22 +25,3 @@ class _ThreaData(object):
         self.lock.acquire()
         dataToStdout(msg)
         self.lock.release()
-
-    def add_url(self, domain):
-        p = urlparse(domain)
-        self.lock.acquire()
-        if p.netloc not in self.urls:
-            self.urls[p.netloc] = set()
-        self.urls[p.netloc].add(domain)
-        self.lock.release()
-
-    def in_url(self, domain):
-        p = urlparse(domain)
-        ret = True
-        self.lock.acquire()
-        if p.netloc not in self.urls:
-            ret = False
-        if ret:
-            ret = domain in self.urls[p.netloc]
-        self.lock.release()
-        return ret

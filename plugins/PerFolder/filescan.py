@@ -52,47 +52,41 @@ class W13SCAN(PluginBase):
         method = self.requests.command  # 请求方式 GET or POST
         headers = self.requests.get_headers()  # 请求头 dict类型
         url = self.build_url()  # 请求完整URL
-        data = self.requests.get_body_data().decode()  # POST 数据
 
         resp_data = self.response.get_body_data()  # 返回数据 byte类型
         resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
         resp_headers = self.response.get_headers()  # 返回头 dict类型
 
-        path1 = get_parent_paths(url)
-        urls = set(path1)
-        for link in get_links(resp_str, url, True):
-            path1 = get_parent_paths(link)
-            urls |= set(path1)
+        p = self.requests.urlparse
+        params = self.requests.params
+        netloc = self.requests.netloc
 
-        for p in urls:
-            filename = self.file()
-            success = []
-            for f in filename:
-                _ = p.rstrip('/') + f
-                if not Share.in_url(_):
-                    Share.add_url(_)
-                    try:
-                        r = requests.get(_, headers=headers, allow_redirects=False)
-                        # out.log(_)
-                        if r.status_code != 404:
-                            success.append({"url": _, "code": len(r.text)})
-                            # print(self.name)
-                    except Exception as e:
-                        pass
-            if len(success) < 5:
-                for i in success:
-                    out.success(i["url"], self.name)
-            else:
-                result = {}
-                for item in success:
-                    length = item.get("len", 0)
-                    if length not in result:
-                        result[length] = list()
-                    result[length].append(item["url"])
+        filename = self.file()
+        success = []
+        for f in filename:
+            _ = url.rstrip('/') + f
+            try:
+                r = requests.get(_, headers=headers, allow_redirects=False)
+                # out.log(_)
+                if r.status_code != 404:
+                    success.append({"url": _, "code": len(r.text)})
+                    # print(self.name)
+            except Exception as e:
+                pass
+        if len(success) < 5:
+            for i in success:
+                out.success(i["url"], self.name)
+        else:
+            result = {}
+            for item in success:
+                length = item.get("len", 0)
+                if length not in result:
+                    result[length] = list()
+                result[length].append(item["url"])
 
-                for k, v in result.items():
-                    if len(v) > 3:
-                        continue
+            for k, v in result.items():
+                if len(v) > 3:
+                    continue
 
-                    for i in v:
-                        out.success(i, self.name)
+                for i in v:
+                    out.success(i, self.name)

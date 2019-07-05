@@ -9,6 +9,7 @@ from config import VERSION, REPOSITORY, EXCLUDE_PLUGINS, INCLUDE_PLUGINS
 from lib.common import dataToStdout
 from lib.data import PATH, KB, logger
 from lib.loader import load_file_to_module
+from lib.spiderset import SpiderSet
 from thirdpart.requests import patch_all
 from queue import Queue
 import platform
@@ -25,6 +26,7 @@ def _init_kb():
     KB['registered'] = dict()
     KB['task_queue'] = Queue()
     KB["is_win"] = platform.system() == 'Windows'
+    KB["spiderset"] = SpiderSet()
 
 
 def _init_plugins():
@@ -40,12 +42,15 @@ def _init_plugins():
                     continue
             if _ in EXCLUDE_PLUGINS:
                 continue
-            filename = os.path.join(PATH['plugins'], _)
+            filename = os.path.join(root, _)
             mod = load_file_to_module(filename)
             try:
                 mod = mod.W13SCAN()
                 getattr(mod, 'name', 'unknown plugin')
-                KB["registered"][_] = mod
+                plugin = os.path.splitext(_)[0]
+                plugin_type = os.path.split(root)[1]
+                setattr(mod, 'type', plugin_type)
+                KB["registered"][plugin] = mod
             except AttributeError:
                 logger.error('Filename:{} not class "{}"'.format(_, 'W13SCAN'))
     logger.info('Load plugin:{}'.format(len(KB["registered"])))

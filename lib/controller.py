@@ -109,3 +109,10 @@ def printProgress():
 
     out = '\r' + ' ' * (KB['console_width'][0] - len(msg)) + msg
     Share.dataToStdout(out)
+
+
+def task_push(plugin_type, request, response):
+    for _ in KB["registered"].keys():
+        module = KB["registered"][_]
+        if module.type == plugin_type:
+            KB['task_queue'].put((_, request, response))
