@@ -4,15 +4,10 @@
 # @Author  : w8ay
 # @File    : jsonp.py
 
-import copy
-import os
-import random
 import re
 
 import requests
 
-from lib.common import prepare_url
-from lib.const import acceptedExt, ignoreParams
 from lib.helper.diifpage import GetRatio
 from lib.output import out
 from lib.plugins import PluginBase
