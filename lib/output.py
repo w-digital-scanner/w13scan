@@ -19,11 +19,16 @@ class OutPut(object):
             "plugin": plugin
         }
         report.update(kw)
-        msg = ''
-        for k, v in report.items():
-            msg += "{}:{}  ".format(k, str(v))
+        # msg = ''
+        # for k, v in report.items():
+        #     msg += "{}:{}  ".format(k, str(v))
         self.collect.append(report)
-        self.log(msg)
+        self.log("[{}]".format(report["plugin"]))
+        del report["plugin"]
+        for k, v in report.items():
+            msg = "{0}{1}{2}".format(k, "   ", str(v))
+            self.log(msg)
+        self.log(' ')
 
     def log(self, msg):
         # Share.dataToStdout(value + '\n')
