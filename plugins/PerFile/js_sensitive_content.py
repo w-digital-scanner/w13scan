@@ -33,8 +33,9 @@ class W13SCAN(PluginBase):
         netloc = self.requests.netloc
 
         exi = os.path.splitext(p.path)[1]
-        if exi not in ['.js', '.vue']:
+        if exi not in ['.js']:
             return
+        # print(url)
         regx = (
             # 匹配url
             r'\b(?:http:|https:)(?:[\w/\.]+)?(?:[a-zA-Z0-9_\-\.]{1,})\.(?:php|asp|ashx|jspx|aspx|jsp|json|action|html|txt|xml|do)\b',

@@ -223,10 +223,7 @@ class Response(HttpTransfer):
             except Exception as e:
                 return ''
         if isinstance(self._body_str, bytes):
-            try:
-                ret = self.get_body_data().decode()
-            except UnicodeDecodeError:
-                ret = ''
+            ret = self.get_body_data().decode(errors='ignore')
             return ret
         return self._body_str
 
@@ -455,7 +452,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
                     pass
             else:
                 self.send_error(404, 'response is None')
-            if not self._is_replay():
+            if not self._is_replay() and response:
                 KB['task_queue'].put(('loader', request, response))
 
                 # for _ in KB["registered"].keys():

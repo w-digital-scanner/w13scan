@@ -232,7 +232,7 @@ def is_base64(value: str):
     if not re.match(regx, value):
         return False
     try:
-        ret = base64.b16decode(value).decode()
+        ret = base64.b16decode(value).decode(errors='ignore')
     except binascii.Error:
         return False
     return ret

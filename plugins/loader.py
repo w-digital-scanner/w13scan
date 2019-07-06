@@ -43,7 +43,7 @@ class FakeReq(HttpTransfer):
         self.port = port
 
         self.command = 'GET'
-        self.path = p.path + p.query
+        self.path = p.path + "?" + p.query
         self.request_version = 1.1
 
         # self.urlparse = None
@@ -72,8 +72,8 @@ class FakeResp(HttpTransfer):
             try:
                 return self.get_body_data().decode(self.decoding)
             except Exception as e:
-                return self.get_body_data().decode('utf-8')
-        return self.get_body_data().decode('utf-8')
+                return self.get_body_data().decode('utf-8', "ignore")
+        return self.get_body_data().decode('utf-8', "ignore")
 
 
 class W13SCAN(PluginBase):
@@ -85,7 +85,7 @@ class W13SCAN(PluginBase):
         method = self.requests.command  # 请求方式 GET or POST
         headers = self.requests.get_headers()  # 请求头 dict类型
         url = self.build_url()  # 请求完整URL
-        data = self.requests.get_body_data().decode()  # POST 数据
+        data = self.requests.get_body_data().decode(errors='ignore')  # POST 数据
 
         resp_data = self.response.get_body_data()  # 返回数据 byte类型
         resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码

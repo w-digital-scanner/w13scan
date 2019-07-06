@@ -8,6 +8,7 @@
 # @Time    : 2019/2/1 2:54 PM
 # @Author  : w8ay
 # @File    : __init__.py.py
+import logging
 import ssl
 
 from requests.cookies import RequestsCookieJar
@@ -22,6 +23,7 @@ from config import TIMEOUT
 
 def patch_all():
     disable_warnings()
+    logging.getLogger("urllib3").setLevel(logging.CRITICAL)
     ssl._create_default_https_context = ssl._create_unverified_context
     Session.request = session_request
 

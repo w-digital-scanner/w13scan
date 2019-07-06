@@ -23,7 +23,6 @@ class W13SCAN(PluginBase):
         method = self.requests.command  # 请求方式 GET or POST
         headers = self.requests.get_headers()  # 请求头 dict类型
         url = self.build_url()  # 请求完整URL
-        data = self.requests.get_body_data().decode()
 
         resp_data = self.response.get_body_data()  # 返回数据 byte类型
         resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
