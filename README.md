@@ -17,9 +17,12 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
 
 ## 检测插件
 - [x] 敏感文件扫描
-    - [x] 基于目录git,svn扫描
+    - [x] .git .svn .bzr .hg泄漏
     - [x] 目录未授权访问
     - [x] linux敏感文件读取
+    - [x] JetBrans IDEA配置文件扫描
+    - [x] .htaccess 泄漏
+    - [x] sftp json泄漏
 - [x] PHP真实路径泄漏
 - [ ] 备份文件扫描
     - [ ] 常见备份文件

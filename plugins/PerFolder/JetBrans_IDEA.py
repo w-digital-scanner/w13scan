@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Time    : 2019/6/29 3:18 PM
+# @Time    : 2019/7/6 3:01 PM
 # @Author  : w8ay
-# @File    : sourceleak.py
-import requests
+# @File    : JetBrans_IDEA.py
 
+import requests
+import re
 from lib.output import out
 from lib.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
-    desc = '''基于流量动态查找目录下git svn等源码泄漏'''
-    name = '.git .svn泄漏插件'
+    desc = ''''''
+    name = 'JetBrans .idea 泄漏'
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST
@@ -26,16 +27,9 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        flag = {
-            "/.svn/all-wcprops": "svn:wc:ra_dav:version-url",
-            "/.git/config": 'repositoryformatversion'
-        }
-        for f in flag.keys():
-            _ = url.rstrip('/') + f
-            try:
-                r = requests.get(_, headers=headers)
-                # out.log(_)
-                if flag[f] in r.text:
-                    out.success(_, self.name)
-            except Exception as e:
-                pass
+        testURL = url.strip('/') + "/.idea/workspace.xml"
+        r = requests.get(testURL, headers=headers)
+        if re.search(
+                '<project version="\w+">',
+                r.text, re.I):
+            out.success(testURL, self.name)

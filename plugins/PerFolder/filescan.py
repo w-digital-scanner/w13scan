@@ -16,10 +16,9 @@ class W13SCAN(PluginBase):
     def file(self):
         filename = ['/debug.txt', '/crossdomain.xml', '/etc/passwd', '/.bash_profile',
                     '/.rediscli_history',
-                    '/.bash_history', '/.bashrc', '/.DS_Store', '/../../../../../../../../../../etc/passwd',
+                    '/.bash_history', '/.bashrc', '/.DS_Store',
                     '/.bash_logout',
-                    '/.vimrc', '/.htaccess', '/examples/', '/.htaccess.bak',
-                    '/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/etc/passwd',
+                    '/.vimrc', '/examples/', '/.htaccess.bak',
                     '/db.conf', '/.history', '/composer.json',
                     '/requirements.txt', '/.htpasswd', '/composer.lock', '/web.config', '/login.php',
                     '/nohup.out',
@@ -40,11 +39,11 @@ class W13SCAN(PluginBase):
                     '/application.ini', '/conf.ini', '/app.ini',
                     '/config.ini',
                     '/php.ini',
-                    '/config.json', '/.user.ini', '/db.ini', '/.idea/workspace.xml', '/.idea/modules.xml', '/a.out',
+                    '/config.json', '/.user.ini', '/db.ini', '/a.out',
                     '/key',
                     '/keys', '/key.txt', '/secret_key', '/secret', '/.env', '/.secret', '/.key', '/.secret_key',
                     '/temp.txt',
-                    '/tmp.txt', '/sftp-config.json']
+                    '/tmp.txt']
         return filename
 
     def audit(self):
