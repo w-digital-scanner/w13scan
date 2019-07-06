@@ -34,7 +34,6 @@ class W13SCAN(PluginBase):
 
         re_list = {
             "ASPNETPathDisclosure": "<title>Invalid\sfile\sname\sfor\smonitoring:\s'([^']*)'\.\sFile\snames\sfor\smonitoring\smust\shave\sabsolute\spaths\,\sand\sno\swildcards\.<\/title>",
-            "EnvirnmentVariables": "(GATEWAY_INTERFACE[\s\S]*?CGI\/1\.[01]|SERVER_PROTOCOL[\s\S]*?HTTP\/1\.[10]|COMMONPROGRAMFILES[\s\S]*?C:\\Program\sFiles\\Common\sFiles|java\.runtime\.name|sun\.boot\.library\.path|java\.vm\.version|java\.runtime\.version|sun\.jnu\.encoding|java\.vm\.specification\.vendor|java\.library\.path|sun\.boot\.class\.path)",
             "Struts2DevMod": "You are seeing this page because development mode is enabled.  Development mode, or devMode, enables extra",
             "Django DEBUG MODEL": "You're seeing this error because you have <code>DEBUG = True<\/code> in",
             "RailsDevMode": "<title>Action Controller: Exception caught<\/title>",

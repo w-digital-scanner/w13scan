@@ -8,6 +8,8 @@ import re
 
 import requests
 
+from lib.common import random_str
+from lib.const import JSON_RECOGNITION_REGEX
 from lib.helper.diifpage import GetRatio
 from lib.output import out
 from lib.plugins import PluginBase
@@ -34,13 +36,19 @@ class W13SCAN(PluginBase):
         combine = '^\S+\(\{.*\}\)'
 
         if re.match(combine, resp_str, re.I | re.S):
+            # 判断是否为jsonp
             if "Referer" in headers:
-                del headers["Referer"]
+                headers["Referer"] = "https://www.baidu.com/q=" + url
             if method == 'GET':
                 r = requests.get(url, headers=headers)
                 if GetRatio(resp_str, r.text) >= 0.8:
                     out.success(url, self.name)
-            elif method == 'POST':
-                r = requests.post(url, headers=headers, data=data)
-                if GetRatio(resp_str, r.text) >= 0.8:
-                    out.success(url, self.name, payload=str(data))
+        elif re.match(JSON_RECOGNITION_REGEX, resp_str, re.I | re.S) and 'callback' not in url:
+            # 不是jsonp,是json
+            if "Referer" in headers:
+                headers["Referer"] = "https://www.baidu.com/q=" + url
+            params["callback"] = random_str(2)
+            if method == 'GET':
+                r = requests.get(netloc, params=params, headers=headers)
+                if params["callback"] + "({" in r.text:
+                    out.success(r.url, self.name)

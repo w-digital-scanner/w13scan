@@ -19,6 +19,8 @@ INCLUDE_PLUGINS = ['all']  # 使用插件,文件名，all为全部
 RETRY = 2  # 超时重试次数
 TIMEOUT = 10  # 超时时间
 
+LEVEL = 0  # 根据检测深度由浅入深分为1～5级别，级别越高使用插件越多。
+
 # DEBUG
 # INCLUDE_PLUGINS = ['loader.py', 'directory_browse.py']
 # THREAD_NUM = 1
