@@ -5,14 +5,13 @@
 # @File    : command_system.py
 import copy
 import os
+import random
 import re
-from urllib.parse import urlparse
 
 import requests
 
 from lib.common import prepare_url
 from lib.const import acceptedExt, ignoreParams
-from lib.data import Share
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -41,6 +40,7 @@ class W13SCAN(PluginBase):
             if exi not in acceptedExt:
                 return
 
+            randint = random.randint(1000, 9000)
             url_flag = {
                 "set|set&set": [
                     'Path=[\s\S]*?PWD=',
@@ -54,6 +54,9 @@ class W13SCAN(PluginBase):
                     'Non-authoritative\sanswer:\s+Name:\s*',
                     'Server:\s*.*?\nAddress:\s*'
                 ],
+                "echo `echo 6162983|base64`6162983".format(randint): [
+                    "NjE2Mjk4Mwo=6162983"
+                ]
             }
             for k, v in params.items():
                 if k.lower() in ignoreParams:

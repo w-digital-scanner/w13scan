@@ -3,6 +3,8 @@
 # @Time    : 2019/6/28 11:03 PM
 # @Author  : w8ay
 # @File    : plugins.py
+from http.client import RemoteDisconnected
+
 from requests import ConnectTimeout, HTTPError, TooManyRedirects
 
 from config import RETRY
@@ -70,6 +72,9 @@ class PluginBase(object):
         except TooManyRedirects as e:
             if e:
                 Share.dataToStdout('\r' + str(e) + '\n\r')
+
+        except RemoteDisconnected as e:
+            pass
 
         except Exception as e:
             if e:

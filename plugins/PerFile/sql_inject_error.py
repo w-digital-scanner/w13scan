@@ -5,13 +5,11 @@
 # @File    : sql_inject_error.py
 import copy
 import os
-from urllib.parse import urlparse
 
 import requests
 
-from lib.common import get_links, prepare_url
+from lib.common import prepare_url
 from lib.const import acceptedExt, ignoreParams
-from lib.data import Share
 from lib.helper.helper_sqli import Get_sql_errors
 from lib.output import out
 from lib.plugins import PluginBase

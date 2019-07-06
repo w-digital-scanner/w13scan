@@ -3,11 +3,8 @@
 # @Time    : 2019/6/29 4:46 PM
 # @Author  : w8ay
 # @File    : directory_browse.py
-from lib.common import get_parent_paths, get_links
-from lib.plugins import PluginBase
-from lib.data import Share
 from lib.output import out
-import requests
+from lib.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
@@ -37,5 +34,5 @@ class W13SCAN(PluginBase):
         ]
         for i in flag_list:
             if i in resp_str.lower():
-                out.success(p, self.name)
+                out.success(url, self.name)
                 break

@@ -16,6 +16,11 @@ acceptedExt = [
     '.do', ''
 ]
 
+notAcceptedExt = [
+    '.pdf', '.docx', '.zip', '.rar', '.gz',
+    'jpg', 'png', 'jpge', 'gif'
+]
+
 ignoreParams = [
     'submit',
     '_',

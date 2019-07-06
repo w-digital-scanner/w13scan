@@ -149,6 +149,7 @@ class W13SCAN(PluginBase):
             if not is_continue:
                 continue
             try:
+                # todo 超过5M拒绝请求
                 r = requests.get(link, headers=headers)
                 req = FakeReq(link, headers)
                 resp = FakeResp(r)
@@ -159,7 +160,10 @@ class W13SCAN(PluginBase):
                 task_push('PerFile', req, resp)
 
         # Collect directory from response
+
         urls = set(get_parent_paths(url))
+        for link in set(links):
+            urls |= set(get_parent_paths(link))
         for i in urls:
             try:
                 r = requests.get(i, headers=headers)

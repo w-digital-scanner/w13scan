@@ -20,5 +20,5 @@ RETRY = 2  # 超时重试次数
 TIMEOUT = 10  # 超时时间
 
 # DEBUG
-# INCLUDE_PLUGINS = ['sql_inject_error.py']
+# INCLUDE_PLUGINS = ['loader.py', 'directory_browse.py']
 # THREAD_NUM = 1

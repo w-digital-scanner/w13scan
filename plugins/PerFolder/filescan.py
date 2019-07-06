@@ -3,11 +3,10 @@
 # @Time    : 2019/6/29 12:16 AM
 # @Author  : w8ay
 # @File    : filescan.py
-from lib.common import get_parent_paths, get_links
-from lib.plugins import PluginBase
-from lib.data import Share
-from lib.output import out
 import requests
+
+from lib.output import out
+from lib.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):

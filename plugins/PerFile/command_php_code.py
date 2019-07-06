@@ -7,19 +7,17 @@ import copy
 import os
 import random
 import re
-from urllib.parse import urlparse
 
 import requests
 
 from lib.common import prepare_url, md5
 from lib.const import acceptedExt, ignoreParams
-from lib.data import Share
 from lib.output import out
 from lib.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
-    name = 'PHP代码注入注入'
+    name = 'PHP代码注入'
     desc = '''暂只支持Get请求方式和回显型的PHP代码注入'''
 
     def audit(self):
@@ -46,6 +44,7 @@ class W13SCAN(PluginBase):
             randint = random.randint(1, 256)
             verify_result = md5(str(randint).encode())
             payloads = [
+                "print(md5({}));",
                 ";print(md5({}));",
                 "';print(md5({}));$a='",
                 "\";print(md5({}));$a=\"",
@@ -58,7 +57,10 @@ class W13SCAN(PluginBase):
                     continue
                 data = copy.deepcopy(params)
                 for payload in payloads:
-                    data[k] = v + payload.format(randint)
+                    if payload[0] == "p":
+                        data[k] = payload.format(randint)
+                    else:
+                        data[k] = v + payload.format(randint)
                     url1 = prepare_url(netloc, params=data)
                     r = requests.get(url1, headers=headers)
                     html1 = r.text

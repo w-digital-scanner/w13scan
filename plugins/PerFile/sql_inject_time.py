@@ -6,13 +6,11 @@
 import copy
 import os
 import time
-from urllib.parse import urlparse
 
 import requests
 
-from lib.common import get_links, prepare_url
+from lib.common import prepare_url
 from lib.const import acceptedExt, ignoreParams
-from lib.data import Share
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -43,7 +41,8 @@ class W13SCAN(PluginBase):
 
             sql_flag = [
                 "'and(select+sleep({time})union/**/select+1)='",
-                '"and(select+sleep({time})union/**/select+1)="'
+                '"and(select+sleep({time})union/**/select+1)="',
+                '/**/and(select+sleep({time})union/**/select+1)'
             ]
             for k, v in params.items():
                 if k.lower() in ignoreParams:

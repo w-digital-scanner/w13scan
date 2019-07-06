@@ -7,13 +7,11 @@ import copy
 import os
 import random
 import re
-from urllib.parse import urlparse
 
 import requests
 
 from lib.common import prepare_url
 from lib.const import acceptedExt, ignoreParams
-from lib.data import Share
 from lib.helper.diifpage import fuzzy_equal
 from lib.output import out
 from lib.plugins import PluginBase

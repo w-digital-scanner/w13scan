@@ -10,7 +10,6 @@ import requests
 
 from lib.common import prepare_url, random_str
 from lib.const import acceptedExt, ignoreParams
-from lib.data import Share
 from lib.helper.diifpage import GetRatio
 from lib.output import out
 from lib.plugins import PluginBase
