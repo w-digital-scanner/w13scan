@@ -190,6 +190,7 @@ class Response(HttpTransfer):
         self.status = h.status
         self.reason = h.reason
         self.set_headers(h.msg)
+        self.decoding = None
 
         body_data = self._decode_content_body(h.read(), self.get_header('Content-Encoding'))
         self.set_body_data(body_data)

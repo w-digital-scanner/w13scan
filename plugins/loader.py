@@ -7,6 +7,7 @@ import re
 from urllib.parse import unquote
 from urllib.parse import urlparse
 
+import chardet
 import requests
 
 from lib.baseproxy import HttpTransfer
@@ -64,14 +65,15 @@ class FakeResp(HttpTransfer):
         self.reason = resp.reason
         self._body = resp.content
         self._headers = resp.headers
+        self.decoding = chardet.detect(self._body)['encoding']  # 探测当前的编码
 
-    def get_body_str(self, decoding='utf-8'):
-        if decoding:
+    def get_body_str(self):
+        if self.decoding:
             try:
-                return self.get_body_data().decode(decoding)
+                return self.get_body_data().decode(self.decoding)
             except Exception as e:
-                return ''
-        return self.get_body_data().decode('utf-')
+                return self.get_body_data().decode('utf-8')
+        return self.get_body_data().decode('utf-8')
 
 
 class W13SCAN(PluginBase):
@@ -88,13 +90,13 @@ class W13SCAN(PluginBase):
         resp_data = self.response.get_body_data()  # 返回数据 byte类型
         resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
         resp_headers = self.response.get_headers()  # 返回头 dict类型
+        encoding = self.response.decoding or 'utf-8'
 
         p = self.requests.urlparse = urlparse(url)
         netloc = self.requests.netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
 
         if method == "POST":
-            data = unquote(data, 'utf-8')
-            # todo 自动识别编码解码
+            data = unquote(data, encoding)
 
             if re.search('([^=]+)=([^%s]+%s?|\Z)' % (DEFAULT_GET_POST_DELIMITER, DEFAULT_GET_POST_DELIMITER),
                          data):
@@ -127,8 +129,7 @@ class W13SCAN(PluginBase):
                 print("post data数据识别失败")
 
         elif method == "GET":
-            data = unquote(p.query, 'utf-8')
-            # todo 自动识别编码解码
+            data = unquote(p.query, encoding)
             params = paramToDict(data, place=PLACE.GET)
             self.requests.params = params
             if KB["spiderset"].add(netloc, self.requests.params.keys(), 'PerFile'):
@@ -149,8 +150,11 @@ class W13SCAN(PluginBase):
             if not is_continue:
                 continue
             try:
-                # todo 超过5M拒绝请求
-                r = requests.get(link, headers=headers)
+                # 超过5M拒绝请求
+                r = requests.head(link, headers=headers)
+                if "Content-Length" in r.headers:
+                    if r.headers["Content-Length"] > 1024 * 1024 * 5:
+                        raise Exception("length > 5M")
                 req = FakeReq(link, headers)
                 resp = FakeResp(r)
             except:
