@@ -23,7 +23,8 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
     - [x] JetBrans IDEA配置文件扫描
     - [x] .htaccess 泄漏
     - [x] sftp json泄漏
-    - [ ] 序列化参数预警
+    - [x] 序列化参数预警
+    - [x] JS敏感内容匹配
 - [x] PHP真实路径泄漏
 - [ ] 备份文件扫描
     - [ ] 常见备份文件
@@ -45,7 +46,7 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
 
 ### 其他插件
 - [ ] 被动子域名搜索
-- [ ] 被动E-mail,Phone等信息搜索
+- [x] 被动E-mail,Phone等信息搜索
 
 ## Thx
 - https://github.com/qiyeboy/BaseProxy  代理框架基于它

@@ -23,7 +23,8 @@ LEVEL = 0  # 根据检测深度由浅入深分为1～5级别，级别越高使�
 
 if 1 >= LEVEL > 0:
     # 等级为1，只使用简单对网站无影响的插件
-    INCLUDE_PLUGINS = ['jsonp.py', 'cors.py', 'php_real_path.py', 'errorpage.py', 'directory_browse.py']
+    INCLUDE_PLUGINS = ['jsonp.py', 'cors.py', 'php_real_path.py', 'errorpage.py', 'directory_browse.py',
+                       'js_sensitive_content.py', 'analyze_parameter.py']
 
 # DEBUG
 # INCLUDE_PLUGINS = ['loader.py', 'directory_browse.py']
