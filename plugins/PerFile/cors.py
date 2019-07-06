@@ -27,14 +27,13 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        sensitive_params = ['mail', 'user', 'name', 'ip', 'pass', 'add']
-
-        if "Access-Control-Allow-Origin" in resp_headers and resp_headers["Access-Control-Allow-Origin"] == "*":
-            if "Access-Control-Allow-Credentials" in resp_headers and resp_headers[
-                "Access-Control-Allow-Credentials"] == True:
-                out.success(url, self.name, payload=str(data))
+        sensitive_params = ['mail', 'user', 'name', 'ip', 'pass', 'add', 'phone']
+        if "access-control-allow-origin" in resp_headers and resp_headers["access-control-allow-origin"] == "*":
+            if "access-control-allow-credentials" in resp_headers and resp_headers[
+                "access-control-allow-credentials"].lower() == 'true':
+                out.success(url, self.name, payload=str(data), method=method)
             else:
                 for i in sensitive_params:
                     if i in resp_str:
-                        out.success(url, self.name, payload=str(data), sensitive=i)
+                        out.success(url, self.name, sensitive=i, method=method, payload=str(data))
                         break
