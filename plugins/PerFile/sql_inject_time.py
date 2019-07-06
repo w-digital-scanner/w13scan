@@ -66,8 +66,25 @@ class W13SCAN(PluginBase):
                     html2 = r2.text
                     elapsed2 = time.time() - _
                     if elapsed2 - elapsed > 1.5:
-                        msg = " {k}:{v1} 耗时 {time1}s; {k}:{v2} 耗时 {time2}s".format(k=k, v1=payload1, v2=payload2,
-                                                                                   time1=elapsed, time2=elapsed2)
-                        # out.log(msg)
-                        out.success(url, self.name, payload=k, condition=msg)
-                        break
+                        # 为了验证准确性，再来一次～
+                        # first request
+                        payload1 = flag.format(time=0)
+                        data[k] = v + payload1
+                        url1 = prepare_url(netloc, params=data)
+                        _ = time.time()
+                        r = requests.get(url1, headers=headers)
+                        html1 = r.text
+                        elapsed = time.time() - _
+
+                        # second request
+                        payload2 = flag.format(time=2)
+                        data[k] = v + payload2
+                        _ = time.time()
+                        r2 = requests.get(netloc, params=data, headers=headers)
+                        html2 = r2.text
+                        elapsed2 = time.time() - _
+                        if elapsed2 - elapsed > 1.5:
+                            msg = " {k}:{v1} 耗时 {time1}s; {k}:{v2} 耗时 {time2}s".format(k=k, v1=payload1, v2=payload2,
+                                                                                       time1=elapsed, time2=elapsed2)
+                            out.success(url, self.name, payload=k, condition=msg)
+                            break

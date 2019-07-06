@@ -51,7 +51,7 @@ class FakeReq(HttpTransfer):
         self.params = paramToDict(p.query, place=PLACE.GET)
 
         self._header = headers
-        self._body = None
+        self._body = b''
 
 
 class FakeResp(HttpTransfer):

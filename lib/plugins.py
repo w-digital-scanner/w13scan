@@ -3,8 +3,12 @@
 # @Time    : 2019/6/28 11:03 PM
 # @Author  : w8ay
 # @File    : plugins.py
+import socket
+import traceback
 from http.client import RemoteDisconnected
 
+import requests
+import urllib3
 from requests import ConnectTimeout, HTTPError, TooManyRedirects
 
 from config import RETRY
@@ -45,7 +49,7 @@ class PluginBase(object):
             msg = 'Plugin: {0} not defined "{1} mode'.format(self.name, 'audit')
             Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
 
-        except ConnectTimeout:
+        except (ConnectTimeout, requests.exceptions.ReadTimeout, urllib3.exceptions.ReadTimeoutError, socket.timeout):
             retry = RETRY
             while retry > 0:
                 msg = 'Plugin: {0} timeout, start it over.'.format(self.name)
@@ -65,7 +69,7 @@ class PluginBase(object):
             msg = 'Plugin: {0} HTTPError occurs, start it over.'.format(self.name)
             Share.dataToStdout('\r' + msg + '\n\r')
 
-        except ConnectionError as e:
+        except ConnectionError:
             msg = "connect target '{0}' failed!".format(self.target)
             Share.dataToStdout('\r' + msg + '\n\r')
 
@@ -79,5 +83,6 @@ class PluginBase(object):
         except Exception as e:
             if e:
                 Share.dataToStdout('\r' + "[x]{} report:".format(self.name) + str(e) + '\n\r')
+                traceback.print_exc()
 
         return output
