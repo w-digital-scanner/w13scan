@@ -38,6 +38,8 @@ def _init_plugins():
             if len(INCLUDE_PLUGINS) == 1 and INCLUDE_PLUGINS[0] == 'all':
                 pass
             else:
+                if "loader.py" not in INCLUDE_PLUGINS:
+                    INCLUDE_PLUGINS.append("loader.py")
                 if _ not in INCLUDE_PLUGINS:
                     continue
             if _ in EXCLUDE_PLUGINS:
