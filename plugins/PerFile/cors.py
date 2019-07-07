@@ -3,8 +3,9 @@
 # @Time    : 2019/7/6 6:44 PM
 # @Author  : w8ay
 # @File    : cors.py
+import os
 
-
+from lib.const import acceptedExt
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -26,6 +27,12 @@ class W13SCAN(PluginBase):
         p = self.requests.urlparse
         params = self.requests.params
         netloc = self.requests.netloc
+
+        if p.query == '':
+            return
+        exi = os.path.splitext(p.path)[1]
+        if exi not in acceptedExt:
+            return
 
         sensitive_params = ['mail', 'user', 'name', 'ip', 'pass', 'add', 'phone']
         if "access-control-allow-origin" in resp_headers and resp_headers["access-control-allow-origin"] == "*":

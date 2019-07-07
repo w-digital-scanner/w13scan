@@ -57,7 +57,8 @@ class PluginBase(object):
                 try:
                     output = self.audit()
                     break
-                except ConnectTimeout:
+                except (
+                ConnectTimeout, requests.exceptions.ReadTimeout, urllib3.exceptions.ReadTimeoutError, socket.timeout):
                     msg = 'Plugin: {0} time-out retry failed!'.format(self.name)
                     Share.dataToStdout('\r' + msg + '\n\r')
                 retry -= 1

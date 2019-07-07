@@ -1,4 +1,5 @@
 # coding:utf-8
+import http
 import os
 import re
 import select
@@ -192,7 +193,10 @@ class Response(HttpTransfer):
         self.set_headers(h.msg)
         self.decoding = None
 
-        body_data = self._decode_content_body(h.read(), self.get_header('Content-Encoding'))
+        try:
+            body_data = self._decode_content_body(h.read(), self.get_header('Content-Encoding'))
+        except http.client.IncompleteRead:
+            body_data = b''
         self.set_body_data(body_data)
         self._text()  # 尝试将文本进行解码
 

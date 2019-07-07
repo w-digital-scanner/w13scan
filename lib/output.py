@@ -6,12 +6,14 @@
 
 from lib.controller import printProgress
 from lib.data import Share, KB
+from threading import Lock
 
 
 class OutPut(object):
 
     def __init__(self):
         self.collect = []
+        self.lock = Lock()
 
     def success(self, url, plugin='unknown', **kw):
         report = {
@@ -30,11 +32,13 @@ class OutPut(object):
     def log(self, msg):
         # Share.dataToStdout(value + '\n')
         width = KB["console_width"][0]
+        self.lock.acquire()
         while len(msg) > width:
             _ = msg[:width]
             Share.dataToStdout('\r' + _ + '\n\r')
             msg = msg[width:]
         Share.dataToStdout('\r' + msg + '\n\r')
+        self.lock.release()
         printProgress()
 
     def output(self):
