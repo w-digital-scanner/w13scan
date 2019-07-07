@@ -27,7 +27,8 @@ if LEVEL >= 1:
                        'js_sensitive_content.py', 'analyze_parameter.py']
 if LEVEL >= 2:
     INCLUDE_PLUGINS.extend(
-        ['sql_inject_error', 'sql_inject_time', 'directory_browse.py', 'repository_leak.py', 'errorpage.py'])
+        ['sql_inject_error', 'sql_inject_time', 'directory_browse.py', 'repository_leak.py', 'errorpage.py',
+         'redirect.py'])
 
 # DEBUG
 # INCLUDE_PLUGINS = ['php_real_path.py', 'js_sensitive_content.py']
