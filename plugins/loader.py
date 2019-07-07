@@ -153,11 +153,12 @@ class W13SCAN(PluginBase):
                 # 超过5M拒绝请求
                 r = requests.head(link, headers=headers)
                 if "Content-Length" in r.headers:
-                    if r.headers["Content-Length"] > 1024 * 1024 * 5:
+                    if int(r.headers["Content-Length"]) > 1024 * 1024 * 5:
                         raise Exception("length > 5M")
+                r = requests.get(link, headers=headers)
                 req = FakeReq(link, headers)
                 resp = FakeResp(r)
-            except:
+            except Exception as e:
                 continue
 
             if KB["spiderset"].add(req.netloc, req.params.keys(), 'PerFile'):

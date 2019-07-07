@@ -41,8 +41,9 @@ class W13SCAN(PluginBase):
                 return
 
             sql_flag = [
+                "/**/and'{0}'='{1}'",
                 "'and'{0}'='{1}",
-                '"and"{0}"="{1}'
+                '"and"{0}"="{1}',
             ]
             for k, v in list(params.items()):
                 if k.lower() in ignoreParams:
@@ -57,7 +58,7 @@ class W13SCAN(PluginBase):
                     r = requests.get(url1, headers=headers)
                     html1 = r.text
                     radio = GetRatio(resp_str, html1)
-                    if radio < 0.88:  # 相似度随手一设～
+                    if radio < 0.88:
                         continue
 
                     # false page
@@ -66,7 +67,7 @@ class W13SCAN(PluginBase):
                     r2 = requests.get(netloc, params=data, headers=headers)
                     html2 = r2.text
                     radio = GetRatio(resp_str, html2)
-                    if radio < 0.68:  # 相似度随手设置
+                    if radio < 0.78:
                         msg = " {k}:{v} !== {k}:{v1} and {k}:{v} === {k}:{v2}".format(k=k, v=v, v1=payload1,
                                                                                       v2=payload2)
                         # out.log(msg)
