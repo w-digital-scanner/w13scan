@@ -19,7 +19,6 @@ class W13SCAN(PluginBase):
         ret = is_base64(v)
 
         if ret and len(ret) >= 6:
-            print("len:", len(ret))
             if method == "GET":
                 out.success(url, self.name, method=method, parameter=k + ":" + v, base64decode=ret)
             elif method == "POST":

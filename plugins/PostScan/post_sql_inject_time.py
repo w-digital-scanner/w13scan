@@ -65,24 +65,24 @@ class W13SCAN(PluginBase):
                         if elapsed2 - elapsed > 1.5:
                             # 为了验证准确性，再来一次～
                             # first request
-                            payload1 = flag.format(time=0)
-                            data[k] = v + payload1
+                            payload1 = v + flag.format(time=0)
+                            data[k] = payload1
                             _ = time.time()
                             r = requests.post(url, data=data, headers=headers)
                             html1 = r.text
                             elapsed = time.time() - _
 
                             # second request
-                            payload2 = flag.format(time=2)
-                            data[k] = v + payload2
+                            payload2 = v + flag.format(time=2)
+                            data[k] = payload2
                             _ = time.time()
                             r2 = requests.post(url, data=data, headers=headers)
                             html2 = r2.text
                             elapsed2 = time.time() - _
                             if elapsed2 - elapsed > 1.5:
-                                msg = " {k}:{v1} 耗时 {time1}s; {k}:{v2} 耗时 {time2}s".format(k=k, v1=payload1,
-                                                                                           v2=payload2,
-                                                                                           time1=elapsed,
-                                                                                           time2=elapsed2)
+                                msg = "{k}:{v1} 耗时 {time1}s; {k}:{v2} 耗时 {time2}s".format(k=k, v1=payload1,
+                                                                                          v2=payload2,
+                                                                                          time1=elapsed,
+                                                                                          time2=elapsed2)
                                 out.success(url, self.name, payload=k, condition=msg, data=str(data))
                                 break

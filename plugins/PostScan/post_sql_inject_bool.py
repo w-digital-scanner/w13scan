@@ -50,8 +50,8 @@ class W13SCAN(PluginBase):
                     for flag in sql_flag:
                         # true page
                         rand_str = random_str(2)
-                        payload1 = flag.format(rand_str, rand_str)
-                        data[k] = v + payload1
+                        payload1 = v + flag.format(rand_str, rand_str)
+                        data[k] = payload1
                         r = requests.post(url, data=data, headers=headers)
                         html1 = r.text
                         radio = GetRatio(resp_str, html1)
@@ -59,13 +59,13 @@ class W13SCAN(PluginBase):
                             continue
 
                         # false page
-                        payload2 = flag.format(random_str(2), random_str(2))
-                        data[k] = v + payload2
+                        payload2 = v + flag.format(random_str(2), random_str(2))
+                        data[k] = payload2
                         r2 = requests.post(url, data=data, headers=headers)
                         html2 = r2.text
                         radio = GetRatio(resp_str, html2)
                         if radio < 0.78:
-                            msg = " {k}:{v} === {k}:{v1} and {k}:{v} !== {k}:{v2}".format(k=k, v=v, v1=payload1,
+                            msg = "{k}:{v} === {k}:{v1} and {k}:{v} !== {k}:{v2}".format(k=k, v=v, v1=payload1,
                                                                                           v2=payload2)
                             # out.log(msg)
                             out.success(url, self.name, payload=k, condition=msg, data=str(data))

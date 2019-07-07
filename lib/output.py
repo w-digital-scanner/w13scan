@@ -21,25 +21,24 @@ class OutPut(object):
             "plugin": plugin
         }
         report.update(kw)
+        self.lock.acquire()
         self.collect.append(report)
-        self.log("[{}]".format(report["plugin"]))
+        self.log("[{}] ".format(report["plugin"]))
         del report["plugin"]
-        for k, v in report.items():
-            msg = "{0}{1}{2}".format(k, "   ", str(v))
+        for k, v in list(report.items()):
+            msg = "{0}{1}{2}".format(k, " " * (15 - len(k)), str(v).strip())
             self.log(msg)
         self.log(' ')
-
-    def log(self, msg):
-        # Share.dataToStdout(value + '\n')
-        width = KB["console_width"][0]
-        self.lock.acquire()
-        while len(msg) > width:
-            _ = msg[:width]
-            Share.dataToStdout('\r' + _ + '\n\r')
-            msg = msg[width:]
-        Share.dataToStdout('\r' + msg + '\n\r')
         self.lock.release()
         printProgress()
+
+    def log(self, msg):
+        width = KB["console_width"][0]
+        while len(msg) >= width:
+            _ = msg[:width]
+            Share.dataToStdout('\r' + _ + ' ' * (width - len(msg)) + '\n\r')
+            msg = msg[width:]
+        Share.dataToStdout('\r' + msg + ' ' * (width - len(msg)) + '\n\r')
 
     def output(self):
         '''
