@@ -40,7 +40,7 @@ class W13SCAN(PluginBase):
         if "Warning" in resp_str and "array given" in resp_str:
             out.success(url, self.name)
 
-        for k, v in params.items():
+        for k, v in list(params.items()):
             if k.lower() in ignoreParams:
                 continue
             data = copy.deepcopy(params)

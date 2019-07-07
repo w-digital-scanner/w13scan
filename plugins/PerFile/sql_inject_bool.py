@@ -44,7 +44,7 @@ class W13SCAN(PluginBase):
                 "'and'{0}'='{1}",
                 '"and"{0}"="{1}'
             ]
-            for k, v in params.items():
+            for k, v in list(params.items()):
                 if k.lower() in ignoreParams:
                     continue
                 data = copy.deepcopy(params)

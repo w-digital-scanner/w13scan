@@ -41,7 +41,7 @@ class W13SCAN(PluginBase):
             if exi not in acceptedExt:
                 return
 
-            for k, v in params.items():
+            for k, v in list(params.items()):
                 if k.lower() in ignoreParams:
                     continue
                 if not re.search('^-?\d+(\.\d+)?$', v):
