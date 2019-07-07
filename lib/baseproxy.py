@@ -410,11 +410,11 @@ class ProxyHandle(BaseHTTPRequestHandler):
         '''
         ret = True
         for i in INCLUDES:
-            match = re.search(i, self.path)
+            match = re.search(i, self.path, re.I)
             if match:
                 ret = False
         for i in EXCLUDES:
-            match = re.search(i, self.path)
+            match = re.search(i, self.path, re.I)
             if match:
                 ret = True
         return ret

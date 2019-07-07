@@ -20,6 +20,7 @@ RETRY = 2  # 超时重试次数
 TIMEOUT = 10  # 超时时间
 
 LEVEL = 0  # 根据检测深度由浅入深分为1～5级别，级别越高使用插件越多。
+DEBUG = False  # DEBUG模式会看到报错信息
 
 if LEVEL >= 1:
     # 等级为1，只使用简单对网站无影响的插件
@@ -31,6 +32,7 @@ if LEVEL >= 2:
          'redirect.py'])
 
 # DEBUG
+# DEBUG = True
 # INCLUDE_PLUGINS = ['php_real_path.py', 'js_sensitive_content.py', 'sql_inject_bool.py', 'sql_inject_error.py',
 #                    'sql_inject_int.py', 'sql_inject_time.py']
 # THREAD_NUM = 1

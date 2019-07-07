@@ -11,7 +11,7 @@ import requests
 import urllib3
 from requests import ConnectTimeout, HTTPError, TooManyRedirects
 
-from config import RETRY
+from config import RETRY, DEBUG
 from lib.baseproxy import Request, Response
 from lib.data import Share
 
@@ -81,7 +81,7 @@ class PluginBase(object):
             pass
 
         except Exception as e:
-            if e:
+            if e and DEBUG:
                 Share.dataToStdout('\r' + "[x]{} report:".format(self.name) + str(e) + '\n\r')
                 traceback.print_exc()
 
