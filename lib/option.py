@@ -51,7 +51,8 @@ def _init_plugins():
                 getattr(mod, 'name', 'unknown plugin')
                 plugin = os.path.splitext(_)[0]
                 plugin_type = os.path.split(root)[1]
-                setattr(mod, 'type', plugin_type)
+                if getattr(mod, 'type', None) is None:
+                    setattr(mod, 'type', plugin_type)
                 KB["registered"][plugin] = mod
             except AttributeError:
                 logger.error('Filename:{} not class "{}"'.format(_, 'W13SCAN'))
