@@ -10,6 +10,7 @@ from urllib.parse import unquote
 
 import requests
 
+from lib.const import acceptedExt
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -54,12 +55,15 @@ class W13SCAN(PluginBase):
 
         regexArray = [
             '(Linux+\sversion\s+[\d\.\w\-_\+]+\s+\([^)]+\)\s+\(gcc\sversion\s[\d\.\-_]+\s)',
-            '((root|bin|daemon|sys|sync|games|man|mail|news|www-data|uucp|backup|list|proxy|gnats|nobody|syslog|mysql|bind|ftp|sshd|postfix):.*:.*:)',
+            '(root:.*:.*:)',
             "System\.IO\.FileNotFoundException: Could not find file\s'\w:",
             "System\.IO\.DirectoryNotFoundException: Could not find a part of the path\s'\w:",
             "<b>Warning<\/b>:\s\sDOMDocument::load\(\)\s\[<a\shref='domdocument.load'>domdocument.load<\/a>\]:\s(Start tag expected|I\/O warning : failed to load external entity).*(Windows\/win.ini|\/etc\/passwd).*\sin\s<b>.*?<\/b>\son\sline\s<b>\d+<\/b>",
             "(<web-app[\s\S]+<\/web-app>)"
         ]
+        exi = os.path.splitext(p.path)[1]
+        if exi not in acceptedExt:
+            return
 
         if method == "GET":
             for k, v in list(params.items()):
