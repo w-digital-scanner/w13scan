@@ -39,7 +39,7 @@ class W13SCAN(PluginBase):
             return
 
         if method == "GET":
-            for k, v in list(params.items()):
+            for k, v in params.items():
                 if not re.match('^http.+', v, re.I):
                     ret = is_base64(v)
                     if not (ret and re.match('^http.+', ret, re.I)):

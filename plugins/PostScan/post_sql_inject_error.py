@@ -39,7 +39,7 @@ class W13SCAN(PluginBase):
         if method == 'POST':
             if post_hint == POST_HINT.NORMAL:
                 sql_flag = '鎈\'"\('
-                for k, v in list(post_data.items()):
+                for k, v in post_data.items():
                     if k.lower() in ignoreParams:
                         continue
                     data = copy.deepcopy(post_data)

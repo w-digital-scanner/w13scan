@@ -40,7 +40,7 @@ class W13SCAN(PluginBase):
                 return
 
             sql_flag = '鎈\'"\('
-            for k, v in list(params.items()):
+            for k, v in params.items():
                 if k.lower() in ignoreParams:
                     continue
                 data = copy.deepcopy(params)

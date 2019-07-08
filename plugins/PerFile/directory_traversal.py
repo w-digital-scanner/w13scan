@@ -66,7 +66,7 @@ class W13SCAN(PluginBase):
             return
 
         if method == "GET":
-            for k, v in list(params.items()):
+            for k, v in params.items():
                 if ("." in v or "/" in v) or (k.lower() in ['filename', 'file', 'path', 'filepath']):
                     default_extension = 'jpg'
                     exi = os.path.splitext(v)[1]

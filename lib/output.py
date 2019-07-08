@@ -25,7 +25,7 @@ class OutPut(object):
         self.collect.append(report)
         self.log("[{}] ".format(report["plugin"]))
         del report["plugin"]
-        for k, v in list(report.items()):
+        for k, v in report.items():
             msg = "{0}{1}{2}".format(k, " " * (15 - len(k)), str(v).strip())
             self.log(msg)
         self.log(' ')

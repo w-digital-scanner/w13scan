@@ -58,7 +58,7 @@ class W13SCAN(PluginBase):
                         "NjE2Mjk4Mwo=6162983"
                     ]
                 }
-                for k, v in list(post_data.items()):
+                for k, v in post_data.items():
                     if k.lower() in ignoreParams:
                         continue
                     data = copy.deepcopy(post_data)

@@ -43,7 +43,7 @@ class W13SCAN(PluginBase):
                     "'and'{0}'='{1}",
                     '"and"{0}"="{1}',
                 ]
-                for k, v in list(post_data.items()):
+                for k, v in post_data.items():
                     if k.lower() in ignoreParams:
                         continue
                     data = copy.deepcopy(post_data)

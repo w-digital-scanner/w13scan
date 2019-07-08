@@ -5,10 +5,10 @@
 # @File    : config.py
 
 REPOSITORY = "https://github.com/boy-hack/w13scan.git"
-VERSION = '0.1'
+VERSION = '0.2'
 
 SERVER_ADDR = ('127.0.0.1', 7778)
-THREAD_NUM = 10  # 线程数量
+THREAD_NUM = 11  # 线程数量
 
 EXCLUDES = [".*\.google", ".*\.lastpass", 'baidu\.com']  # 扫描排除网址(正则表达式)
 INCLUDES = [".*"]  # 扫描允许网址(正则表达式)

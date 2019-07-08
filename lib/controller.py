@@ -115,4 +115,4 @@ def task_push(plugin_type, request, response):
     for _ in KB["registered"].keys():
         module = KB["registered"][_]
         if module.type == plugin_type:
-            KB['task_queue'].put((_, request, response))
+            KB['task_queue'].put((_, copy.deepcopy(request), copy.deepcopy(response)))

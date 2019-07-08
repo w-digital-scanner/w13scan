@@ -66,7 +66,7 @@ class W13SCAN(PluginBase):
             ]
 
             if post_hint == POST_HINT.NORMAL:
-                for k, v in list(post_data.items()):
+                for k, v in post_data.items():
                     if ("." in v or "/" in v) or (k.lower() in ['filename', 'file', 'path', 'filepath']):
                         default_extension = 'jpg'
                         exi = os.path.splitext(v)[1]
