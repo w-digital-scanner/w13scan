@@ -3,11 +3,6 @@
 # @Time    : 2019/6/28 10:59 PM
 # @Author  : w8ay
 # @File    : __init__.py.py
-# !/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# @Time    : 2019/2/1 2:54 PM
-# @Author  : w8ay
-# @File    : __init__.py.py
 import logging
 import ssl
 
@@ -52,6 +47,17 @@ def session_request(self, method, url,
     )
     prep = self.prepare_request(req)
 
+    raw = ''
+    if prep.body:
+        raw = "{}\n{}\n\n{}".format(
+            prep.method + ' ' + prep.url,
+            '\n'.join('{}: {}'.format(k, v) for k, v in prep.headers.items()),
+            prep.body)
+    else:
+        raw = "{}\n{}".format(
+            prep.method + ' ' + prep.url,
+            '\n'.join('{}: {}'.format(k, v) for k, v in prep.headers.items()))
+
     proxies = proxies or {}
 
     settings = self.merge_environment_settings(
@@ -74,5 +80,7 @@ def session_request(self, method, url,
             encoding = resp.apparent_encoding
 
         resp.encoding = encoding
+
+    resp.raw = raw
 
     return resp

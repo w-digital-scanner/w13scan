@@ -85,6 +85,6 @@ class W13SCAN(PluginBase):
                         elapsed2 = time.time() - _
                         if elapsed2 - elapsed > 1.5:
                             msg = "{k}:{v1} 耗时 {time1}s; {k}:{v2} 耗时 {time2}s".format(k=k, v1=payload1, v2=payload2,
-                                                                                       time1=elapsed, time2=elapsed2)
-                            out.success(url, self.name, payload=k, condition=msg)
+                                                                                      time1=elapsed, time2=elapsed2)
+                            out.success(url, self.name, payload=k, condition=msg, raw=[r.raw, r2.raw])
                             break

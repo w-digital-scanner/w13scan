@@ -51,5 +51,5 @@ class W13SCAN(PluginBase):
                 for sql_regex, dbms_type in Get_sql_errors():
                     match = sql_regex.search(html)
                     if match:
-                        out.success(url, self.name, payload="{}={}".format(k, data[k]), dbms_type=dbms_type)
+                        out.success(url, self.name, payload="{}={}".format(k, data[k]), dbms_type=dbms_type, raw=r.raw)
                         break

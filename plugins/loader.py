@@ -85,7 +85,7 @@ class W13SCAN(PluginBase):
         method = self.requests.command  # 请求方式 GET or POST
         headers = self.requests.get_headers()  # 请求头 dict类型
         url = self.build_url()  # 请求完整URL
-        data = self.requests.get_body_data().decode(errors='ignore')  # POST 数据
+        post_data = self.requests.get_body_data().decode(errors='ignore')  # POST 数据
 
         resp_data = self.response.get_body_data()  # 返回数据 byte类型
         resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
@@ -95,29 +95,33 @@ class W13SCAN(PluginBase):
         p = self.requests.urlparse = urlparse(url)
         netloc = self.requests.netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
 
+        data = unquote(p.query, encoding)
+        params = paramToDict(data, place=PLACE.GET)
+        self.requests.params = params
+
         if method == "POST":
-            data = unquote(data, encoding)
+            post_data = unquote(post_data, encoding)
 
             if re.search('([^=]+)=([^%s]+%s?|\Z)' % (DEFAULT_GET_POST_DELIMITER, DEFAULT_GET_POST_DELIMITER),
-                         data):
+                         post_data):
                 self.requests.post_hint = POST_HINT.NORMAL
-                self.requests.post_data = paramToDict(data, place=PLACE.POST, hint=self.requests.post_hint)
+                self.requests.post_data = paramToDict(post_data, place=PLACE.POST, hint=self.requests.post_hint)
 
-            elif re.search(JSON_RECOGNITION_REGEX, data):
+            elif re.search(JSON_RECOGNITION_REGEX, post_data):
                 self.requests.post_hint = POST_HINT.JSON
-                self.requests.post_data = paramToDict(data, place=PLACE.POST, hint=self.requests.post_hint)
+                self.requests.post_data = paramToDict(post_data, place=PLACE.POST, hint=self.requests.post_hint)
 
-            elif re.search(XML_RECOGNITION_REGEX, data):
+            elif re.search(XML_RECOGNITION_REGEX, post_data):
                 self.requests.post_hint = POST_HINT.XML
 
-            elif re.search(JSON_LIKE_RECOGNITION_REGEX, data):
+            elif re.search(JSON_LIKE_RECOGNITION_REGEX, post_data):
                 self.requests.post_hint = POST_HINT.JSON_LIKE
 
-            elif re.search(ARRAY_LIKE_RECOGNITION_REGEX, data):
+            elif re.search(ARRAY_LIKE_RECOGNITION_REGEX, post_data):
                 self.requests.post_hint = POST_HINT.ARRAY_LIKE
-                self.requests.post_data = paramToDict(data, place=PLACE.POST, hint=self.requests.post_hint)
+                self.requests.post_data = paramToDict(post_data, place=PLACE.POST, hint=self.requests.post_hint)
 
-            elif re.search(MULTIPART_RECOGNITION_REGEX, data):
+            elif re.search(MULTIPART_RECOGNITION_REGEX, post_data):
                 self.requests.post_hint = POST_HINT.MULTIPART
 
             # 支持自动识别并转换参数的类型有 NORMAL,JSON,ARRAY-LIKE
@@ -129,10 +133,8 @@ class W13SCAN(PluginBase):
                 print("post data数据识别失败")
 
         elif method == "GET":
-            data = unquote(p.query, encoding)
-            params = paramToDict(data, place=PLACE.GET)
-            self.requests.params = params
-            if KB["spiderset"].add(netloc, self.requests.params.keys(), 'PerFile'):
+
+            if KB["spiderset"].add(netloc, list(self.requests.params.keys()), 'PerFile'):
                 task_push('PerFile', self.requests, self.response)
 
         # Send PerScheme
