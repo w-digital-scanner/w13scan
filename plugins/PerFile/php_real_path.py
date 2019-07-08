@@ -8,7 +8,7 @@ import os
 
 import requests
 
-from lib.common import prepare_url
+from lib.common import prepare_url, get_middle_text
 from lib.const import ignoreParams, acceptedExt
 from lib.output import out
 from lib.plugins import PluginBase
@@ -50,6 +50,7 @@ class W13SCAN(PluginBase):
                 _ = prepare_url(netloc, params=data)
                 r = requests.get(_, headers=headers)
                 if "Warning" in r.text and "array given" in r.text:
-                    out.success(_, self.name)
+                    path = get_middle_text(r.text, 'array given in ', ' on line')
+                    out.success(_, self.name, path=path)
             except:
                 pass
