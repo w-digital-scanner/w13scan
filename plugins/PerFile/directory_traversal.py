@@ -54,10 +54,9 @@ class W13SCAN(PluginBase):
 
         regexArray = [
             '(Linux+\sversion\s+[\d\.\w\-_\+]+\s+\([^)]+\)\s+\(gcc\sversion\s[\d\.\-_]+\s)',
-            '((root|bin|daemon|sys|sync|games|man|mail|news|www-data|uucp|backup|list|proxy|gnats|nobody|syslog|mysql|bind|ftp|sshd|postfix):[\d\w-\s,]+:\d+:\d+:[\w-_\s,]*:[\w-_\s,\/]*:[\w-_,\/]*[\r\n])',
-            '((root|bin|daemon|sys|sync|games|man|mail|news|www-data|uucp|backup|list|proxy|gnats|nobody|syslog|mysql|bind|ftp|sshd|postfix)\&\#x3a;[\d\w-\s,]+\&\#x3a;\d+\&\#x3a;[\w-_\s,]*\&\#x3a;[\d\w-\s,]+\&\#x3a;\&\#x2f;)',
-            "System\.IO\.FileNotFoundException: Could not find file\s'\w:\\(boot\.ini|windows\\win.ini|etc\\passwd)",
-            "System\.IO\.DirectoryNotFoundException: Could not find a part of the path\s'\w:\\(boot\.ini|windows\\win.ini|etc\\passwd)",
+            '((root|bin|daemon|sys|sync|games|man|mail|news|www-data|uucp|backup|list|proxy|gnats|nobody|syslog|mysql|bind|ftp|sshd|postfix):.*:.*:)',
+            "System\.IO\.FileNotFoundException: Could not find file\s'\w:",
+            "System\.IO\.DirectoryNotFoundException: Could not find a part of the path\s'\w:",
             "<b>Warning<\/b>:\s\sDOMDocument::load\(\)\s\[<a\shref='domdocument.load'>domdocument.load<\/a>\]:\s(Start tag expected|I\/O warning : failed to load external entity).*(Windows\/win.ini|\/etc\/passwd).*\sin\s<b>.*?<\/b>\son\sline\s<b>\d+<\/b>",
             "(<web-app[\s\S]+<\/web-app>)"
         ]
@@ -84,14 +83,21 @@ class W13SCAN(PluginBase):
                     if 1 >= isjava >= 0:
                         payloads.append("/WEB-INF/web.xml")
                         payloads.append("../../WEB-INF/web.xml")
+
+                    issucc = False
+
                     for payload in payloads:
                         data[k] = payload
                         r = requests.get(netloc, params=data, headers=headers)
                         for i in plainArray:
                             if i in r.text:
                                 out.success(url, self.name, payload="{}:{}".format(k, data[k]))
+                                issucc = True
                                 break
                         for i in regexArray:
                             if re.search(i, r.text, re.I | re.S | re.M):
                                 out.success(url, self.name, payload="{}:{}".format(k, data[k]))
+                                issucc = True
                                 break
+                        if issucc:
+                            break
