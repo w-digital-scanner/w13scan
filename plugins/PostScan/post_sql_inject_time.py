@@ -84,5 +84,6 @@ class W13SCAN(PluginBase):
                                                                                           v2=payload2,
                                                                                           time1=elapsed,
                                                                                           time2=elapsed2)
-                                out.success(url, self.name, payload=k, condition=msg, data=str(data))
+                                out.success(url, self.name, payload=k, condition=msg, data=str(data),
+                                            raw=[r.raw, r2.raw])
                                 break

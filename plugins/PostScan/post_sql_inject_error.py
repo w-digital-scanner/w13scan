@@ -51,5 +51,5 @@ class W13SCAN(PluginBase):
 
                         if match:
                             out.success(url, self.name, payload="{}={}".format(k, data[k]), data=str(data),
-                                        dbms=str(dbms_type))
+                                        dbms=str(dbms_type), raw=r.raw)
                             break

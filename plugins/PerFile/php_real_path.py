@@ -51,6 +51,6 @@ class W13SCAN(PluginBase):
                 r = requests.get(_, headers=headers)
                 if "Warning" in r.text and "array given" in r.text:
                     path = get_middle_text(r.text, 'array given in ', ' on line')
-                    out.success(_, self.name, path=path)
+                    out.success(_, self.name, path=path,raw=r.raw)
             except:
                 pass

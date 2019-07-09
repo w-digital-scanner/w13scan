@@ -65,9 +65,9 @@ class W13SCAN(PluginBase):
                         html1 = r.text
                         if verify_result in html1:
                             out.success(url, self.name, payload="{}:{}".format(k, data[k]), method=method,
-                                        data=str(data))
+                                        data=str(data), raw=r.raw)
                             break
                         if re.search(regx, html1, re.I | re.S | re.M):
                             out.success(url, self.name, payload="{}:{}".format(k, data[k]), method=method,
-                                        data=str(data))
+                                        data=str(data), raw=r.raw)
                             break

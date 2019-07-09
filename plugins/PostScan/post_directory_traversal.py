@@ -95,12 +95,12 @@ class W13SCAN(PluginBase):
                             r = requests.post(url, data=data, headers=headers)
                             for i in plainArray:
                                 if i in r.text:
-                                    out.success(url, self.name, payload="{}:{}".format(k, data[k]))
+                                    out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw)
                                     issucc = True
                                     break
                             for i in regexArray:
                                 if re.search(i, r.text, re.I | re.S | re.M):
-                                    out.success(url, self.name, payload="{}:{}".format(k, data[k]))
+                                    out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw)
                                     issucc = True
                                     break
                             if issucc:

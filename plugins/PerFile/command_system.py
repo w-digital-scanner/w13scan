@@ -73,5 +73,5 @@ class W13SCAN(PluginBase):
                         html1 = r.text
                         for rule in re_list:
                             if re.search(rule, html1, re.I | re.S | re.M):
-                                out.success(url, self.name, payload="{}:{}".format(k, data[k]))
+                                out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw)
                                 break

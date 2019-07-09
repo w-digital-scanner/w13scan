@@ -69,7 +69,7 @@ class W13SCAN(PluginBase):
                     radio = GetRatio(resp_str, html2)
                     if radio < 0.78:
                         msg = "{k}:{v} === {k}:{v1} and {k}:{v} !== {k}:{v2}".format(k=k, v=v, v1=payload1,
-                                                                                      v2=payload2)
+                                                                                     v2=payload2)
                         # out.log(msg)
-                        out.success(url, self.name, payload=k, condition=msg)
+                        out.success(url, self.name, payload=k, condition=msg, raw=[r.raw, r2.raw])
                         break
