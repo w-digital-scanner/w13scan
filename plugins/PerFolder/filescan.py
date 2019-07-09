@@ -43,7 +43,7 @@ class W13SCAN(PluginBase):
                     '/key',
                     '/keys', '/key.txt', '/secret_key', '/secret', '/.env', '/.secret', '/.key', '/.secret_key',
                     '/temp.txt',
-                    '/tmp.txt']
+                    '/tmp.txt', '更新日志.txt']
         return filename
 
     def audit(self):
