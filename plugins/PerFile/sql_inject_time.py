@@ -68,23 +68,36 @@ class W13SCAN(PluginBase):
                     if elapsed2 - elapsed > 1.5:
                         # 为了验证准确性，再来一次～
                         # first request
-                        payload1 = flag.format(time=0)
-                        data[k] = v + payload1
-                        url1 = prepare_url(netloc, params=data)
-                        _ = time.time()
-                        r = requests.get(url1, headers=headers)
-                        html1 = r.text
-                        elapsed = time.time() - _
+                        first_eclip = 0
+                        num = 3
+                        for i in range(num):
+                            payload1 = flag.format(time=0)
+                            data[k] = v + payload1
+                            url1 = prepare_url(netloc, params=data)
+                            _ = time.time()
+                            r = requests.get(url1, headers=headers)
+                            html1 = r.text
+                            elapsed = time.time() - _
+                            first_eclip += elapsed
+                            time.sleep(0.1)
+                        first_eclip = first_eclip / num
 
+                        second_eclip = 0
                         # second request
-                        payload2 = flag.format(time=2)
-                        data[k] = v + payload2
-                        _ = time.time()
-                        r2 = requests.get(netloc, params=data, headers=headers)
-                        html2 = r2.text
-                        elapsed2 = time.time() - _
+                        for i in range(num):
+                            payload2 = flag.format(time=2)
+                            data[k] = v + payload2
+                            _ = time.time()
+                            r2 = requests.get(netloc, params=data, headers=headers)
+                            html2 = r2.text
+                            elapsed2 = time.time() - _
+                            second_eclip += elapsed2
+                            time.sleep(0.1)
+                        second_eclip = second_eclip / num
+
                         if elapsed2 - elapsed > 1.5:
-                            msg = "{k}:{v1} 耗时 {time1}s; {k}:{v2} 耗时 {time2}s".format(k=k, v1=payload1, v2=payload2,
-                                                                                      time1=elapsed, time2=elapsed2)
+                            msg = "{k}:{v1} 平均耗时 {time1}s; {k}:{v2} 平均耗时 {time2}s".format(k=k, v1=payload1, v2=payload2,
+                                                                                          time1=first_eclip,
+                                                                                          time2=second_eclip)
                             out.success(url, self.name, payload=k, condition=msg, raw=[r.raw, r2.raw])
                             break

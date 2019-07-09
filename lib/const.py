@@ -27,7 +27,8 @@ ignoreParams = [
 logoutParams = [
     'logout',
     'log_out',
-    'loginesc'
+    'loginesc',
+    'loginout'
 ]
 
 

@@ -56,7 +56,7 @@ class OutPut(object):
                 _ = line[:width]
                 outputs.append(_)
                 # Share.dataToStdout('\r' + _ + ' ' * (width - len(msg)) + '\n\r')
-                line = i[width:]
+                line = line[width:]
             outputs.append(line)
         for i in outputs:
             Share.dataToStdout('\r' + i + ' ' * (width - len(i)) + '\n\r')

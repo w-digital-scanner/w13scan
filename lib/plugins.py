@@ -9,7 +9,7 @@ from http.client import RemoteDisconnected
 
 import requests
 import urllib3
-from requests import ConnectTimeout, HTTPError, TooManyRedirects
+from requests import ConnectTimeout, HTTPError, TooManyRedirects, ConnectionError
 
 from config import RETRY, DEBUG
 from lib.baseproxy import Request, Response
@@ -58,7 +58,8 @@ class PluginBase(object):
                     output = self.audit()
                     break
                 except (
-                ConnectTimeout, requests.exceptions.ReadTimeout, urllib3.exceptions.ReadTimeoutError, socket.timeout):
+                        ConnectTimeout, requests.exceptions.ReadTimeout, urllib3.exceptions.ReadTimeoutError,
+                        socket.timeout):
                     msg = 'Plugin: {0} time-out retry failed!'.format(self.name)
                     Share.dataToStdout('\r' + msg + '\n\r')
                 retry -= 1
@@ -70,18 +71,17 @@ class PluginBase(object):
             msg = 'Plugin: {0} HTTPError occurs, start it over.'.format(self.name)
             # Share.dataToStdout('\r' + msg + '\n\r')
 
-        except ConnectionError:
+        except [ConnectionError]:
             msg = "connect target '{0}' failed!".format(self.target)
             # Share.dataToStdout('\r' + msg + '\n\r')
         except TooManyRedirects as e:
-            if e:
-                Share.dataToStdout('\r' + str(e) + '\n\r')
+            Share.dataToStdout('\r' + str(e) + '\n\r')
 
         except RemoteDisconnected as e:
             pass
 
         except Exception as e:
-            if e and DEBUG:
+            if DEBUG:
                 Share.dataToStdout('\r' + "[x]{} report:".format(self.name) + str(e) + '\n\r')
                 traceback.print_exc()
 

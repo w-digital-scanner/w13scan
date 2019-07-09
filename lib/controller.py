@@ -91,7 +91,10 @@ def task_run():
         KB["lock"].release()
         poc_module = copy.deepcopy(KB["registered"][poc_module_name])
 
-        result = poc_module.execute(request, response)
+        try:
+            poc_module.execute(request, response)
+        except:
+            pass
 
         KB["lock"].acquire()
         KB["finished"] += 1

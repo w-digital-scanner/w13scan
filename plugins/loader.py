@@ -147,9 +147,14 @@ class W13SCAN(PluginBase):
         for link in set(links):
             is_continue = True
             for item in logoutParams:
-                if link.lower() in item:
+                if item in link.lower():
                     is_continue = False
+                    break
             if not is_continue:
+                continue
+
+            # 去重复
+            if not KB["spiderset"].add(link, ' ', 'get_links'):
                 continue
             try:
                 # 超过5M拒绝请求
@@ -172,6 +177,8 @@ class W13SCAN(PluginBase):
         for link in set(links):
             urls |= set(get_parent_paths(link))
         for i in urls:
+            if not KB["spiderset"].add(i, ' ', 'get_link_directory'):
+                continue
             try:
                 r = requests.get(i, headers=headers)
                 req = FakeReq(i, headers)
