@@ -28,8 +28,6 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        if p.query == '':
-            return
         exi = os.path.splitext(p.path)[1]
         if exi not in acceptedExt:
             return

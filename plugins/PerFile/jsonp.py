@@ -5,6 +5,7 @@
 # @File    : jsonp.py
 
 import re
+import string
 
 import requests
 
@@ -33,21 +34,21 @@ class W13SCAN(PluginBase):
         netloc = self.requests.netloc
 
         combine = '^\S+\(\{.*\}\)'
+        domain = "{}://{}".format(p.scheme, p.netloc) + random_str(2,
+                                                                   string.ascii_lowercase + string.digits) + p.netloc + "/"
 
         if re.match(combine, resp_str, re.I | re.S):
             # 判断是否为jsonp
-            if "Referer" in headers:
-                headers["Referer"] = "https://www.baidu.com/q=" + url
+            headers["Referer"] = domain
             if method == 'GET':
                 r = requests.get(url, headers=headers)
                 if GetRatio(resp_str, r.text) >= 0.8:
-                    out.success(url, self.name)
+                    out.success(url, self.name, raw=r.raw)
         elif re.match(JSON_RECOGNITION_REGEX, resp_str, re.I | re.S) and 'callback' not in url:
             # 不是jsonp,是json
-            if "Referer" in headers:
-                headers["Referer"] = "https://www.baidu.com/q=" + url
+            headers["Referer"] = domain
             params["callback"] = random_str(2)
             if method == 'GET':
                 r = requests.get(netloc, params=params, headers=headers)
                 if params["callback"] + "({" in r.text:
-                    out.success(r.url, self.name)
+                    out.success(r.url, self.name, raw=r.raw)

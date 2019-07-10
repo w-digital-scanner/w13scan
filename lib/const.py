@@ -4,6 +4,9 @@
 # @Author  : w8ay
 # @File    : const.py
 
+REPOSITORY = "https://github.com/boy-hack/w13scan.git"
+VERSION = '0.2'
+
 acceptedExt = [
     '.php', '.php3', '.php4', '.php5', '.php7', '.phtml',
     '.asp', '.aspx', '.ascx', '.asmx',

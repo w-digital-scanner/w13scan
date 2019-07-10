@@ -4,10 +4,9 @@
 # @Author  : w8ay
 # @File    : config.py
 
-REPOSITORY = "https://github.com/boy-hack/w13scan.git"
-VERSION = '0.2'
 
-SERVER_ADDR = ('127.0.0.1', 7778)
+SERVER_ADDR = ('127.0.0.1', 7778)  # 默认监听地址
+
 THREAD_NUM = 11  # 线程数量
 
 EXCLUDES = [".*\.google", ".*\.lastpass", 'baidu\.com']  # 扫描排除网址(正则表达式)

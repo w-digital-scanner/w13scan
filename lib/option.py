@@ -4,15 +4,16 @@
 # @Author  : w8ay
 # @File    : option.py
 import os
+import platform
+from queue import Queue
 
-from config import VERSION, REPOSITORY, EXCLUDE_PLUGINS, INCLUDE_PLUGINS
+from config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS
 from lib.common import dataToStdout
+from lib.const import VERSION, REPOSITORY
 from lib.data import PATH, KB, logger
 from lib.loader import load_file_to_module
 from lib.spiderset import SpiderSet
 from thirdpart.requests import patch_all
-from queue import Queue
-import platform
 
 
 def _set_path(root):
