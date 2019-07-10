@@ -22,6 +22,13 @@ TIMEOUT = 10  # 超时时间
 LEVEL = 0  # 根据检测深度由浅入深分为1～5级别，级别越高使用插件越多。
 DEBUG = False  # DEBUG模式会看到报错信息
 
+# 所有扫描请求可以转发到另外一个代理上
+PROXY_CONFIG_BOOL = False
+PROXY_CONFIG = {
+    "http": "127.0.0.1:8080",
+    "https": "127.0.0.1:8080"
+}
+
 if LEVEL >= 1:
     # 等级为1，只使用简单对网站无影响的插件
     INCLUDE_PLUGINS = ['jsonp.py', 'cors.py', 'php_real_path.py', 'errorpage.py', 'directory_browse.py',
