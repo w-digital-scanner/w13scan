@@ -17,11 +17,10 @@ class SpiderSet(object):
         self.spider_list = set()
         self.lock = threading.Lock()
 
-    def add(self, netloc, params, plugin):
+    def add(self, netloc, plugin):
         """
         添加成功返回True，添加失败有重复返回False
         :param netloc:
-        :param params:
         :param plugin:
         :return:bool
         """
@@ -29,10 +28,7 @@ class SpiderSet(object):
         if not (isinstance(netloc, str) and isinstance(plugin, str)):
             netloc = str(netloc)
             plugin = str(plugin)
-        if not isinstance(params, list):
-            params = list(params)
-        params = ','.join(params)
-        _ = "{}:{}:{}".format(netloc, params, plugin)
+        _ = "{}:{}".format(netloc, plugin)
         _ = md5(_.encode('utf-8'))
         self.lock.acquire()
         if _ in self.spider_list:

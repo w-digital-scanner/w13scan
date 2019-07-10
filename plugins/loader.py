@@ -66,6 +66,7 @@ class FakeResp(HttpTransfer):
         self._body = resp.content
         self._headers = resp.headers
         self.decoding = chardet.detect(self._body)['encoding']  # 探测当前的编码
+        self._url = resp.url
 
     def get_body_str(self):
         if self.decoding:
@@ -127,19 +128,19 @@ class W13SCAN(PluginBase):
             # 支持自动识别并转换参数的类型有 NORMAL,JSON,ARRAY-LIKE
             if self.requests.post_hint and self.requests.post_hint in [POST_HINT.NORMAL, POST_HINT.JSON,
                                                                        POST_HINT.ARRAY_LIKE]:
-                if KB["spiderset"].add(netloc, self.requests.post_data.keys(), 'PostScan'):
+                if KB["spiderset"].add(url + "POST" + ''.join(self.requests.post_data), 'PostScan'):
                     task_push('PostScan', self.requests, self.response)
             elif self.requests.post_hint is None:
                 print("post data数据识别失败")
 
         elif method == "GET":
 
-            if KB["spiderset"].add(netloc, list(self.requests.params.keys()), 'PerFile'):
+            if KB["spiderset"].add(url, 'PerFile'):
                 task_push('PerFile', self.requests, self.response)
 
         # Send PerScheme
         domain = "{}://{}".format(p.scheme, p.netloc)
-        if KB["spiderset"].add(domain, '', 'PerScheme'):
+        if KB["spiderset"].add(domain, 'PerScheme'):
             task_push('PerScheme', self.requests, self.response)
 
         # Collect from response
@@ -154,7 +155,7 @@ class W13SCAN(PluginBase):
                 continue
 
             # 去重复
-            if not KB["spiderset"].add(link, ' ', 'get_links'):
+            if not KB["spiderset"].add(link, 'get_links'):
                 continue
             try:
                 # 超过5M拒绝请求
@@ -168,7 +169,7 @@ class W13SCAN(PluginBase):
             except Exception as e:
                 continue
 
-            if KB["spiderset"].add(req.netloc, req.params.keys(), 'PerFile'):
+            if KB["spiderset"].add(resp._url, 'PerFile'):
                 task_push('PerFile', req, resp)
 
         # Collect directory from response
@@ -185,5 +186,5 @@ class W13SCAN(PluginBase):
                 resp = FakeResp(r)
             except:
                 continue
-            if KB["spiderset"].add(req.netloc, req.params.keys(), 'PerFolder'):
+            if KB["spiderset"].add(resp._url, 'PerFolder'):
                 task_push('PerFolder', req, resp)

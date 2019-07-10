@@ -15,6 +15,12 @@ class OutPut(object):
         self.collect = []
         self.lock = Lock()
 
+    def count(self):
+        self.lock.acquire()
+        count = len(self.collect)
+        self.lock.release()
+        return count
+
     def success(self, url, plugin='unknown', **kw):
         report = {
             "url": url,
@@ -29,7 +35,7 @@ class OutPut(object):
         if "raw" in report:
             if isinstance(report['raw'], str):
                 raw = [report['raw']]
-            elif isinstance(report['raw'],list):
+            elif isinstance(report['raw'], list):
                 raw = report['raw']
             del report['raw']
         for k, v in report.items():
