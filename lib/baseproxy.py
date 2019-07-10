@@ -82,6 +82,8 @@ class HttpTransfer(object):
     def set_headers(self, headers):
         headers_tmp = {}
         for k, v in headers.items():
+            if k == "Accept-Encoding" and "br" in v:
+                v = v.replace("br", "")
             headers_tmp[k.lower()] = v
         self._headers = headers_tmp
 
@@ -194,7 +196,8 @@ class Response(HttpTransfer):
         self.decoding = None
 
         try:
-            body_data = self._decode_content_body(h.read(), self.get_header('Content-Encoding'))
+            data = h.read()
+            body_data = self._decode_content_body(data, self.get_header('Content-Encoding'))
         except http.client.IncompleteRead:
             body_data = b''
         self.set_body_data(body_data)
