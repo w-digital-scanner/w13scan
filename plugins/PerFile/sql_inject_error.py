@@ -8,8 +8,8 @@ import os
 
 import requests
 
-from lib.common import prepare_url
-from lib.const import acceptedExt, ignoreParams
+from lib.common import prepare_url, paramToDict
+from lib.const import acceptedExt, ignoreParams, PLACE
 from lib.helper.helper_sqli import Get_sql_errors
 from lib.output import out
 from lib.plugins import PluginBase
@@ -32,6 +32,23 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
+        # cookie
+        sql_flag = '鎈\'"\('
+        if headers and "cookie" in headers:
+            cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
+            del headers["cookie"]
+            if cookies:
+                for k, v in cookies.items():
+                    cookie = copy.deepcopy(cookies)
+                    cookie[k] = v + sql_flag
+                    r = requests.get(url, headers, cookies=cookie)
+                    for sql_regex, dbms_type in Get_sql_errors():
+                        match = sql_regex.search(r.text)
+                        if match:
+                            out.success(url, self.name, payload="cookie: {}={}".format(k, cookie[k]),
+                                        dbms_type=dbms_type,
+                                        raw=r.raw)
+                            break
         if method == 'GET':
             if p.query == '':
                 return
@@ -39,7 +56,6 @@ class W13SCAN(PluginBase):
             if exi not in acceptedExt:
                 return
 
-            sql_flag = '鎈\'"\('
             for k, v in params.items():
                 if k.lower() in ignoreParams:
                     continue
@@ -53,3 +69,4 @@ class W13SCAN(PluginBase):
                     if match:
                         out.success(url, self.name, payload="{}={}".format(k, data[k]), dbms_type=dbms_type, raw=r.raw)
                         break
+

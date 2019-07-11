@@ -54,7 +54,7 @@ class W13SCAN(PluginBase):
                     data[k] = v + payload1
                     url1 = prepare_url(netloc, params=data)
                     _ = time.time()
-                    r = requests.get(url1, headers=headers)
+                    r = requests.get(url1, headers=headers, timeout=60)
                     html1 = r.text
                     elapsed = time.time() - _
 
@@ -62,7 +62,7 @@ class W13SCAN(PluginBase):
                     payload2 = flag.format(time=2)
                     data[k] = v + payload2
                     _ = time.time()
-                    r2 = requests.get(netloc, params=data, headers=headers)
+                    r2 = requests.get(netloc, params=data, headers=headers, timeout=60)
                     html2 = r2.text
                     elapsed2 = time.time() - _
                     if elapsed2 - elapsed > 1.5:
@@ -75,7 +75,7 @@ class W13SCAN(PluginBase):
                             data[k] = v + payload1
                             url1 = prepare_url(netloc, params=data)
                             _ = time.time()
-                            r = requests.get(url1, headers=headers)
+                            r = requests.get(url1, headers=headers, timeout=60)
                             html1 = r.text
                             elapsed = time.time() - _
                             first_eclip += elapsed
@@ -88,7 +88,7 @@ class W13SCAN(PluginBase):
                             payload2 = flag.format(time=2)
                             data[k] = v + payload2
                             _ = time.time()
-                            r2 = requests.get(netloc, params=data, headers=headers)
+                            r2 = requests.get(netloc, params=data, headers=headers, timeout=60)
                             html2 = r2.text
                             elapsed2 = time.time() - _
                             second_eclip += elapsed2
