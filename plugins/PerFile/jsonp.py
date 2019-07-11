@@ -71,7 +71,7 @@ class W13SCAN(PluginBase):
             params["callback"] = random_str(2)
             if method == 'GET':
                 r = requests.get(netloc, params=params, headers=headers)
-                if params["callback"] + "({" in r.text:
+                if r.text.startswith(params["callback"] + "({"):
                     res = {
                         "Referer": domain,
                         "callback": params["callback"],
