@@ -34,6 +34,10 @@ class W13SCAN(PluginBase):
         netloc = self.requests.netloc
 
         # cookie
+        exi = os.path.splitext(p.path)[1]
+        if exi not in acceptedExt:
+            return
+
         sql_flag = '鎈\'"\('
         if headers and "cookie" in headers:
             cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)

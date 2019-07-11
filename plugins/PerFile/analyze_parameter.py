@@ -16,13 +16,13 @@ class W13SCAN(PluginBase):
 
     def _check(self, k, v, method, url, data):
 
-        ret = is_base64(v)
+        # ret = is_base64(v)
 
-        if ret and len(ret) >= 6:
-            if method == "GET":
-                out.success(url, self.name, method=method, parameter=k + ":" + v, base64decode=ret)
-            elif method == "POST":
-                out.success(url, self.name, method=method, parameter=k + ":" + v, base64decode=ret, data=str(data))
+        # if ret and len(ret) >= 6:
+        #     if method == "GET":
+        #         out.success(url, self.name, method=method, parameter=k + ":" + v, base64decode=ret)
+        #     elif method == "POST":
+        #         out.success(url, self.name, method=method, parameter=k + ":" + v, base64decode=ret, data=str(data))
 
         whats = None
         if isJavaObjectDeserialization(v):

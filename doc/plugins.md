@@ -7,7 +7,7 @@
     - [x] JetBrans IDEA配置文件扫描
     - [x] .htaccess 泄漏
     - [x] sftp json泄漏
-    - [x] 序列化参数预警
+    - [x] 序列化参数预警 +
     - [x] JS敏感内容匹配
     - [x] phpinfo信息
 - [x] PHP真实路径泄漏
@@ -15,7 +15,7 @@
     - [x] 常见备份文件
     - [x] 基于URL组合路径备份文件
 - [x] SQL注入
-    - [x] 报错型SQL注入 +
+    - [x] 报错型SQL注入 ++
     - [x] 时间盲注 +
     - [x] 布尔类型SQL注入
 - [x] 命令注入
@@ -26,5 +26,5 @@
 - [x] 目录穿越漏洞 ++
 - [x] URL任意跳转
 - [x] CRLF注入
-- [x] JSONP信息搜索 +
+- [x] JSONP信息搜索 ++
 - [x] CORS信息搜索
