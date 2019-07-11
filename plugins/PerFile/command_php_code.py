@@ -46,28 +46,28 @@ class W13SCAN(PluginBase):
             "'.print(md5({})).'"
         ]
 
+        if headers and "cookie" in headers:
+            cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
+            del headers["cookie"]
+            if cookies:
+                for k, v in cookies.items():
+                    cookie = copy.deepcopy(cookies)
+                    for payload in payloads:
+                        if payload[0] == "p":
+                            cookie[k] = payload.format(randint)
+                        else:
+                            cookie[k] = v + payload.format(randint)
+                        r = requests.get(url, headers=headers, cookies=cookie)
+                        html1 = r.text
+                        if verify_result in html1:
+                            out.success(url, self.name, type="Cookie", payload="{}:{}".format(k, cookie[k]), raw=r.raw)
+                            break
+                        if re.search(regx, html1, re.I | re.S | re.M):
+                            out.success(url, self.name, type="Cookie", payload="{}:{}".format(k, cookie[k]), raw=r.raw)
+                            break
+
         if method == 'GET':
             # cookie
-            if headers and "cookie" in headers:
-                cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
-                del headers["cookie"]
-                if cookies:
-                    for k, v in cookies.items():
-                        cookie = copy.deepcopy(cookies)
-                        for payload in payloads:
-                            if payload[0] == "p":
-                                cookie[k] = payload.format(randint)
-                            else:
-                                cookie[k] = v + payload.format(randint)
-                            r = requests.get(url, headers=headers, cookies=cookie)
-                            html1 = r.text
-                            if verify_result in html1:
-                                out.success(url, self.name, payload="{}:{}".format(k, cookie[k]), raw=r.raw)
-                                break
-                            if re.search(regx, html1, re.I | re.S | re.M):
-                                out.success(url, self.name, payload="{}:{}".format(k, cookie[k]), raw=r.raw)
-                                break
-
             if p.query == '':
                 return
             exi = os.path.splitext(p.path)[1]

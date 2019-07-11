@@ -5,6 +5,7 @@
 # @File    : sql_inject_error.py
 import copy
 import os
+from urllib.parse import urlencode
 
 import requests
 
@@ -41,7 +42,7 @@ class W13SCAN(PluginBase):
                 for k, v in cookies.items():
                     cookie = copy.deepcopy(cookies)
                     cookie[k] = v + sql_flag
-                    r = requests.get(url, headers, cookies=cookie)
+                    r = requests.get(url, headers, cookies=urlencode(cookie))
                     for sql_regex, dbms_type in Get_sql_errors():
                         match = sql_regex.search(r.text)
                         if match:
@@ -69,4 +70,3 @@ class W13SCAN(PluginBase):
                     if match:
                         out.success(url, self.name, payload="{}={}".format(k, data[k]), dbms_type=dbms_type, raw=r.raw)
                         break
-
