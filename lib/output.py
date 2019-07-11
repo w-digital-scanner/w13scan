@@ -39,8 +39,12 @@ class OutPut(object):
                 raw = report['raw']
             del report['raw']
         for k, v in report.items():
-            msg = "{0}{1}{2}".format(k, " " * (15 - len(k)), str(v).strip())
-            self.log(msg)
+            if isinstance(v, list):
+                for i in v:
+                    self.log(i)
+            if isinstance(v, str):
+                msg = "{0}{1}{2}".format(k, " " * (15 - len(k)), str(v).strip())
+                self.log(msg)
         self.log(' ')
         if raw:
             index = 0
