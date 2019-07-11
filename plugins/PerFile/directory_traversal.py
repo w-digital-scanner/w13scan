@@ -38,11 +38,11 @@ class W13SCAN(PluginBase):
         filepath = p.path.lower()
         iswin = isunix = isjava = 0  # 三种状态 0 未知 1 确定 2 否定
 
-        if filepath.startswith(".aspx") or filepath.startswith(".asp"):
+        if filepath.endswith(".aspx") or filepath.endswith(".asp"):
             isunix = 2
             iswin = 1
             isjava = 2
-        if filepath.startswith(".jsp"):
+        if filepath.endswith(".jsp"):
             isjava = 1
 
         plainArray = [
