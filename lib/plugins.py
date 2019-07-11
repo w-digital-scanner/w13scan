@@ -71,7 +71,7 @@ class PluginBase(object):
             msg = 'Plugin: {0} HTTPError occurs, start it over.'.format(self.name)
             # Share.dataToStdout('\r' + msg + '\n\r')
 
-        except [ConnectionError]:
+        except ConnectionError:
             msg = "connect target '{0}' failed!".format(self.target)
             # Share.dataToStdout('\r' + msg + '\n\r')
         except TooManyRedirects as e:

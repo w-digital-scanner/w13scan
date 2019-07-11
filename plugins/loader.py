@@ -178,7 +178,7 @@ class W13SCAN(PluginBase):
         for link in set(links):
             urls |= set(get_parent_paths(link))
         for i in urls:
-            if not KB["spiderset"].add(i, ' ', 'get_link_directory'):
+            if not KB["spiderset"].add(i, 'get_link_directory'):
                 continue
             try:
                 r = requests.get(i, headers=headers)

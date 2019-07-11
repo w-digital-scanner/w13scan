@@ -127,6 +127,10 @@ def paramToDict(parameters, place=PLACE.GET, hint=POST_HINT.NORMAL) -> dict:
     if place == PLACE.COOKIE:
         splitParams = parameters.split(DEFAULT_COOKIE_DELIMITER)
         hint = POST_HINT.NORMAL
+        for element in splitParams:
+            parts = element.split("=")
+            if len(parts) >= 2:
+                testableParameters[parts[0]] = ''.join(parts[1:])
     # elif (place == PLACE.GET or PLACE == PLACE.POST) and (hint == POST_HINT.NORMAL or hint == POST_HINT.ARRAY_LIKE):
     #     splitParams = parameters.split(DEFAULT_GET_POST_DELIMITER)
     elif place == PLACE.GET:

