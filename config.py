@@ -29,9 +29,11 @@ PROXY_CONFIG = {
 }
 
 if LEVEL >= 1:
-    # 等级为1，只使用简单对网站无影响的插件
-    INCLUDE_PLUGINS = ['jsonp.py', 'cors.py', 'php_real_path.py', 'errorpage.py', 'directory_browse.py',
-                       'js_sensitive_content.py', 'analyze_parameter.py']
+    # 等级为1，只使用简单，对网站无影响的插件
+    INCLUDE_PLUGINS = []
+    INCLUDE_PLUGINS.extend(['jsonp.py', 'cors.py', 'errorpage.py', 'directory_browse.py',
+                            'js_sensitive_content.py', 'analyze_parameter.py', 'normal_page.py', 'redirect.py',
+                            ])
 if LEVEL >= 2:
     INCLUDE_PLUGINS.extend(
         ['sql_inject_error.py', 'sql_inject_time.py', 'directory_browse.py', 'repository_leak.py', 'errorpage.py',
