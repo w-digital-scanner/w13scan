@@ -18,7 +18,7 @@ from lib.plugins import PluginBase
 
 class W13SCAN(PluginBase):
     name = '基于报错SQL注入'
-    desc = '''目前仅支持GET方式的请求'''
+    desc = '''支持GET、COOKIE、HEADER头注入'''
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST
@@ -73,4 +73,20 @@ class W13SCAN(PluginBase):
                     match = sql_regex.search(html)
                     if match:
                         out.success(url, self.name, payload="{}={}".format(k, data[k]), dbms_type=dbms_type, raw=r.raw)
+                        break
+
+            # test header
+            if headers:
+                sql_flag = '\'"\('
+                headers["User-Agent"] = headers.get("User-Agent", "") + sql_flag
+                headers["referer"] = headers.get("referer", "") + sql_flag
+                headers["client-ip"] = headers.get("client-ip", "") + sql_flag
+                headers["x-forwarded-for"] = headers.get("x-forwarded-for", "") + sql_flag
+                headers["via"] = headers.get("via")
+                r = requests.get(url, headers=headers)
+                html = r.text
+                for sql_regex, dbms_type in Get_sql_errors():
+                    match = sql_regex.search(html)
+                    if match:
+                        out.success(url, self.name, type="header inject", dbms_type=dbms_type, raw=r.raw)
                         break
