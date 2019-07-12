@@ -83,6 +83,10 @@ def session_request(self, method, url,
 
         resp.encoding = encoding
 
-    resp.raw = raw
-
+    if not getattr(resp, 'raw', None):
+        resp.raw = raw
+    else:
+        tmp = resp.raw
+        resp.raw = raw
+        setattr(resp, 'raw2', tmp)
     return resp

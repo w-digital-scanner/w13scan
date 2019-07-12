@@ -43,7 +43,9 @@ class FakeReq(HttpTransfer):
         self.port = port
 
         self.command = 'GET'
-        self.path = p.path + "?" + p.query
+        self.path = p.path
+        if p.query:
+            self.path = p.path + "?" + p.query
         self.request_version = 1.1
 
         # self.urlparse = None
