@@ -92,10 +92,10 @@ class W13SCAN(PluginBase):
                             second_eclip = second_eclip / num
 
                             if second_eclip - first_eclip > 1.5:
-                                msg = "{k}:{v1} 平均耗时 {time1}s; {k}:{v2} 平均耗时 {time2}s".format(k=k, v1=payload1,
-                                                                                              v2=payload2,
-                                                                                              time1=first_eclip,
-                                                                                              time2=second_eclip)
+                                msg = [
+                                    "{k}:{v1} 平均耗时 {time1}s".format(k=k, v1=payload1, time1=first_eclip),
+                                    "{k}:{v2} 平均耗时 {time2}s".format(k=k, v2=payload2, time2=second_eclip)
+                                ]
                                 out.success(url, self.name, payload=k, condition=msg, data=str(data),
                                             raw=[r.raw, r2.raw])
                                 break

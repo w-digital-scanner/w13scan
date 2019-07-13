@@ -79,10 +79,10 @@ class W13SCAN(PluginBase):
             if headers:
                 sql_flag = '\'"\('
                 headers["User-Agent"] = headers.get("User-Agent", "") + sql_flag
-                headers["referer"] = headers.get("referer", "") + sql_flag
-                headers["client-ip"] = headers.get("client-ip", "") + sql_flag
-                headers["x-forwarded-for"] = headers.get("x-forwarded-for", "") + sql_flag
-                headers["via"] = headers.get("via")
+                headers["referer"] = headers.get("referer", url) + sql_flag
+                headers["client-ip"] = headers.get("client-ip", "127.0.0.1") + sql_flag
+                headers["x-forwarded-for"] = headers.get("x-forwarded-for", "127.0.0.1") + sql_flag
+                headers["via"] = headers.get("via", "") + sql_flag
                 r = requests.get(url, headers=headers)
                 html = r.text
                 for sql_regex, dbms_type in Get_sql_errors():

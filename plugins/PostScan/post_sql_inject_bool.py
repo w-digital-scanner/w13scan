@@ -63,10 +63,17 @@ class W13SCAN(PluginBase):
                         data[k] = payload2
                         r2 = requests.post(url, data=data, headers=headers)
                         html2 = r2.text
-                        radio = GetRatio(resp_str, html2)
+                        radio2 = GetRatio(resp_str, html2)
                         if radio < 0.78:
-                            msg = "{k}:{v} === {k}:{v1} and {k}:{v} !== {k}:{v2}".format(k=k, v=v, v1=payload1,
-                                                                                         v2=payload2)
+                            condition = [
+                                '{k}:{v} 与原页面 {k}:{v1} 的相似度{radio} 页面大小:{size1}'.format(k=k, v=payload1, v1=v,
+                                                                                        radio=radio,
+                                                                                        size1=len(html1)),
+                                '{k}:{v} 与原页面 {k}:{v1} 的相似度{radio} 页面大小:{size2}'.format(k=k, v=payload2, v1=v,
+                                                                                        radio=radio2,
+                                                                                        size2=len(html2))
+                            ]
                             # out.log(msg)
-                            out.success(url, self.name, payload=k, condition=msg, data=str(data), raw=[r.raw, r2.raw])
+                            out.success(url, self.name, payload=k, condition=condition, data=str(data),
+                                        raw=[r.raw, r2.raw])
                             break
