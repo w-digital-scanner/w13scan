@@ -105,7 +105,7 @@ class W13SCAN(PluginBase):
                 for flag in sql_flag:
                     # false page
                     is_inject = False
-                    payload2 = v + flag.format(random_str(2), random_str(2))
+                    payload2 = v + flag.format(random_str(1) + 'a', random_str(1) + 'b')
                     data[k] = payload2
                     r2 = requests.get(netloc, params=data, headers=headers)
                     html1 = self.removeDynamicContent(r2.text)
@@ -115,7 +115,7 @@ class W13SCAN(PluginBase):
                         # self.seqMatcher.set_seq1(resp_str or "")
                         # self.seqMatcher.set_seq2(html1 or "")
                         # ratio *= self.seqMatcher.quick_ratio()  # true false
-                        if ratio == 1.0:
+                        if ratio > 0.98:
                             continue
                     except (MemoryError, OverflowError):
                         continue

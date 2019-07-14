@@ -4,13 +4,12 @@
 # @Author  : w8ay
 # @File    : controller.py
 import copy
-
-from lib.data import logger, KB, Share
-from config import THREAD_NUM
-import time
 import threading
+import time
 import traceback
 
+from config import THREAD_NUM
+from lib.data import logger, KB, Share
 from thirdpart.console import getTerminalSize
 
 
