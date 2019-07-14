@@ -29,8 +29,8 @@ class W13SCAN(PluginBase):
         netloc = self.requests.netloc
 
         variants = [
-            "sftp-config.json",
-            "recentservers.xml"
+            "/sftp-config.json",
+            "/recentservers.xml"
         ]
         for f in variants:
             _ = url.rstrip('/') + f
