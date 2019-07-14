@@ -261,16 +261,20 @@ class Response(HttpTransfer):
         return data
 
     def _decode_content_body(self, data, encoding):
+        if encoding is None:
+            encoding = 'identity'
         if encoding == 'identity':  # 没有压缩
             text = data
-
         elif encoding in ('gzip', 'x-gzip'):  # gzip压缩
-            text = zlib.decompress(data, 16 + zlib.MAX_WBITS)
+            try:
+                text = zlib.decompress(data, 16 + zlib.MAX_WBITS)
+            except zlib.error:
+                text = zlib.decompress(data)
         elif encoding == 'deflate':  # zip压缩
             try:
-                text = zlib.decompress(data)
-            except zlib.error:
                 text = zlib.decompress(data, -zlib.MAX_WBITS)
+            except zlib.error:
+                text = zlib.decompress(data)
         else:
             text = data
 
@@ -392,6 +396,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
 
     def __init__(self, request, client_addr, server):
         self.is_connected = False
+        self._target = None
         BaseHTTPRequestHandler.__init__(self, request, client_addr, server)
 
     def do_CONNECT(self):
@@ -412,14 +417,18 @@ class ProxyHandle(BaseHTTPRequestHandler):
         :return:
         '''
         ret = True
+        target = self.path
+        if not self.is_connected:
+            target = self._target
         for i in INCLUDES:
-            match = re.search(i, self.path, re.I)
+            match = re.search(i, target, re.I)
             if match:
                 ret = False
         for i in EXCLUDES:
-            match = re.search(i, self.path, re.I)
+            match = re.search(i, target, re.I)
             if match:
                 ret = True
+                break
         return ret
 
     def do_GET(self):
@@ -461,10 +470,6 @@ class ProxyHandle(BaseHTTPRequestHandler):
                 self.send_error(404, 'response is None')
             if not self._is_replay() and response:
                 KB['task_queue'].put(('loader', request, response))
-
-                # for _ in KB["registered"].keys():
-                #     KB['task_queue'].put((_, request, response))
-                # self.mitm_request(request, response)
         else:
             self.send_error(404, 'request is None')
 
@@ -499,6 +504,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
         self.hostname = u.hostname
         self.port = u.port or 80
         # 将path重新封装，比如http://www.baidu.com:80/index.html会变成 /index.html
+        self._target = u.netloc
         self.path = urlunparse(
             ParseResult(scheme='', netloc='', params=u.params, path=u.path or '/', query=u.query, fragment=u.fragment))
         self._proxy_sock = socket()
