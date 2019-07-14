@@ -48,7 +48,8 @@ class W13SCAN(PluginBase):
 
         if headers and "cookie" in headers:
             cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
-            del headers["cookie"]
+            tmp_header = copy.deepcopy(headers)
+            del tmp_header["cookie"]
             if cookies:
                 for k, v in cookies.items():
                     cookie = copy.deepcopy(cookies)
@@ -57,7 +58,7 @@ class W13SCAN(PluginBase):
                             cookie[k] = payload.format(randint)
                         else:
                             cookie[k] = v + payload.format(randint)
-                        r = requests.get(url, headers=headers, cookies=cookie)
+                        r = requests.get(url, headers=tmp_header, cookies=cookie)
                         html1 = r.text
                         if verify_result in html1:
                             out.success(url, self.name, type="Cookie", payload="{}:{}".format(k, cookie[k]), raw=r.raw)

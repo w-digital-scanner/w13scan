@@ -41,12 +41,13 @@ class W13SCAN(PluginBase):
         sql_flag = '鎈\'"\('
         if headers and "cookie" in headers:
             cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
-            del headers["cookie"]
+            tmp_headers = copy.deepcopy(headers)
+            del tmp_headers["cookie"]
             if cookies:
                 for k, v in cookies.items():
                     cookie = copy.deepcopy(cookies)
                     cookie[k] = v + sql_flag
-                    r = requests.get(url, headers, cookies=urlencode(cookie))
+                    r = requests.get(url, headers=tmp_headers, cookies=urlencode(cookie))
                     for sql_regex, dbms_type in Get_sql_errors():
                         match = sql_regex.search(r.text)
                         if match:
@@ -72,7 +73,8 @@ class W13SCAN(PluginBase):
                 for sql_regex, dbms_type in Get_sql_errors():
                     match = sql_regex.search(html)
                     if match:
-                        out.success(url, self.name, payload="{}={}".format(k, data[k]), dbms_type=dbms_type, raw=r.raw)
+                        out.success(url, self.name, payload="{}={}".format(k, data[k]), dbms_type=dbms_type, raw=r.raw,
+                                    errinfo=match.group())
                         break
 
             # test header
@@ -88,5 +90,6 @@ class W13SCAN(PluginBase):
                 for sql_regex, dbms_type in Get_sql_errors():
                     match = sql_regex.search(html)
                     if match:
-                        out.success(url, self.name, type="header inject", dbms_type=dbms_type, raw=r.raw)
+                        out.success(url, self.name, type="header inject", dbms_type=dbms_type, raw=r.raw,
+                                    errinfo=match.group())
                         break
