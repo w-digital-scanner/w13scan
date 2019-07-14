@@ -28,7 +28,8 @@ class W13SCAN(PluginBase):
 
     def findDynamicContent(self, firstPage, secondPage):
         ret = findDynamicContent(firstPage, secondPage)
-        self.dynamic.extend(ret)
+        if ret:
+            self.dynamic.extend(ret)
 
     def removeDynamicContent(self, page):
         """
@@ -158,5 +159,6 @@ class W13SCAN(PluginBase):
                                         is_inject = True
                                         break
                     if is_inject:
-                        out.success(url, self.name, payload=k, raw=[r2.raw, r.raw])
+                        out.success(url, self.name, raw=[r2.raw, r.raw],
+                                    payload1="{}:{}".format(k, payload1), payload2="{}:{}".format(k, payload2))
                         break

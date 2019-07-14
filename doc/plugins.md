@@ -3,7 +3,7 @@
 - [x] 敏感信息扫描
     - [x] .git .svn .bzr .hg泄漏
     - [x] 目录未授权访问
-    - [x] linux敏感文件读取
+    - [x] 敏感文件读取 +
     - [x] JetBrans IDEA配置文件扫描
     - [x] .htaccess 泄漏
     - [x] sftp json泄漏
@@ -24,7 +24,7 @@
     - [x] ASP命令注入
 - [x] 文件包含漏洞
 - [x] 目录穿越漏洞 ++
-- [x] URL任意跳转
+- [x] URL任意跳转 +
 - [x] CRLF注入
 - [x] JSONP信息搜索 +++
 - [x] CORS信息搜索
