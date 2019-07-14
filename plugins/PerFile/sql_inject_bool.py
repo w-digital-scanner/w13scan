@@ -101,7 +101,7 @@ class W13SCAN(PluginBase):
                     self.findDynamicContent(resp_str, self.removeDynamicContent(r.text))
 
             sql_flag = [
-                "/**/and'{0}'='{1}'",
+                "<--isalnum-->",
                 "'and'{0}'='{1}",
                 '"and"{0}"="{1}',
             ]
@@ -111,7 +111,16 @@ class W13SCAN(PluginBase):
                 data = copy.deepcopy(params)
                 for flag in sql_flag:
                     is_inject = False
-                    payload_false = v + flag.format(random_str(1) + 'a', random_str(1) + 'b')
+                    is_num = False
+                    if flag == "<--isalnum-->":
+                        if str(v).isalnum():
+                            is_num = True
+                        else:
+                            continue
+                    if is_num:
+                        payload_false = "{}/0".format(v)
+                    else:
+                        payload_false = v + flag.format(random_str(1) + 'a', random_str(1) + 'b')
                     data[k] = payload_false
                     r2 = requests.get(netloc, params=data, headers=headers)
                     falsePage = self.removeDynamicContent(r2.text)
@@ -128,7 +137,10 @@ class W13SCAN(PluginBase):
 
                     # true page
                     rand_str = random_str(2)
-                    payload_true = v + flag.format(rand_str, rand_str)
+                    if is_num:
+                        payload_true = "{}*1".format(v)
+                    else:
+                        payload_true = v + flag.format(rand_str, rand_str)
                     data[k] = payload_true
                     r = requests.get(netloc, params=data, headers=headers)
                     truePage = self.removeDynamicContent(r.text)
