@@ -10,9 +10,9 @@ import re
 
 import requests
 
-from lib.common import prepare_url, random_str
+from lib.common import random_str
 from lib.const import acceptedExt, ignoreParams
-from lib.helper.diifpage import GetRatio, findDynamicContent, getFilteredPageContent
+from lib.helper.diifpage import findDynamicContent, getFilteredPageContent
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -21,10 +21,17 @@ class W13SCAN(PluginBase):
     name = '基于布尔判断的SQL注入'
     desc = '''目前仅支持GET方式的请求'''
 
-    def init(self):
+    def __init__(self):
+        super().__init__()
+        self.seqMatcher = difflib.SequenceMatcher(None)
+        self.UPPER_RATIO_BOUND = 0.98
+        self.LOWER_RATIO_BOUND = 0.02
+
+        self.DIFF_TOLERANCE = 0.05
+        self.CONSTANT_RATIO = 0.9
+
         self.retry = 5  # 重试次数
         self.dynamic = []
-        self.seqMatcher = difflib.SequenceMatcher(None)
 
     def findDynamicContent(self, firstPage, secondPage):
         ret = findDynamicContent(firstPage, secondPage)
@@ -73,17 +80,17 @@ class W13SCAN(PluginBase):
             if exi not in acceptedExt:
                 return
 
-            self.init()
             # 重新请求一次获取一次网页
             r = requests.get(url, headers=headers)
             try:
                 self.seqMatcher.set_seq1(resp_str)
                 self.seqMatcher.set_seq2(r.text)
-                radio = self.seqMatcher.quick_ratio()
+                ratio = round(self.seqMatcher.quick_ratio(), 3)
             except MemoryError:
                 return
 
-            if radio <= 0.98:
+            if ratio <= 0.98:
+                return False
                 self.findDynamicContent(resp_str, r.text)
                 count = 0
                 while 1:
@@ -103,50 +110,46 @@ class W13SCAN(PluginBase):
                     continue
                 data = copy.deepcopy(params)
                 for flag in sql_flag:
-                    # false page
                     is_inject = False
-                    payload2 = v + flag.format(random_str(1) + 'a', random_str(1) + 'b')
-                    data[k] = payload2
+                    payload_false = v + flag.format(random_str(1) + 'a', random_str(1) + 'b')
+                    data[k] = payload_false
                     r2 = requests.get(netloc, params=data, headers=headers)
-                    html1 = self.removeDynamicContent(r2.text)
-                    ratio = 1.0
+                    falsePage = self.removeDynamicContent(r2.text)
+
                     try:
-                        ratio *= GetRatio(resp_str, html1)
-                        # self.seqMatcher.set_seq1(resp_str or "")
-                        # self.seqMatcher.set_seq2(html1 or "")
-                        # ratio *= self.seqMatcher.quick_ratio()  # true false
-                        if ratio > 0.98:
+                        self.seqMatcher.set_seq1(resp_str)
+                        self.seqMatcher.set_seq2(falsePage)
+                        ratio_false = round(self.seqMatcher.quick_ratio(), 3)
+                        # ratio *= GetRatio(resp_str, html1)
+                        if ratio_false == 1.0:
                             continue
                     except (MemoryError, OverflowError):
                         continue
 
                     # true page
                     rand_str = random_str(2)
-                    payload1 = v + flag.format(rand_str, rand_str)
-                    data[k] = payload1
+                    payload_true = v + flag.format(rand_str, rand_str)
+                    data[k] = payload_true
                     r = requests.get(netloc, params=data, headers=headers)
-                    html2 = self.removeDynamicContent(r.text)
-                    try:
-                        # self.seqMatcher.set_seq1(html2 or "")
-                        # self.seqMatcher.set_seq2(html1 or "")
-                        # ratio2 = self.seqMatcher.quick_ratio()  # true false
-                        ratio2 = GetRatio(html1, html2)
-                    except (MemoryError, OverflowError):
+                    truePage = self.removeDynamicContent(r.text)
+
+                    if truePage == falsePage:
                         continue
 
                     try:
-                        # self.seqMatcher.set_seq1(html2 or "")
-                        # self.seqMatcher.set_seq2(resp_str or "")
-                        # ratio3 = self.seqMatcher.quick_ratio()  # true true
-                        ratio3 = GetRatio(resp_str, html2)
+                        self.seqMatcher.set_seq1(resp_str or "")
+                        self.seqMatcher.set_seq2(truePage or "")
+                        ratio_true = round(self.seqMatcher.quick_ratio(), 3)
                     except (MemoryError, OverflowError):
                         continue
-                    if (0.1 > ratio - ratio2 > -0.1) and ratio3 > ratio - 0.05 and ratio3 > ratio2 - 0.5:
-                        is_inject = True
-                    if not is_inject:
+
+                    if ratio_true > self.UPPER_RATIO_BOUND or (ratio_true - ratio_false) > self.DIFF_TOLERANCE:
+                        if ratio_false <= self.UPPER_RATIO_BOUND:
+                            is_inject = True
+                    else:
                         originalSet = set(getFilteredPageContent(resp_str, True, "\n").split("\n"))
-                        trueSet = set(getFilteredPageContent(html2, True, "\n").split("\n"))
-                        falseSet = set(getFilteredPageContent(html1, True, "\n").split("\n"))
+                        trueSet = set(getFilteredPageContent(truePage, True, "\n").split("\n"))
+                        falseSet = set(getFilteredPageContent(falsePage, True, "\n").split("\n"))
 
                         if originalSet == trueSet and trueSet != falseSet:
                             candidates = trueSet - falseSet
@@ -158,7 +161,8 @@ class W13SCAN(PluginBase):
                                         candidate) > 10:
                                         is_inject = True
                                         break
+
                     if is_inject:
-                        out.success(url, self.name, raw=[r2.raw, r.raw],
-                                    payload1="{}:{}".format(k, payload1), payload2="{}:{}".format(k, payload2))
+                        out.success(url, self.name, raw=[r2.raw, r.raw], payload_true=k + ":" + payload_true,
+                                    payload_false=k + ":" + payload_false)
                         break
