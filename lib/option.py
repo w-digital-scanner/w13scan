@@ -5,6 +5,8 @@
 # @File    : option.py
 import os
 import platform
+import threading
+import time
 from queue import Queue
 
 from config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS
@@ -13,6 +15,7 @@ from lib.const import VERSION, REPOSITORY
 from lib.data import PATH, KB, logger
 from lib.loader import load_file_to_module
 from lib.spiderset import SpiderSet
+from thirdpart.console import getTerminalSize
 from thirdpart.requests import patch_all
 
 
@@ -28,6 +31,12 @@ def _init_kb():
     KB['task_queue'] = Queue()
     KB["is_win"] = platform.system() == 'Windows'
     KB["spiderset"] = SpiderSet()
+    KB["console_width"] = getTerminalSize()
+    KB['start_time'] = time.time()
+    KB['finished'] = 0
+    KB["lock"] = threading.Lock()
+    KB["result"] = 0
+    KB["running"] = 0
 
 
 def _init_plugins():

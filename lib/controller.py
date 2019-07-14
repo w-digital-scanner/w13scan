@@ -10,7 +10,6 @@ import traceback
 
 from config import THREAD_NUM
 from lib.data import logger, KB, Share
-from thirdpart.console import getTerminalSize
 
 
 def exception_handled_function(thread_function, args=()):
@@ -25,13 +24,7 @@ def exception_handled_function(thread_function, args=()):
 
 def run_threads(num_threads, thread_function, args: tuple = ()):
     threads = []
-    KB["continue"] = True
-    KB["console_width"] = getTerminalSize()
-    KB['start_time'] = time.time()
-    KB['finished'] = 0
-    KB["lock"] = threading.Lock()
-    KB["result"] = 0
-    KB["running"] = 0
+
 
     try:
         info_msg = "Staring {0} threads".format(num_threads)
