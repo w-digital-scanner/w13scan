@@ -7,9 +7,9 @@
 
 SERVER_ADDR = ('127.0.0.1', 7778)  # 默认监听地址
 
-THREAD_NUM = 11  # 线程数量
+THREAD_NUM = 21  # 线程数量
 
-EXCLUDES = [".*\.google", ".*\.lastpass", 'baidu\.com']  # 扫描排除网址(正则表达式)
+EXCLUDES = ["google\.", "lastpass\.", 'baidu\.com']  # 扫描排除网址(正则表达式)
 INCLUDES = [".*"]  # 扫描允许网址(正则表达式)
 
 EXCLUDE_PLUGINS = []  # 不使用的插件，文件名
@@ -35,9 +35,9 @@ if LEVEL >= 1:
                             'js_sensitive_content.py', 'analyze_parameter.py', 'normal_page.py', 'redirect.py',
                             ])
 if LEVEL >= 2:
+    # 等级2，会主动发送部分流量，但流量不会被WAF等探测到。
     INCLUDE_PLUGINS.extend(
-        ['sql_inject_error.py', 'sql_inject_time.py', 'directory_browse.py', 'repository_leak.py', 'errorpage.py',
-         'redirect.py'])
+        [])
 
 # DEBUG
 # DEBUG = True
