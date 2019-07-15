@@ -10,6 +10,7 @@ import random
 
 import requests
 
+from lib.common import random_str
 from lib.const import acceptedExt, ignoreParams
 from lib.output import out
 from lib.plugins import PluginBase
@@ -40,15 +41,16 @@ class W13SCAN(PluginBase):
                 return
 
             rndStr = 9000 + random.randint(1, 999)
-            payload = "<img/src=xyz OnErRor=alert(" + rndStr + ")>"
+            tag = random_str(4)
+            payload = "<{tag}>{randint}</{tag}>".format(tag=tag, randint=rndStr)
 
             for k, v in params.items():
                 if k.lower() in ignoreParams:
                     continue
                 data = copy.deepcopy(params)
                 data[k] = v + payload
-                r = requests.get(url, headers=headers)
+                r = requests.get(url, headers=headers, params=data)
                 html1 = r.text
                 if payload in html1:
-                    out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw)
+                    out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw, descript="探测tag被解析")
                     break
