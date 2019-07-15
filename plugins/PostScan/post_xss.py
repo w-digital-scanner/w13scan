@@ -36,11 +36,11 @@ class W13SCAN(PluginBase):
 
         if method == 'POST':
             if post_hint == POST_HINT.NORMAL:
-                rndStr = 9000 + random.randint(1, 999)
-                payload = "<img/src=xyz OnErRor=alert(" + str(rndStr) + ")>"
                 for k, v in post_data.items():
                     if k.lower() in ignoreParams:
                         continue
+                    rndStr = 9000 + random.randint(1, 999)
+                    payload = "<img/src=xyz OnErRor=alert(" + str(rndStr) + ")>"
                     data = copy.deepcopy(post_data)
                     data[k] = v + payload
                     r = requests.post(url, headers=headers, data=data)
