@@ -67,7 +67,7 @@ class W13SCAN(PluginBase):
                         if spli == "":
                             data[k] = flag
                         else:
-                            data[k] = v + flag
+                            data[k] = v + spli + flag
                         url1 = prepare_url(netloc, params=data)
                         r = requests.get(url1, headers=headers)
                         html1 = r.text

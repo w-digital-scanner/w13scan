@@ -67,7 +67,7 @@ class W13SCAN(PluginBase):
                             if spli == "":
                                 data[k] = flag
                             else:
-                                data[k] = v + flag
+                                data[k] = v + spli + flag
                             r = requests.post(url, data=data, headers=headers)
                             html1 = r.text
                             for rule in re_list:
