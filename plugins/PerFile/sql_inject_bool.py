@@ -158,21 +158,23 @@ class W13SCAN(PluginBase):
                     if ratio_true > self.UPPER_RATIO_BOUND or (ratio_true - ratio_false) > self.DIFF_TOLERANCE:
                         if ratio_false <= self.UPPER_RATIO_BOUND:
                             is_inject = True
-                    else:
+                    if not is_inject:
                         originalSet = set(getFilteredPageContent(resp_str, True, "\n").split("\n"))
                         trueSet = set(getFilteredPageContent(truePage, True, "\n").split("\n"))
                         falseSet = set(getFilteredPageContent(falsePage, True, "\n").split("\n"))
 
-                        if originalSet == trueSet and trueSet != falseSet:
+                        if len(originalSet - trueSet) <= 2 and trueSet != falseSet:
                             candidates = trueSet - falseSet
-                            if candidates:
-                                candidates = sorted(candidates, key=len)
-                                for candidate in candidates:
-                                    if re.match(r"\A[\w.,! ]+\Z",
-                                                candidate) and ' ' in candidate and candidate.strip() and len(
-                                        candidate) > 10:
-                                        is_inject = True
-                                        break
+                            if len(candidates) > 0:
+                                is_inject = True
+                            # if candidates:
+                            #     candidates = sorted(candidates, key=len)
+                            #     for candidate in candidates:
+                            #         if re.match(r"\A[\w.,! ]+\Z",
+                            #                     candidate) and ' ' in candidate and candidate.strip() and len(
+                            #             candidate) > 10:
+                            #             is_inject = True
+                            #             break
 
                     if is_inject:
                         out.success(url, self.name, raw=[r2.raw, r.raw], payload_true=k + ":" + payload_true,

@@ -52,7 +52,7 @@ class FakeReq(HttpTransfer):
         self.netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
         self.params = paramToDict(p.query, place=PLACE.GET)
 
-        self._header = headers
+        self._headers = headers
         self._body = b''
 
 
