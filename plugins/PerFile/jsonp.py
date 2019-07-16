@@ -47,7 +47,7 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        combine = '^\S+\(\{.*\}\)'
+        combine = '^\S+\(\{.*?\}\)'
         domain = "{}://{}".format(p.scheme, p.netloc) + random_str(4,
                                                                    string.ascii_lowercase + string.digits) + ".com/"
 

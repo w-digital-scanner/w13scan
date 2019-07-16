@@ -158,7 +158,7 @@ class W13SCAN(PluginBase):
                     if ratio_true > self.UPPER_RATIO_BOUND or (ratio_true - ratio_false) > self.DIFF_TOLERANCE:
                         if ratio_false <= self.UPPER_RATIO_BOUND:
                             is_inject = True
-                    if not is_inject and ratio_true > 0.68:
+                    if not is_inject and ratio_true > 0.68 and abs(ratio_true - ratio_false) > 0.05:
                         originalSet = set(getFilteredPageContent(resp_str, True, "\n").split("\n"))
                         trueSet = set(getFilteredPageContent(truePage, True, "\n").split("\n"))
                         falseSet = set(getFilteredPageContent(falsePage, True, "\n").split("\n"))
