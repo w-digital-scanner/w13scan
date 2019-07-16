@@ -22,7 +22,10 @@ class W13SCAN(PluginBase):
     desc = '''自动寻找JSONP请求并自动去除referer查看能否利用'''
 
     def jsonp_load(self, jsonp):
-        json_text = re.search('^[^(]*?\((.*)\)[^)]*$', jsonp).group(1)
+        match = re.search('^[^(]*?\((.*)\)[^)]*$', jsonp)
+        if match is None:
+            return None
+        json_text = match.group(1)
         if not json_text:
             return None
         try:
@@ -45,8 +48,8 @@ class W13SCAN(PluginBase):
         netloc = self.requests.netloc
 
         combine = '^\S+\(\{.*\}\)'
-        domain = "{}://{}".format(p.scheme, p.netloc) + random_str(2,
-                                                                   string.ascii_lowercase + string.digits) + p.netloc + "/"
+        domain = "{}://{}".format(p.scheme, p.netloc) + random_str(4,
+                                                                   string.ascii_lowercase + string.digits) + ".com/"
 
         sensitive_params = ['mail', 'user', 'name', 'ip', 'pass', 'add', 'phone']
         if re.match(combine, resp_str, re.I | re.S):

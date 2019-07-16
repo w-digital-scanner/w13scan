@@ -6,6 +6,7 @@
 import copy
 import os
 import re
+from urllib.parse import unquote
 
 import requests
 
@@ -92,7 +93,7 @@ class W13SCAN(PluginBase):
         :see: http://stackoverflow.com/questions/283752/refresh-http-header
         """
         if response.status_code == 200 and re.search(
-                '<meta http-equiv=["\']Refresh["\'] content=["\']\d+;url=.*?["\']>', r.text,
+                '<meta http-equiv=["\']Refresh["\'] content=["\']\d+;url=.*?["\']>', response.text,
                 re.I | re.S):
             return True
         return False
@@ -101,7 +102,8 @@ class W13SCAN(PluginBase):
         """
         Test for 302 header redirects
         """
-        if response.status_code in [301, 302] or "location" in response.headers:
+        if response.status_code in [301, 302] and "Location" in response.headers and self.test_domain in unquote(
+                response.headers["Location"]):
             return True
         return False
 

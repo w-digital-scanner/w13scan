@@ -531,7 +531,10 @@ class ProxyHandle(BaseHTTPRequestHandler):
                 return
 
         except Exception as e:
-            self.send_error(500, str(e))
+            try:
+                self.send_error(500, str(e))
+            except:
+                return
             return
 
         self.setup()
