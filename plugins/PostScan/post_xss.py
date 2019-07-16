@@ -6,6 +6,7 @@
 
 import copy
 import random
+from urllib.parse import quote
 
 import requests
 
@@ -41,10 +42,12 @@ class W13SCAN(PluginBase):
                         continue
                     rndStr = 9000 + random.randint(1, 999)
                     payload = "<img/src=xyz OnErRor=alert(" + str(rndStr) + ")>"
-                    data = copy.deepcopy(post_data)
-                    data[k] = v + payload
-                    r = requests.post(url, headers=headers, data=data)
-                    html = r.text
-                    if payload in html:
-                        out.success(url, self.name, payload="{}={}".format(k, data[k]), data=str(data),
-                                    raw=r.raw)
+                    payloads = [payload, quote(payload)]
+                    for i in payloads:
+                        data = copy.deepcopy(post_data)
+                        data[k] = v + i
+                        r = requests.post(url, headers=headers, data=data)
+                        html = r.text
+                        if payload in html:
+                            out.success(url, self.name, payload="{}={}".format(k, data[k]), data=str(data),
+                                        raw=r.raw)

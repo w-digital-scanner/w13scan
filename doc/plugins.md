@@ -28,3 +28,4 @@
 - [x] CRLF注入
 - [x] JSONP信息搜索 ++++
 - [x] CORS信息搜索
+- [x] XSS +
