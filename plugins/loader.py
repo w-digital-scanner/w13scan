@@ -51,7 +51,7 @@ class FakeReq(HttpTransfer):
 
         # self.urlparse = None
         self.netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
-        self.tld = get_fld(self.netloc, fix_protocol=True)
+        self.tld = get_fld(self.netloc, fix_protocol=True, fail_silently=True)
         self.params = paramToDict(p.query, place=PLACE.GET)
 
         self._headers = headers
@@ -102,7 +102,7 @@ class W13SCAN(PluginBase):
 
         p = self.requests.urlparse = urlparse(url)
         netloc = self.requests.netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
-        self.requests.tld = get_fld(netloc, fix_protocol=True)
+        self.requests.tld = get_fld(netloc, fix_protocol=True, fail_silently=True)
 
         data = unquote(p.query, encoding)
         params = paramToDict(data, place=PLACE.GET)
