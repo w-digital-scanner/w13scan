@@ -33,6 +33,7 @@ if LEVEL >= 1:
     INCLUDE_PLUGINS = []
     INCLUDE_PLUGINS.extend(['jsonp.py', 'cors.py', 'errorpage.py', 'directory_browse.py',
                             'js_sensitive_content.py', 'analyze_parameter.py', 'normal_page.py', 'redirect.py',
+                            'subdomain_found.py'
                             ])
 if LEVEL >= 2:
     # 等级2，会主动发送部分流量，但流量不会被WAF等探测到。

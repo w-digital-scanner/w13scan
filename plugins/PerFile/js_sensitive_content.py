@@ -63,4 +63,5 @@ class W13SCAN(PluginBase):
             texts = re.findall(_, resp_str, re.M | re.I)
             if texts:
                 for i in set(texts):
-                    out.success(url, self.name, info=i)
+                    if out.set(i):
+                        out.success(url, self.name, info=i)

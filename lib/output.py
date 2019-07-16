@@ -14,6 +14,18 @@ class OutPut(object):
     def __init__(self):
         self.collect = []
         self.lock = Lock()
+        self.result_set = set()
+
+    def set(self, value):
+        '''
+        存储相同的结果，防止重复
+        :param value:
+        :return:
+        '''
+        if value not in self.result_set:
+            self.result_set.add(value)
+            return True
+        return False
 
     def count(self):
         self.lock.acquire()
