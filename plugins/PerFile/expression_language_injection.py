@@ -7,6 +7,7 @@
 import copy
 import os
 import random
+import re
 
 import requests
 
@@ -52,10 +53,10 @@ class W13SCAN(PluginBase):
                     "{ranstr}${{{int1}*{int2}}}{ranstr}".format(ranstr=randstr, int1=randint1, int2=randint2),
                     "{ranstr}#{{{int1}*{int2}}}{ranstr}".format(ranstr=randstr, int1=randint1, int2=randint2)
                 }
-                flag = "{ranstr}{int}{ranstr}".format(ranstr=randstr, int=randint1 * randint2)
+                flag = "{ranstr}.?{{?{int}}}?{ranstr}".format(ranstr=randstr, int=randint1 * randint2)
 
                 for payload in payloads:
                     data[k] = v + payload
                     r = requests.get(netloc, params=data, headers=headers)
-                    if flag in r.text:
+                    if re.search(flag, r.text):
                         out.success(url, self.name, payload="{}:{}".format(k, data[k], raw=r.raw))

@@ -49,9 +49,7 @@ class W13SCAN(PluginBase):
                 "' oNsOmeEvent='console.log(2333)",  # 单引号payload
             ]
             url_payload = "javascript:{randint}".format(randint=rndStr)
-            javascript_payload = [
-                ""
-            ]
+            javascript_payload = "{randint}".format(randint=rndStr)
 
             for k, v in params.items():
                 if k.lower() in ignoreParams:
@@ -73,9 +71,21 @@ class W13SCAN(PluginBase):
                             break
 
                 if in_script:
-                    out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
-                                descript="探测字符在<script>脚本内被解析",
-                                type="javascript xss")
+                    if ('"' + ranstr) in html1:
+                        data[k] = v + javascript_payload + '"'
+                        r = requests.get(url, headers=headers, params=data)
+                        if (javascript_payload + '"') in r.text:
+                            out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
+                                        descript="探测字符在<script>脚本内被解析,且双引号未被转义",
+                                        type="javascript xss")
+                    if ("'" + ranstr) in html1:
+                        data[k] = v + javascript_payload + "'"
+                        r = requests.get(url, headers=headers, params=data)
+                        if (javascript_payload + "'") in r.text:
+                            out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
+                                        descript="探测字符在<script>脚本内被解析,且单引号未被转义",
+                                        type="javascript xss")
+
                 else:
                     # check html xss
                     data[k] = v + html_payload
