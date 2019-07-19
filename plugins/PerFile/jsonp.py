@@ -63,10 +63,13 @@ class W13SCAN(PluginBase):
                             res = {
                                 "Referer": domain,
                                 "keyword": i,
+                                "Content-Type": r.headers.get("Content-Type", "")
                             }
                             response = self.jsonp_load(r.text)
                             if response:
                                 res["response"] = response
+                                if len(response) > 500:
+                                    res["response"] = "数据太多，自行访问"
                             out.success(url, self.name, **res)
         elif re.match(JSON_RECOGNITION_REGEX, resp_str, re.I | re.S) and 'callback' not in url:
             # 不是jsonp,是json
@@ -77,9 +80,12 @@ class W13SCAN(PluginBase):
                 if r.text.startswith(params["callback"] + "({"):
                     res = {
                         "Referer": domain,
+                        "Content-Type": r.headers.get("Content-Type", ""),
                         "callback": params["callback"],
                     }
                     response = self.jsonp_load(r.text)
                     if response:
                         res["response"] = response
+                        if len(response) > 500:
+                            res["response"] = "数据太多，自行访问"
                     out.success(r.url, self.name, **res)
