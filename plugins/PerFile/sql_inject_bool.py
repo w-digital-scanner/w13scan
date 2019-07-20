@@ -102,8 +102,8 @@ class W13SCAN(PluginBase):
 
             sql_flag = [
                 "<--isalnum-->",
-                "'and'{0}'='{1}",
-                '"and"{0}"="{1}',
+                "'&&'{0}'='{1}",
+                '"&&"{0}"="{1}',
             ]
             for k, v in params.items():
                 if k.lower() in ignoreParams:

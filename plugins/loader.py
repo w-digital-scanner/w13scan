@@ -23,7 +23,7 @@ from lib.plugins import PluginBase
 
 class FakeReq(HttpTransfer):
 
-    def __init__(self, url, headers: dict):
+    def __init__(self, url, headers: dict, method='GET', data={}):
         HttpTransfer.__init__(self)
 
         self.https = False
@@ -43,7 +43,17 @@ class FakeReq(HttpTransfer):
         self.hostname = hostname
         self.port = port
 
-        self.command = 'GET'
+        self.command = 'GET' if method == 'GET' else method
+        self._body = b''
+        if self.command == 'POST':
+            self.post_hint = POST_HINT.NORMAL
+            self._body = ''
+            for k, v in data.items():
+                self._body += "{}={};".format(k, v)
+            self._body = self._body.encode()
+            self.post_hint = POST_HINT.NORMAL
+            self.post_data = data
+
         self.path = p.path
         if p.query:
             self.path = p.path + "?" + p.query
@@ -55,7 +65,6 @@ class FakeReq(HttpTransfer):
         self.params = paramToDict(p.query, place=PLACE.GET)
 
         self._headers = headers
-        self._body = b''
 
 
 class FakeResp(HttpTransfer):

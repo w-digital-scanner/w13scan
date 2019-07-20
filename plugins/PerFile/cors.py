@@ -32,13 +32,7 @@ class W13SCAN(PluginBase):
         if exi not in acceptedExt:
             return
 
-        sensitive_params = ['mail', 'user', 'name', 'ip', 'pass', 'add', 'phone']
         if "access-control-allow-origin" in resp_headers and resp_headers["access-control-allow-origin"] == "*":
             if "access-control-allow-credentials" in resp_headers and resp_headers[
                 "access-control-allow-credentials"].lower() == 'true':
                 out.success(url, self.name, payload=str(data), method=method)
-            else:
-                for i in sensitive_params:
-                    if i in resp_str:
-                        out.success(url, self.name, sensitive=i, method=method, payload=str(data))
-                        break
