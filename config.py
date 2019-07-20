@@ -36,12 +36,13 @@ if LEVEL >= 1:
                             'subdomain_found.py'
                             ])
 if LEVEL >= 2:
-    # 等级2，会主动发送部分流量，但流量不会被WAF等探测到。
+    # 等级2，会主动发送部分流量，但流量规则不会被WAF等探测到。
     INCLUDE_PLUGINS.extend(
         [])
 
 # DEBUG
-# DEBUG = True
-# INCLUDE_PLUGINS = ['php_real_path.py', 'js_sensitive_content.py', 'sql_inject_bool.py', 'sql_inject_error.py',
-#                    'sql_inject_int.py', 'sql_inject_time.py']
+DEBUG = True
+# EXCLUDE_PLUGINS = ['subdomain_found.py', 'jsonp.py', 'js_sensitive_content.py'
+#                    ]
+# INCLUDE_PLUGINS = ['sql_inject_bool.py']
 # THREAD_NUM = 1
