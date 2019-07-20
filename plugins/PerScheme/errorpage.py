@@ -37,7 +37,8 @@ class W13SCAN(PluginBase):
             "Struts2DevMod": "You are seeing this page because development mode is enabled.  Development mode, or devMode, enables extra",
             "Django DEBUG MODEL": "You're seeing this error because you have <code>DEBUG = True<\/code> in",
             "RailsDevMode": "<title>Action Controller: Exception caught<\/title>",
-            "RequiredParameter": "Required\s\w+\sparameter\s'([^']+?)'\sis\snot\spresent"
+            "RequiredParameter": "Required\s\w+\sparameter\s'([^']+?)'\sis\snot\spresent",
+            "Thinkphp3 Debug": '<p class="face">:(</p>'
         }
         r = requests.get(domain, headers=headers)
         for k, v in re_list.items():
