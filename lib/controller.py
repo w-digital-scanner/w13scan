@@ -10,6 +10,7 @@ import traceback
 
 from config import THREAD_NUM
 from lib.data import logger, KB, Share
+from lib.output import out
 
 
 def exception_handled_function(thread_function, args=()):
@@ -24,7 +25,6 @@ def exception_handled_function(thread_function, args=()):
 
 def run_threads(num_threads, thread_function, args: tuple = ()):
     threads = []
-
 
     try:
         info_msg = "Staring {0} threads".format(num_threads)
@@ -83,10 +83,7 @@ def task_run():
         KB["lock"].release()
         poc_module = copy.deepcopy(KB["registered"][poc_module_name])
 
-        try:
-            poc_module.execute(request, response)
-        except:
-            pass
+        poc_module.execute(request, response)
 
         KB["lock"].acquire()
         KB["finished"] += 1
@@ -99,11 +96,11 @@ def task_run():
 
 
 def printProgress():
-    msg = '%s running | %s remaining | %s scanned in %.2f seconds' % (
-        KB["running"], KB["task_queue"].qsize(), KB["finished"], time.time() - KB['start_time'])
+    msg = '%s success | %s remaining | %s scanned in %.2f seconds' % (
+        out.count(), KB["task_queue"].qsize(), KB["finished"], time.time() - KB['start_time'])
 
-    out = '\r' + ' ' * (KB['console_width'][0] - len(msg)) + msg
-    Share.dataToStdout(out)
+    _ = '\r' + ' ' * (KB['console_width'][0] - len(msg)) + msg
+    Share.dataToStdout(_)
 
 
 def task_push(plugin_type, request, response):

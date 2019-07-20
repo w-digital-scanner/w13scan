@@ -4,9 +4,9 @@
 # @Author  : w8ay
 # @File    : output.py
 
-from lib.controller import printProgress
-from lib.data import Share, KB
 from threading import Lock
+
+from lib.data import Share, KB
 
 
 class OutPut(object):
@@ -66,7 +66,6 @@ class OutPut(object):
                 self.log(" ")
                 index += 1
         self.lock.release()
-        printProgress()
 
     def log(self, msg):
         width = KB["console_width"][0]

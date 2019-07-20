@@ -16,6 +16,7 @@ acceptedExt = [
     '.pl',
     '.cgi',
     '.jsp', '.jhtml', '.jhtm', '.jws',
+    '.htm', '.html',
     '.do', ''
 ]
 
