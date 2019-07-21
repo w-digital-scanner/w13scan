@@ -15,9 +15,7 @@ class W13SCAN(PluginBase):
     name = "敏感文件扫描"
 
     def generate(self):
-        payloads = [{'path': '/config.php', 'tag': '', 'content-type': 'html', 'content-type_no': ''},
-                    {'path': '/config/config.php', 'tag': '', 'content-type': 'html', 'content-type_no': ''},
-                    {'path': '/config.inc', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
+        payloads = [{'path': '/config.inc', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
                     {'path': '/config.php.bak', 'tag': '', 'content-type': 'application/octet-stream',
                      'content-type_no': ''},
                     {'path': '/db.php.bak', 'tag': '', 'content-type': 'application/octet-stream',
