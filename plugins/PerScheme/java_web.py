@@ -18,8 +18,6 @@ class W13SCAN(PluginBase):
                     {'path': '/WEB-INF/web.xml.bak', 'tag': '<?xml', 'content-type': '', 'content-type_no': ''},
                     {'path': '/WEB-INF/applicationContext.xml', 'tag': '<?xml', 'content-type': 'xml',
                      'content-type_no': ''},
-                    {'path': '/WEB-INF/applicationContext-slave.xml', 'tag': '<?xml', 'content-type': 'xml',
-                     'content-type_no': ''},
                     {'path': '/WEB-INF/config.xml', 'tag': '<?xml', 'content-type': 'xml', 'content-type_no': ''},
                     {'path': '/WEB-INF/spring.xml', 'tag': '<?xml', 'content-type': 'xml', 'content-type_no': ''},
                     {'path': '/WEB-INF/struts-config.xml', 'tag': '<?xml', 'content-type': 'xml',

