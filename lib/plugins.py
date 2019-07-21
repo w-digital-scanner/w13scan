@@ -10,6 +10,7 @@ from http.client import RemoteDisconnected
 import requests
 import urllib3
 from requests import ConnectTimeout, HTTPError, TooManyRedirects, ConnectionError
+from urllib3.exceptions import NewConnectionError, PoolError
 
 from config import RETRY, DEBUG
 from lib.baseproxy import Request, Response
@@ -60,10 +61,9 @@ class PluginBase(object):
                 except (
                         ConnectTimeout, requests.exceptions.ReadTimeout, urllib3.exceptions.ReadTimeoutError,
                         socket.timeout):
-                    pass
                     # msg = 'Plugin: {0} time-out retry failed!'.format(self.name)
                     # Share.dataToStdout('\r' + msg + '\n\r')
-                retry -= 1
+                    retry -= 1
             else:
                 msg = "connect target '{0}' failed!".format(self.target)
                 # Share.dataToStdout('\r' + msg + '\n\r')
@@ -76,9 +76,16 @@ class PluginBase(object):
             msg = "connect target '{0}' failed!".format(self.target)
             # Share.dataToStdout('\r' + msg + '\n\r')
         except TooManyRedirects as e:
-            Share.dataToStdout('\r' + str(e) + '\n\r')
+            # Share.dataToStdout('\r' + str(e) + '\n\r')
+            pass
 
         except RemoteDisconnected as e:
+            pass
+
+        except NewConnectionError as ex:
+            pass
+
+        except PoolError as ex:
             pass
 
         except Exception as e:

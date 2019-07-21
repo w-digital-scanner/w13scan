@@ -61,10 +61,6 @@ class W13SCAN(PluginBase):
                      'content-type_no': ''},
                     {'path': '/.mysql.php.swp', 'tag': '<?php', 'content-type': 'application/octet-stream',
                      'content-type_no': ''},
-                    {'path': '/{hostname_or_folder}.ini', 'tag': '[', 'content-type': 'application',
-                     'content-type_no': ''},
-                    {'path': '/../{hostname_or_folder}.ini', 'tag': '[', 'content-type': 'application',
-                     'content-type_no': ''}, {'path': '/app.cfg', 'tag': '', 'content-type': '', 'content-type_no': ''},
                     {'path': '/readme', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
                     {'path': '/README', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
                     {'path': '/readme.md', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
@@ -96,10 +92,11 @@ class W13SCAN(PluginBase):
         netloc = self.requests.netloc
 
         payloads = self.generate()
+        success = []
 
         for payload in payloads:
             test_url = url.rstrip('/') + payload["path"]
-            r = requests.get(test_url, headers=headers)
+            r = requests.get(test_url, headers=headers, allow_redirects=False)
             if r.status_code != 200:
                 continue
             if payload["tag"]:
@@ -111,4 +108,22 @@ class W13SCAN(PluginBase):
             if payload["content-type_no"]:
                 if payload["content-type_no"] in r.headers.get('Content-Type', ''):
                     continue
-            out.success(test_url, self.name)
+            success.append({"url": test_url, "len": len(r.text)})
+
+        if success:
+            if len(success) < 10:
+                for i in success:
+                    out.success(i["url"], self.name)
+            else:
+                result = {}
+                for item in success:
+                    length = item.get("len", 0)
+                    if length not in result:
+                        result[length] = list()
+                    result[length].append(item["url"])
+                for k, v in result.items():
+                    if len(v) > 5:
+                        continue
+                    else:
+                        for i in v:
+                            out.success(i, self.name)
