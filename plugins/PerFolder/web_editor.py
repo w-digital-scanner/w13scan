@@ -52,9 +52,9 @@ class W13SCAN(PluginBase):
         payloads = self.generate()
 
         for payload in payloads:
-            test_url = url.rstrip('/') + '/' + payload["path"]
+            test_url = url.rstrip('/') + payload["path"]
             r = requests.get(test_url, headers=headers)
-            if r.status_code == 404:
+            if r.status_code != 200:
                 continue
             if payload["tag"]:
                 if payload["tag"] not in r.text:

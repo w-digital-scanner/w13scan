@@ -38,6 +38,7 @@ class W13SCAN(PluginBase):
         if exi not in acceptedExt:
             return
 
+        origin_len = len(resp_str)
         sql_flag = '鎈\'"\('
         if headers and "cookie" in headers:
             cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
@@ -48,6 +49,8 @@ class W13SCAN(PluginBase):
                     cookie = copy.deepcopy(cookies)
                     cookie[k] = v + sql_flag
                     r = requests.get(url, headers=tmp_headers, cookies=urlencode(cookie))
+                    if origin_len == len(r.text):
+                        continue
                     for sql_regex, dbms_type in Get_sql_errors():
                         match = sql_regex.search(r.text)
                         if match:
@@ -80,13 +83,14 @@ class W13SCAN(PluginBase):
             # test header
             if headers:
                 sql_flag = '\'"\('
-                headers["User-Agent"] = headers.get("User-Agent", "") + sql_flag
-                headers["referer"] = headers.get("referer", url) + sql_flag
-                headers["client-ip"] = headers.get("client-ip", "127.0.0.1") + sql_flag
-                headers["x-forwarded-for"] = headers.get("x-forwarded-for", "127.0.0.1") + sql_flag
-                headers["via"] = headers.get("via", "") + sql_flag
-                r = requests.get(url, headers=headers)
+                new_headers = {"User-Agent": headers.get("User-Agent", "") + sql_flag,
+                               "referer": headers.get("referer", url) + sql_flag,
+                               "x-forwarded-for": headers.get("x-forwarded-for", "127.0.0.1") + sql_flag,
+                               "via": headers.get("via", "") + sql_flag}
+                r = requests.get(url, headers=new_headers)
                 html = r.text
+                if origin_len == len(html):
+                    return
                 for sql_regex, dbms_type in Get_sql_errors():
                     match = sql_regex.search(html)
                     if match:

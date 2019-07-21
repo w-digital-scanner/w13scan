@@ -38,7 +38,7 @@ class W13SCAN(PluginBase):
             "Django DEBUG MODEL": "You're seeing this error because you have <code>DEBUG = True<\/code> in",
             "RailsDevMode": "<title>Action Controller: Exception caught<\/title>",
             "RequiredParameter": "Required\s\w+\sparameter\s'([^']+?)'\sis\snot\spresent",
-            "Thinkphp3 Debug": '<p class="face">:(</p>'
+            "Thinkphp3 Debug": '<p class="face">:\(</p>'
         }
         r = requests.get(domain, headers=headers)
         for k, v in re_list.items():

@@ -5,12 +5,10 @@
 # @File    : post_sql_inject_error.py
 
 import copy
-import os
 
 import requests
 
-from lib.common import prepare_url
-from lib.const import acceptedExt, ignoreParams, POST_HINT
+from lib.const import ignoreParams, POST_HINT
 from lib.helper.helper_sqli import Get_sql_errors
 from lib.output import out
 from lib.plugins import PluginBase
