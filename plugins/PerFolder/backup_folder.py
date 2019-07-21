@@ -59,7 +59,7 @@ class W13SCAN(PluginBase):
 
         file_dic = ['bak.rar', 'bak.zip', 'backup.rar', 'backup.zip', 'www.zip', 'www.rar', 'web.rar', 'web.zip',
                     'wwwroot.rar',
-                    'wwwroot.zip']
+                    'wwwroot.zip', 'log.zip', 'log.rar']
 
         if method == "GET":
             url = url.rstrip("/")

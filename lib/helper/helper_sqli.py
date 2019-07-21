@@ -93,12 +93,12 @@ def Get_sql_errors():
     errors.append(('\\[Macromedia\\]\\[SQLServer JDBC Driver\\]', DBMS.MSSQL))
 
     # Generic errors..
-    errors.append(('SELECT .*? FROM .*?', DBMS.UNKNOWN))
-    errors.append(('UPDATE .*? SET .*?', DBMS.UNKNOWN))
-    errors.append(('INSERT INTO .*?', DBMS.UNKNOWN))
-    errors.append(('Unknown column', DBMS.UNKNOWN))
-    errors.append(('where clause', DBMS.UNKNOWN))
-    errors.append(('SqlServer', DBMS.UNKNOWN))
+    # errors.append(('SELECT .*? FROM .*?', DBMS.UNKNOWN))
+    # errors.append(('UPDATE .*? SET .*?', DBMS.UNKNOWN))
+    # errors.append(('INSERT INTO .*?', DBMS.UNKNOWN))
+    # errors.append(('Unknown column', DBMS.UNKNOWN))
+    # errors.append(('where clause', DBMS.UNKNOWN))
+    # errors.append(('SqlServer', DBMS.UNKNOWN))
 
     sql_errors = []
     for re_string, DBMS_type in errors:

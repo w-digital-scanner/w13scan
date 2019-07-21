@@ -70,7 +70,16 @@ class W13SCAN(PluginBase):
                     {'path': '/readme.md', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
                     {'path': '/readme.html', 'tag': '', 'content-type': 'html', 'content-type_no': ''},
                     {'path': '/changelog.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
-                    {'path': '/更新日志.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''}]
+                    {'path': '/更新日志.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/www.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/error.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/log.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/sql.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/errors.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/db.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/data.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/app.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    ]
         return payloads
 
     def audit(self):
