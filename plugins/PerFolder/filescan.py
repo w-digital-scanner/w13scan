@@ -3,6 +3,7 @@
 # @Time    : 2019/6/29 12:16 AM
 # @Author  : w8ay
 # @File    : filescan.py
+
 import requests
 
 from lib.output import out
@@ -10,41 +11,67 @@ from lib.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
-    desc = '''基于流量动态生成敏感目录文件扫描'''
-    name = "敏感文件扫描插件"
+    desc = '''收集自BBScan的插件'''
+    name = "敏感文件扫描"
 
-    def file(self):
-        filename = ['/debug.txt', '/crossdomain.xml', '/etc/passwd', '/.bash_profile',
-                    '/.rediscli_history',
-                    '/.bash_history', '/.bashrc', '/.DS_Store',
-                    '/.bash_logout',
-                    '/.vimrc', '/examples/', '/.htaccess.bak',
-                    '/db.conf', '/.history', '/composer.json',
-                    '/requirements.txt', '/.htpasswd', '/composer.lock', '/web.config', '/login.php',
-                    '/nohup.out',
-                    '/htpasswd.bak', '/httpd.conf', '/.mysql_history', '/login.asp', '/database.yml',
-                    '/.ssh/known_hosts',
-                    '/.ssh/id_rsa', '/.ssh/id_dsa', '/id_dsa',
-                    '/id_rsa',
-                    '/.ssh/id_rsa.pub', '/.ssh/id_dsa.pub', '/id_rsa.pub', '/.ssh/authorized_keys', '/readme.md',
-                    '/readme',
-                    '/readme.txt', '/README.md', '/README', '/README.txt', '/LICENSE.txt', '/LICENSE.md', '/LICENSE',
-                    '/CHANGELOG.md', '/CHANGELOG.txt', '/CHANGELOG', '/changelog.md', '/changelog.txt', '/changelog',
-                    '/CONTRIBUTING.md', '/CONTRIBUTING.txt', '/CONTRIBUTING', '/install.md', '/install.txt', '/install',
-                    '/INSTALL.md', '/INSTALL.txt', '/INSTALL', '/data.txt',
-                    '/install.sh', '/deploy.sh', '/upload.sh', '/setup.sh', '/backup.sh', '/rsync.sh', '/sync.sh',
-                    '/test.sh',
-                    '/run.sh', '/config.php', '/config.inc',
-                    '/settings.ini',
-                    '/application.ini', '/conf.ini', '/app.ini',
-                    '/config.ini',
-                    '/php.ini',
-                    '/config.json', '/.user.ini', '/db.ini', '/a.out',
-                    '/key',
-                    '/keys', '/key.txt', '/secret_key', '/secret', '/.env', '/.secret', '/.key', '/.secret_key',
-                    '/temp.txt',
-                    '/tmp.txt', '/更新日志.txt']
-        return filename
+    def generate(self):
+        payloads = [{'path': '/config.php', 'tag': '', 'content-type': 'html', 'content-type_no': ''},
+                    {'path': '/config/config.php', 'tag': '', 'content-type': 'html', 'content-type_no': ''},
+                    {'path': '/config.inc', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/config.php.bak', 'tag': '', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/db.php.bak', 'tag': '', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/conf/config.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/config.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/config/config.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/configuration.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/configs/application.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/settings.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/application.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/conf.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/app.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/config.json', 'tag': '', 'content-type': 'application/json', 'content-type_no': ''},
+                    {'path': '/a.out', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/key', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/keys', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/key.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/temp.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/tmp.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/php.ini', 'tag': '[', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/sftp-config.json', 'tag': 'password', 'content-type': 'application/json',
+                     'content-type_no': ''},
+                    {'path': '/index.php.bak', 'tag': '<?php', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/.index.php.swp', 'tag': '<?php', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/index.cgi.bak', 'tag': '', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/config.inc.php.bak', 'tag': '<?php', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/.config.inc.php.swp', 'tag': '<?php', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/config/.config.php.swp', 'tag': '<?php', 'content-type': '', 'content-type_no': ''},
+                    {'path': '/.config.php.swp', 'tag': '<?php', 'content-type': '', 'content-type_no': ''},
+                    {'path': '/.settings.php.swp', 'tag': '<?php', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/.database.php.swp', 'tag': '<?php', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/.db.php.swp', 'tag': '<?php', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/.mysql.php.swp', 'tag': '<?php', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
+                    {'path': '/{hostname_or_folder}.ini', 'tag': '[', 'content-type': 'application',
+                     'content-type_no': ''},
+                    {'path': '/../{hostname_or_folder}.ini', 'tag': '[', 'content-type': 'application',
+                     'content-type_no': ''}, {'path': '/app.cfg', 'tag': '', 'content-type': '', 'content-type_no': ''},
+                    {'path': '/readme', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/README', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/readme.md', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
+                    {'path': '/readme.html', 'tag': '', 'content-type': 'html', 'content-type_no': ''},
+                    {'path': '/changelog.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/更新日志.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''}]
+        return payloads
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST
@@ -59,32 +86,20 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        filename = self.file()
-        success = []
-        for f in filename:
-            _ = url.rstrip('/') + f
-            try:
-                r = requests.get(_, headers=headers, allow_redirects=False)
-                # out.log(_)
-                if r.status_code != 404:
-                    success.append({"url": _, "code": len(r.text)})
-                    # print(self.name)
-            except Exception as e:
-                pass
-        if len(success) < 5:
-            for i in success:
-                out.success(i["url"], self.name)
-        else:
-            result = {}
-            for item in success:
-                length = item.get("len", 0)
-                if length not in result:
-                    result[length] = list()
-                result[length].append(item["url"])
+        payloads = self.generate()
 
-            for k, v in result.items():
-                if len(v) > 3:
+        for payload in payloads:
+            test_url = url.rstrip('/') + '/' + payload["path"]
+            r = requests.get(test_url, headers=headers)
+            if r.status_code == 404:
+                continue
+            if payload["tag"]:
+                if payload["tag"] not in r.text:
                     continue
-
-                for i in v:
-                    out.success(i, self.name)
+            if payload["content-type"]:
+                if payload['content-type'] not in r.headers.get('Content-Type', ''):
+                    continue
+            if payload["content-type_no"]:
+                if payload["content-type_no"] in r.headers.get('Content-Type', ''):
+                    continue
+            out.success(test_url, self.name)

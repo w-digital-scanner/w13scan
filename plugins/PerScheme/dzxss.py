@@ -33,3 +33,21 @@ class W13SCAN(PluginBase):
         r = requests.get(payload, headers=headers)
         if r.status_code == 200 and 'CWS' in r.text:
             out.success(payload, self.name)
+
+        payloads = ['config/config_ucenter.php.bak',
+                    'config/.config_ucenter.php.swp',
+                    'config/.config_global.php.swp',
+                    'config/config_global.php.1',
+                    'uc_server/data/config.inc.php.bak',
+                    'config/config_global.php.bak',
+                    'include/config.inc.php.tmp']
+
+        for payload in payloads:
+            r = requests.get(domain + payload, headers=headers)
+            if (r.status_code == 200 or r.status_code == 206) and "<?php" in r.text:
+                out.success(domain + payload, self.name)
+
+        payload = domain + "static/image/admincp/getcolor.htm'"
+        r = requests.get(payload, headers=headers)
+        if "if(fun) eval('parent.'+fun+'" in r.text:
+            out.success(payload, self.name, descript="Discuz getcolor DOM XSS")
