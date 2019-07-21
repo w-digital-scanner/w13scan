@@ -48,7 +48,7 @@ class W13SCAN(PluginBase):
                 '" oNsOmeEvent="console.log(233)',  # 双引号payload
                 "' oNsOmeEvent='console.log(2333)",  # 单引号payload
             ]
-            url_payload = "javascript:{randint}".format(randint=rndStr)
+            url_payload = "javascript&colon;{randint}".format(randint=rndStr)
             javascript_payload = "{randint}".format(randint=rndStr)
 
             for k, v in params.items():
