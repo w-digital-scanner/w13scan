@@ -64,7 +64,7 @@ class W13SCAN(PluginBase):
                     {'path': '/readme.md', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
                     {'path': '/readme.html', 'tag': '', 'content-type': 'html', 'content-type_no': ''},
                     {'path': '/changelog.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
-                    {'path': '/更新日志.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/%e6%9b%b4%e6%96%b0%e6%97%a5%e5%bf%97.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
                     {'path': '/www.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
                     {'path': '/error.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
                     {'path': '/log.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
