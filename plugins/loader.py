@@ -63,7 +63,9 @@ class FakeReq(HttpTransfer):
         self.netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
         self.tld = get_fld(self.netloc, fix_protocol=True, fail_silently=True)
         self.params = paramToDict(p.query, place=PLACE.GET)
-
+        self.cookies = None
+        if "cookie" in headers or "Cookie" in headers:
+            self.cookies = paramToDict(headers.get("cookie", headers.get("Cookie")), place=PLACE.COOKIE)
         self._headers = headers
 
 
@@ -116,6 +118,8 @@ class W13SCAN(PluginBase):
         data = unquote(p.query, encoding)
         params = paramToDict(data, place=PLACE.GET)
         self.requests.params = params
+        if "cookie" in headers:
+            self.requests.cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
 
         if method == "POST":
             post_data = unquote(post_data, encoding)

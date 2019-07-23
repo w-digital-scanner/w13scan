@@ -156,6 +156,7 @@ class Request(HttpTransfer):
         self.urlparse = None
         self.netloc = None
         self.params = None
+        self.cookies = None
 
         self.set_headers(req.headers)
 
