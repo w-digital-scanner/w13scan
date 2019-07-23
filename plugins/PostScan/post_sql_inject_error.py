@@ -8,7 +8,7 @@ import copy
 
 import requests
 
-from lib.const import ignoreParams, POST_HINT
+from lib.const import ignoreParams, POST_HINT, Level
 from lib.helper.helper_sqli import Get_sql_errors
 from lib.output import out
 from lib.plugins import PluginBase
@@ -17,6 +17,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = 'POST插件 基于报错SQL注入'
     desc = '''目前支持POST方式的请求'''
+    level = Level.HIGHT
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

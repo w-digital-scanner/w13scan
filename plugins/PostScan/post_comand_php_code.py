@@ -12,7 +12,7 @@ import re
 import requests
 
 from lib.common import prepare_url, md5
-from lib.const import acceptedExt, ignoreParams, POST_HINT
+from lib.const import acceptedExt, ignoreParams, POST_HINT, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -20,6 +20,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = 'PHP代码注入 POST插件'
     desc = '''支持POST请求方式和回显型的PHP代码注入'''
+    level = Level.HIGHT
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

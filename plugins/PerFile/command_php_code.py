@@ -11,7 +11,7 @@ import re
 import requests
 
 from lib.common import prepare_url, md5, paramToDict
-from lib.const import acceptedExt, ignoreParams, PLACE
+from lib.const import acceptedExt, ignoreParams, PLACE, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -19,6 +19,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = 'PHP代码注入'
     desc = '''暂只支持Get请求方式和回显型的PHP代码注入以及cookie中的代码注入'''
+    level = Level.HIGHT
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

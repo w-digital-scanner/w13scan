@@ -8,7 +8,7 @@ import os
 
 from lib.common import is_base64, isJavaObjectDeserialization, isPythonObjectDeserialization, \
     isPHPObjectDeserialization, paramToDict
-from lib.const import PLACE
+from lib.const import PLACE, Level
 from lib.output import out
 from lib.plugins import PluginBase
 import re
@@ -17,6 +17,7 @@ import re
 class W13SCAN(PluginBase):
     name = 'js文件敏感内容匹配'
     desc = '''从返回js的包中匹配敏感内容'''
+    level = Level.LOW
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

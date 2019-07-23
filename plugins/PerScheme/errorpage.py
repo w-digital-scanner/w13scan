@@ -9,6 +9,7 @@ import re
 import requests
 
 from lib.common import random_str
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -16,6 +17,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = '错误暴露信息'
     desc = '''访问一个不存在的错误页面，可以从这个页面中获取一些信息'''
+    level = Level.LOW
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

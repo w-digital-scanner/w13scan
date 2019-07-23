@@ -9,7 +9,7 @@ import re
 
 import requests
 
-from lib.const import ignoreParams, acceptedExt
+from lib.const import ignoreParams, acceptedExt, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -17,6 +17,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = ''''''
     name = 'XPATH检测'
+    level = Level.MIDDLE
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

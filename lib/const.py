@@ -75,6 +75,13 @@ class POST_HINT(object):
     ARRAY_LIKE = "Array-like"
 
 
+class Level(object):
+    NONE = 0
+    LOW = 1
+    MIDDLE = 2
+    HIGHT = 3
+
+
 POST_HINT_CONTENT_TYPES = {
     POST_HINT.JSON: "application/json",
     POST_HINT.JSON_LIKE: "application/json",

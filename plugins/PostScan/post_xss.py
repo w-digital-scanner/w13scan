@@ -10,7 +10,7 @@ from urllib.parse import quote
 
 import requests
 
-from lib.const import ignoreParams, POST_HINT
+from lib.const import ignoreParams, POST_HINT, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -18,6 +18,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = 'POST插件 XSS简易注入'
     desc = '''目前支持POST方式的请求'''
+    level = Level.MIDDLE
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

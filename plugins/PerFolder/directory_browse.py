@@ -3,6 +3,7 @@
 # @Time    : 2019/6/29 4:46 PM
 # @Author  : w8ay
 # @File    : directory_browse.py
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -10,6 +11,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = '目录遍历插件'
     desc = '''遍历每个目录，查看是否可以直接访问'''
+    level = Level.LOW
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

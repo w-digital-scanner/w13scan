@@ -3,7 +3,7 @@
 # @Time    : 2019/7/11 4:51 PM
 # @Author  : w8ay
 # @File    : normal_page.py
-
+from lib.const import Level
 from lib.helper.phpinfo_helper import get_phpinfo
 from lib.output import out
 from lib.plugins import PluginBase
@@ -12,6 +12,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = '通用敏感信息搜集'
     desc = '''只从返回包中搜集通用的敏感信息'''
+    level = Level.LOW
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

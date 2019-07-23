@@ -11,7 +11,7 @@ from urllib.parse import unquote, urlencode
 
 import requests
 
-from lib.const import POST_HINT
+from lib.const import POST_HINT, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -19,6 +19,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = 'POST模式 路径穿越插件'
     desc = '''支持多平台payload'''
+    level = Level.LOW
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

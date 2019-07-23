@@ -5,6 +5,7 @@
 # @File    : java_web.py
 import requests
 
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -12,6 +13,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = '''收集自BBScan的插件'''
     name = "JAVA WEB敏感文件"
+    level = Level.LOW
 
     def generate(self):
         payloads = [{'path': '/WEB-INF/web.xml', 'tag': '<?xml', 'content-type': 'xml', 'content-type_no': ''},

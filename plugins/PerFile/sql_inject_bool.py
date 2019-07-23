@@ -11,7 +11,7 @@ import re
 import requests
 
 from lib.common import random_str
-from lib.const import acceptedExt, ignoreParams
+from lib.const import acceptedExt, ignoreParams, Level
 from lib.helper.diifpage import findDynamicContent, getFilteredPageContent
 from lib.output import out
 from lib.plugins import PluginBase
@@ -20,6 +20,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = '基于布尔判断的SQL注入'
     desc = '''目前仅支持GET方式的请求'''
+    level = Level.HIGHT
 
     def __init__(self):
         super().__init__()

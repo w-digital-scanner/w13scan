@@ -9,7 +9,7 @@ import os
 import requests
 
 from lib.common import prepare_url, get_middle_text
-from lib.const import ignoreParams, acceptedExt
+from lib.const import ignoreParams, acceptedExt, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -17,6 +17,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = '''对于一些php网站，将正常参数替换为[]可能造成真实信息泄漏'''
     name = 'php 真实路径泄漏'
+    level = Level.MIDDLE
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

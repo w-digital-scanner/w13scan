@@ -7,6 +7,7 @@
 
 import requests
 
+from lib.const import Level
 from lib.controller import task_push
 from lib.data import KB
 from lib.output import out
@@ -17,6 +18,7 @@ from plugins.loader import FakeReq, FakeResp
 class W13SCAN(PluginBase):
     name = '敏感目录扫描'
     desc = ''''''
+    level = Level.LOW
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

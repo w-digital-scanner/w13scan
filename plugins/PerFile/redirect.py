@@ -11,7 +11,7 @@ from urllib.parse import unquote
 import requests
 
 from lib.common import is_base64
-from lib.const import acceptedExt
+from lib.const import acceptedExt, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -19,6 +19,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = '''任意网址重定向'''
     name = '支持检查 html meta 跳转、30x 跳转、JavaScript跳转等等'
+    level = Level.LOW
 
     def __init__(self):
         super().__init__()

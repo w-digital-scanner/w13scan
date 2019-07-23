@@ -5,6 +5,7 @@
 # @File    : directory_traversal.py
 import requests
 
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -12,6 +13,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = '''收集自BBScan的目录穿越插件'''
     name = "目录穿越扫描插件"
+    level = Level.LOW
 
     def generate(self):
         payloads = [{'path': '/etc/passwd', 'tag': 'root:x:', 'content-type': '', 'content-type_no': ''},

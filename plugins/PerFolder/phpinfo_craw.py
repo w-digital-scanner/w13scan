@@ -6,6 +6,7 @@
 
 import requests
 
+from lib.const import Level
 from lib.helper.phpinfo_helper import get_phpinfo
 from lib.output import out
 from lib.plugins import PluginBase
@@ -14,6 +15,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = '''查看此目录下是否存在phpinfo文件'''
     name = 'phpinfo遍历'
+    level = Level.MIDDLE
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

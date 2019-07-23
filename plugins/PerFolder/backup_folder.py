@@ -11,6 +11,7 @@ import re
 
 import requests
 
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -18,6 +19,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = '常见备份文件'
     desc = '''扫描每个目录下的常见备份文件,以及以当前目录名命名的备份文件'''
+    level = Level.MIDDLE
 
     def _check(self, content):
         """

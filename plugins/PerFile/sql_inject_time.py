@@ -12,7 +12,7 @@ from urllib.parse import urlencode
 import requests
 
 from lib.common import random_str
-from lib.const import acceptedExt, ignoreParams
+from lib.const import acceptedExt, ignoreParams, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -20,6 +20,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = '基于时间的SQL注入'
     desc = '''目前仅支持GET方式的请求'''
+    level = Level.HIGHT
 
     def __init__(self):
         super().__init__()

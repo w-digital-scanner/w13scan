@@ -15,7 +15,7 @@ from lib.baseproxy import HttpTransfer
 from lib.common import paramToDict, get_links, get_parent_paths
 from lib.const import JSON_RECOGNITION_REGEX, POST_HINT, XML_RECOGNITION_REGEX, \
     JSON_LIKE_RECOGNITION_REGEX, ARRAY_LIKE_RECOGNITION_REGEX, MULTIPART_RECOGNITION_REGEX, DEFAULT_GET_POST_DELIMITER, \
-    PLACE, logoutParams
+    PLACE, logoutParams, Level
 from lib.controller import task_push
 from lib.data import KB
 from lib.plugins import PluginBase
@@ -99,6 +99,7 @@ class W13SCAN(PluginBase):
     type = 'loader'
     desc = '''Loader插件对请求以及响应进行解析，从而调度更多插件运行'''
     name = 'plugin loader'
+    level = Level.NONE
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

@@ -6,6 +6,8 @@
 
 import requests
 import re
+
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -13,6 +15,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = ''''''
     name = 'JetBrans .idea 泄漏'
+    level = Level.LOW
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

@@ -7,6 +7,7 @@ import re
 
 import requests
 
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -14,6 +15,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = ''''''
     name = 'SFTP_Credentials_Exposure'
+    level = Level.LOW
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

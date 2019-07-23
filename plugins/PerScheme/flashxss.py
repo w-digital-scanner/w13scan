@@ -7,6 +7,7 @@
 import requests
 
 from lib.common import md5
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -14,6 +15,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = '''一些flash xss'''
     name = 'some flash xss'
+    level = Level.LOW
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

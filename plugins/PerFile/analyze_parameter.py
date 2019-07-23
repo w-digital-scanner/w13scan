@@ -8,11 +8,13 @@ from lib.common import is_base64, isJavaObjectDeserialization, isPythonObjectDes
 from lib.const import PLACE
 from lib.output import out
 from lib.plugins import PluginBase
+from api import Level
 
 
 class W13SCAN(PluginBase):
     name = 'base64,反序列化参数分析'
     desc = '''从参数，post包，cookie中寻找并解密base64和反序列化的参数'''
+    level = Level.MIDDLE
 
     def _check(self, k, v, method, url, data):
 

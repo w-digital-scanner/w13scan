@@ -5,6 +5,7 @@
 # @File    : common_set.py
 import requests
 
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -12,6 +13,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = '''收集自BBScan的插件'''
     name = "通用敏感文件扫描插件"
+    level = Level.LOW
 
     def generate(self):
         payloads = [{'path': '/core', 'tag': 'ELF', 'content-type': '', 'content-type_no': ''},

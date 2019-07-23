@@ -7,6 +7,7 @@
 import requests
 from tld import parse_tld
 
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -14,6 +15,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = '基于域名的备份文件'
     desc = '''扫描基于域名的备份文件'''
+    level = Level.MIDDLE
 
     def _check(self, content):
         """

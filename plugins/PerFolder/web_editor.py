@@ -7,6 +7,7 @@
 
 import requests
 
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -14,6 +15,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = '''收集自BBScan的插件'''
     name = "WEB 编辑器扫描"
+    level = Level.LOW
 
     def generate(self):
         payloads = [{'path': '/fckeditor/_samples/default.html', 'tag': '<title>FCKeditor', 'content-type': 'html',

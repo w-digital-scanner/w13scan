@@ -11,7 +11,7 @@ import requests
 import json
 import re
 from lib.common import random_str
-from lib.const import JSON_RECOGNITION_REGEX
+from lib.const import JSON_RECOGNITION_REGEX, Level
 from lib.helper.diifpage import GetRatio
 from lib.output import out
 from lib.plugins import PluginBase
@@ -20,6 +20,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = 'JSONP寻找插件'
     desc = '''自动寻找JSONP请求并自动去除referer查看能否利用'''
+    level = Level.LOW
 
     def jsonp_load(self, jsonp):
         match = re.search('^[^(]*?\((.*)\)[^)]*$', jsonp)

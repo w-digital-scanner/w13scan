@@ -10,7 +10,7 @@ from urllib.parse import urlencode
 import requests
 
 from lib.common import prepare_url, paramToDict
-from lib.const import acceptedExt, ignoreParams, PLACE
+from lib.const import acceptedExt, ignoreParams, PLACE, Level
 from lib.helper.helper_sqli import Get_sql_errors
 from lib.output import out
 from lib.plugins import PluginBase
@@ -19,6 +19,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = '基于报错SQL注入'
     desc = '''支持GET、COOKIE、HEADER头注入'''
+    level = Level.HIGHT
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

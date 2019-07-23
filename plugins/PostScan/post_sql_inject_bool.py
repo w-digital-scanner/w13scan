@@ -10,7 +10,7 @@ import os
 import requests
 
 from lib.common import prepare_url, random_str
-from lib.const import acceptedExt, ignoreParams, POST_HINT
+from lib.const import acceptedExt, ignoreParams, POST_HINT, Level
 from lib.helper.diifpage import GetRatio
 from lib.output import out
 from lib.plugins import PluginBase
@@ -19,6 +19,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = 'POST插件 基于布尔判断的SQL注入'
     desc = '''目前支持POST方式的请求'''
+    level = Level.HIGHT
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

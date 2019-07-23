@@ -7,6 +7,7 @@ import re
 
 import requests
 
+from lib.const import Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -14,6 +15,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     desc = '''基于流量动态查找目录下仓库源码泄漏'''
     name = '.git .svn .bzr .hg泄漏插件'
+    level = Level.MIDDLE
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

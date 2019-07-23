@@ -12,7 +12,7 @@ import re
 import requests
 
 from lib.common import random_str
-from lib.const import acceptedExt, ignoreParams
+from lib.const import acceptedExt, ignoreParams, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -20,6 +20,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = '服务端模板注入SSTI'
     desc = '''对GET请求参数进行相关测试'''
+    level = Level.HIGHT
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST

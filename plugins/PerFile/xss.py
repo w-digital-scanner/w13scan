@@ -12,7 +12,7 @@ import re
 import requests
 
 from lib.common import random_str
-from lib.const import acceptedExt, ignoreParams
+from lib.const import acceptedExt, ignoreParams, Level
 from lib.output import out
 from lib.plugins import PluginBase
 
@@ -20,6 +20,7 @@ from lib.plugins import PluginBase
 class W13SCAN(PluginBase):
     name = 'XSS多种方式探测'
     desc = '''暂只支持Get请求方式'''
+    level = Level.MIDDLE
 
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST
