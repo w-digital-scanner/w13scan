@@ -12,7 +12,7 @@ from queue import Queue
 from config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS
 from lib.common import dataToStdout
 from lib.const import VERSION, REPOSITORY
-from lib.data import PATH, KB, logger
+from lib.data import PATH, KB, logger, conf
 from lib.loader import load_file_to_module
 from lib.spiderset import SpiderSet
 from thirdpart.console import getTerminalSize
@@ -69,9 +69,29 @@ def _init_plugins():
     logger.info('Load plugin:{}'.format(len(KB["registered"])))
 
 
-def init(root):
+def _init_conf():
+    cmd_line = {
+        "show_version": False,
+        "is_debug": None,
+        "verbose": 0,
+        "url": None,
+        "url_file": None,
+        "server_addr": None,
+        "proxy": None,
+        "timeout": 30,
+        "retry": 2,
+        "threads": 21,
+        "excludes": [],
+        "includes": [],
+        "exclude_plugins": [],
+        "include_plugins": []
+    }
+
+
+def init(root, cmdline):
     banner()
     _set_path(root)
+    _init_conf()
     _init_kb()
     _init_plugins()
     patch_all()

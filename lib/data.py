@@ -15,3 +15,4 @@ logger = logging
 PATH = dict()  # 全局路径
 KB = dict()
 Share = _ThreaData()
+conf = dict()

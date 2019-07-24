@@ -4,6 +4,7 @@ import threading
 
 from config import SERVER_ADDR
 from lib.baseproxy import AsyncMitmProxy
+from lib.cmdparse import cmd_line_parser
 from lib.controller import start
 from lib.data import KB
 from lib.option import init
@@ -12,7 +13,8 @@ from lib.option import init
 def main():
     # init
     root = os.path.dirname(os.path.abspath(__file__))
-    init(root)
+    cmdline = cmd_line_parser().__dict__
+    init(root, cmdline)
 
     try:
         # 启动漏洞扫描器线程
