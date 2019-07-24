@@ -102,7 +102,7 @@ class W13SCAN(PluginBase):
                     self.findDynamicContent(resp_str, self.removeDynamicContent(r.text))
 
             sql_flag = [
-                "<--isalnum-->",
+                "<--isdigit-->",
                 "'&&'{0}'='{1}",
                 '"&&"{0}"="{1}',
             ]
@@ -113,8 +113,8 @@ class W13SCAN(PluginBase):
                 for flag in sql_flag:
                     is_inject = False
                     is_num = False
-                    if flag == "<--isalnum-->":
-                        if str(v).isalnum():
+                    if flag == "<--isdigit-->":
+                        if str(v).isdigit():
                             is_num = True
                         else:
                             continue

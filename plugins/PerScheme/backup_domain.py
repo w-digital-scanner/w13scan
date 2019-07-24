@@ -57,7 +57,10 @@ class W13SCAN(PluginBase):
 
         domain = "{}://{}/".format(p.scheme, p.netloc)
 
-        payloads = parse_tld(domain, fix_protocol=True, fail_silently=True)
+        try:
+            payloads = parse_tld(domain, fix_protocol=True, fail_silently=True)
+        except AttributeError:
+            payloads = None
         if not payloads:
             return
 
