@@ -201,6 +201,8 @@ class Response(HttpTransfer):
             body_data = self._decode_content_body(data, self.get_header('Content-Encoding'))
         except http.client.IncompleteRead:
             body_data = b''
+        except zlib.error:
+            body_data = b''
         self.set_body_data(body_data)
         self._text()  # 尝试将文本进行解码
 
