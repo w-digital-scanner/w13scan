@@ -45,7 +45,4 @@ if LEVEL >= 2:
 
 # DEBUG
 DEBUG = True
-# EXCLUDE_PLUGINS = ['subdomain_found.py', 'jsonp.py', 'js_sensitive_content.py'
-#                    ]
-# INCLUDE_PLUGINS = ['sql_inject_bool.py']
-# THREAD_NUM = 1
+# EXCLUDE_PLUGINS = ['subdomain_found.py', 'jsonp.py', 'js_sensitive_content.py']

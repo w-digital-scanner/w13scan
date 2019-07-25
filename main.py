@@ -2,6 +2,8 @@ import os
 import signal
 import threading
 
+from colorama import deinit, init as cinit, Style, Fore, Back
+
 from lib.baseproxy import AsyncMitmProxy
 from lib.cmdparse import cmd_line_parser
 from lib.controller import start
@@ -12,7 +14,9 @@ from lib.option import init, banner
 def main():
     # init
     root = os.path.dirname(os.path.abspath(__file__))
+    cinit(autoreset=True)
     banner()
+
     cmdline = cmd_line_parser().__dict__
     init(root, cmdline)
     if conf["show_version"]:
@@ -30,6 +34,7 @@ def main():
         baseproxy.serve_forever()
     except KeyboardInterrupt:
         print("\n[*] User quit")
+        deinit()
         if not KB["is_win"]:
             os.kill(os.getpid(), signal.SIGHUP)
 

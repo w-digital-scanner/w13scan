@@ -9,6 +9,8 @@ import threading
 import time
 from queue import Queue
 
+from colorama import Fore
+
 from config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS, SERVER_ADDR, DEBUG, INCLUDES, EXCLUDES, THREAD_NUM, LEVEL, TIMEOUT, \
     RETRY, PROXY_CONFIG, ACTIVE_SCAN, PROXY_CONFIG_BOOL
 from lib.common import dataToStdout
@@ -168,4 +170,5 @@ def banner():
     　 \　 /\　 /
     　　 ︶　 ︶
 '''
-    dataToStdout(_.format(version=VERSION, git=REPOSITORY))
+
+    dataToStdout(Fore.GREEN + _.format(version=VERSION, git=REPOSITORY))
