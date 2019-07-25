@@ -43,7 +43,7 @@ class OutPut(object):
         report.update(kw)
         self.lock.acquire()
         self.collect.append(report)
-        self.log("[{}] ".format(report["plugin"]), Fore.RED)
+        self.log("[{}]".format(report["plugin"]), Fore.RED)
         del report["plugin"]
         raw = None
         if "raw" in report:
