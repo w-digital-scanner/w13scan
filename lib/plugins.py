@@ -12,9 +12,8 @@ import urllib3
 from requests import ConnectTimeout, HTTPError, TooManyRedirects, ConnectionError
 from urllib3.exceptions import NewConnectionError, PoolError
 
-from config import RETRY, DEBUG
 from lib.baseproxy import Request, Response
-from lib.data import Share
+from lib.data import Share, conf
 
 
 class PluginBase(object):
@@ -51,7 +50,7 @@ class PluginBase(object):
             Share.dataToStdout(Share.dataToStdout('\r' + msg + '\n\r'))
 
         except (ConnectTimeout, requests.exceptions.ReadTimeout, urllib3.exceptions.ReadTimeoutError, socket.timeout):
-            retry = RETRY
+            retry = conf["retry"]
             while retry > 0:
                 msg = 'Plugin: {0} timeout, start it over.'.format(self.name)
                 # Share.dataToStdout('\r' + msg + '\n\r')
@@ -89,7 +88,7 @@ class PluginBase(object):
             pass
 
         except Exception as e:
-            if DEBUG:
+            if conf["is_debug"]:
                 Share.dataToStdout('\r' + "[x]{} report:".format(self.name) + str(e) + '\n\r')
                 traceback.print_exc()
 

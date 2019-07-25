@@ -4,6 +4,7 @@
 # @Author  : w8ay
 # @File    : config.py
 
+# default setting
 
 SERVER_ADDR = ('127.0.0.1', 7778)  # 默认监听地址
 
@@ -20,6 +21,8 @@ TIMEOUT = 10  # 超时时间
 
 LEVEL = 0  # 根据检测深度由浅入深分为1～5级别，级别越高使用插件越多。LEVEL=0代表不使用该功能，默认使用全部插件。
 DEBUG = False  # DEBUG模式会看到报错信息
+
+ACTIVE_SCAN = False  # 是否关闭主动扫描，w13scan会自动解析返回包中的链接进行扫描
 
 # 所有扫描请求可以转发到另外一个代理上
 PROXY_CONFIG_BOOL = False
@@ -42,7 +45,4 @@ if LEVEL >= 2:
 
 # DEBUG
 DEBUG = True
-# EXCLUDE_PLUGINS = ['subdomain_found.py', 'jsonp.py', 'js_sensitive_content.py'
-#                    ]
-# INCLUDE_PLUGINS = ['sql_inject_bool.py']
-# THREAD_NUM = 1
+# EXCLUDE_PLUGINS = ['subdomain_found.py', 'jsonp.py', 'js_sensitive_content.py']

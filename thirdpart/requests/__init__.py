@@ -13,7 +13,7 @@ from requests.sessions import merge_setting, merge_cookies
 from requests.utils import get_encodings_from_content
 from urllib3 import disable_warnings
 
-from config import TIMEOUT, PROXY_CONFIG_BOOL, PROXY_CONFIG
+from lib.data import conf
 
 
 def patch_all():
@@ -59,8 +59,8 @@ def session_request(self, method, url,
             '\n'.join('{}: {}'.format(k, v) for k, v in prep.headers.items()))
 
     proxies = proxies or {}
-    if PROXY_CONFIG_BOOL and not proxies:
-        proxies = PROXY_CONFIG
+    if conf["proxy_config_bool"] and not proxies:
+        proxies = conf["proxy"]
 
     settings = self.merge_environment_settings(
         prep.url, proxies, stream, verify, cert
@@ -68,7 +68,7 @@ def session_request(self, method, url,
 
     # Send the request.
     send_kwargs = {
-        'timeout': timeout or TIMEOUT,
+        'timeout': timeout or conf["timeout"],
         'allow_redirects': allow_redirects,
     }
     send_kwargs.update(settings)

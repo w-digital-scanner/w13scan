@@ -17,7 +17,7 @@ from lib.const import JSON_RECOGNITION_REGEX, POST_HINT, XML_RECOGNITION_REGEX, 
     JSON_LIKE_RECOGNITION_REGEX, ARRAY_LIKE_RECOGNITION_REGEX, MULTIPART_RECOGNITION_REGEX, DEFAULT_GET_POST_DELIMITER, \
     PLACE, logoutParams, Level
 from lib.controller import task_push
-from lib.data import KB
+from lib.data import KB, conf
 from lib.plugins import PluginBase
 
 
@@ -164,6 +164,8 @@ class W13SCAN(PluginBase):
         if KB["spiderset"].add('GET' + domain, 'PerScheme'):
             task_push('PerScheme', self.requests, self.response)
 
+        if conf["active"]:
+            return
         # Collect from response
         links = get_links(resp_str, url, True)
         for link in set(links):

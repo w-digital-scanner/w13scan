@@ -16,8 +16,7 @@ import chardet
 from OpenSSL.crypto import load_certificate, FILETYPE_PEM, TYPE_RSA, PKey, X509, X509Extension, dump_privatekey, \
     dump_certificate, load_privatekey, X509Req
 
-from config import EXCLUDES, INCLUDES
-from lib.data import PATH, KB, logger
+from lib.data import PATH, KB, logger, conf
 
 __author__ = 'qiye'
 __date__ = '2018/6/15 11:45'
@@ -423,11 +422,11 @@ class ProxyHandle(BaseHTTPRequestHandler):
         target = self.path
         if not self.is_connected:
             target = self._target
-        for i in INCLUDES:
+        for i in conf["includes"]:
             match = re.search(i, target, re.I)
             if match:
                 ret = False
-        for i in EXCLUDES:
+        for i in conf["excludes"]:
             match = re.search(i, target, re.I)
             if match:
                 ret = True

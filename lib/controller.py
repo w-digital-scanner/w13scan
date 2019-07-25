@@ -8,8 +8,7 @@ import threading
 import time
 import traceback
 
-from config import THREAD_NUM
-from lib.data import logger, KB, Share
+from lib.data import logger, KB, Share, conf
 from lib.output import out
 
 
@@ -72,7 +71,7 @@ def run_threads(num_threads, thread_function, args: tuple = ()):
 
 
 def start():
-    run_threads(THREAD_NUM, task_run)
+    run_threads(conf["threads"], task_run)
 
 
 def task_run():

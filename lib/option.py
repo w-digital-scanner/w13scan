@@ -9,10 +9,13 @@ import threading
 import time
 from queue import Queue
 
-from config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS
+from colorama import Fore
+
+from config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS, SERVER_ADDR, DEBUG, INCLUDES, EXCLUDES, THREAD_NUM, LEVEL, TIMEOUT, \
+    RETRY, PROXY_CONFIG, ACTIVE_SCAN, PROXY_CONFIG_BOOL
 from lib.common import dataToStdout
 from lib.const import VERSION, REPOSITORY
-from lib.data import PATH, KB, logger
+from lib.data import PATH, KB, logger, conf
 from lib.loader import load_file_to_module
 from lib.spiderset import SpiderSet
 from thirdpart.console import getTerminalSize
@@ -69,9 +72,87 @@ def _init_plugins():
     logger.info('Load plugin:{}'.format(len(KB["registered"])))
 
 
-def init(root):
-    banner()
+def _init_conf():
+    cmd_line = {
+        "show_version": False,
+        "is_debug": None,
+        "level": 0,
+        "url": None,
+        "url_file": None,
+        "server_addr": None,
+        "proxy": None,
+        "timeout": 30,
+        "retry": 2,
+        "threads": 21,
+        "excludes": [],
+        "includes": [],
+        "exclude_plugins": [],
+        "include_plugins": [],
+        "active": True,
+        "proxy_config_bool": False
+    }
+    conf.update(cmd_line)
+    conf["is_debug"] = DEBUG
+    conf["server_addr"] = SERVER_ADDR
+    conf["threads"] = THREAD_NUM
+    conf["excludes"] = EXCLUDES
+    conf["includes"] = INCLUDES
+    conf["exclude_plugins"] = EXCLUDE_PLUGINS
+    conf["include_plugins"] = INCLUDE_PLUGINS
+    conf["retry"] = RETRY
+    conf["timeout"] = TIMEOUT
+    conf["level"] = LEVEL
+    conf["active"] = ACTIVE_SCAN
+    conf["proxy"] = PROXY_CONFIG
+    conf["proxy_config_bool"] = PROXY_CONFIG_BOOL
+
+
+def _merge_options(input_options):
+    """
+    Merge command line options with configuration file and default options.
+    """
+    if hasattr(input_options, "items"):
+        input_options_items = input_options.items()
+    else:
+        input_options_items = input_options.__dict__.items()
+
+    for key, value in input_options_items:
+        if key not in conf or value not in (None, False):
+            conf[key] = value
+
+
+def _set_conf():
+    # server_addr
+    if isinstance(conf["server_addr"], str):
+        defaulf = 7778
+        if ":" in conf["server_addr"]:
+            splits = conf["server_addr"].split(":", 2)
+            conf["server_addr"] = tuple([splits[0], int(splits[1])])
+        else:
+            conf["server_addr"] = tuple([conf["server_addr"], defaulf])
+
+    # threads
+    conf["threads"] = int(conf["threads"])
+
+    # conf["excludes"] = EXCLUDES
+    # conf["includes"] = INCLUDES
+    # conf["exclude_plugins"] = EXCLUDE_PLUGINS
+    # conf["include_plugins"] = INCLUDE_PLUGINS
+
+    # proxy
+    if isinstance(conf["proxy"], str) and "@" in conf["proxy"]:
+        conf["proxy_config_bool"] = True
+        method, ip = conf["proxy"].split("@")
+        conf["proxy"] = {
+            method: ip
+        }
+
+
+def init(root, cmdline):
     _set_path(root)
+    _init_conf()
+    _merge_options(cmdline)
+    _set_conf()
     _init_kb()
     _init_plugins()
     patch_all()
@@ -89,4 +170,5 @@ def banner():
     　 \　 /\　 /
     　　 ︶　 ︶
 '''
-    dataToStdout(_.format(version=VERSION, git=REPOSITORY))
+
+    dataToStdout(Fore.GREEN + _.format(version=VERSION, git=REPOSITORY))

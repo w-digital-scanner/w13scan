@@ -6,6 +6,8 @@
 
 from threading import Lock
 
+from colorama import Fore
+
 from lib.data import Share, KB
 
 
@@ -41,7 +43,7 @@ class OutPut(object):
         report.update(kw)
         self.lock.acquire()
         self.collect.append(report)
-        self.log("[{}] ".format(report["plugin"]))
+        self.log("[{}]".format(report["plugin"]), Fore.RED)
         del report["plugin"]
         raw = None
         if "raw" in report:
@@ -67,7 +69,7 @@ class OutPut(object):
                 index += 1
         self.lock.release()
 
-    def log(self, msg):
+    def log(self, msg, color=Fore.YELLOW):
         width = KB["console_width"][0]
         outputs = []
         msgs = msg.split('\n')
@@ -80,7 +82,7 @@ class OutPut(object):
                 line = line[width:]
             outputs.append(line)
         for i in outputs:
-            Share.dataToStdout('\r' + i + ' ' * (width - len(i)) + '\n\r')
+            Share.dataToStdout('\r' + color + i + ' ' * (width - len(i)) + '\n\r')
 
     def output(self):
         '''
