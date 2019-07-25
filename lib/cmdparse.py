@@ -20,34 +20,37 @@ def cmd_line_parser(argv=None):
     usage = "w13scan [options]"
     parser = argparse.ArgumentParser(prog='W13Scan', usage=usage)
 
-    parser.add_argument("--version", dest="show_version", action="store_true",
+    parser.add_argument("-v", "--version", dest="show_version", action="store_true",
                         help="Show program's version number and exit")
 
     parser.add_argument("--debug", dest="is_debug", action="store_true",
-                        help="Show program's version number and exit")
-    parser.add_argument("-v", dest="verbose", type=int, default=1, choices=list(range(7)),
-                        help="Verbosity level: 0-6 (default 1)")
+                        help="Show programs's exception")
+    parser.add_argument("--level", dest="level", type=int, default=0, choices=list(range(6)),
+                        help="different level use different plugin: 0-5 (default 1)")
 
     # Target options
     target = parser.add_argument_group('Target', "At least one of these "
                                                  "options has to be provided to define the target(s)")
-    target.add_argument("-u", "--url", dest="url",
-                        help="Target URL (e.g. \"http://www.site.com/vuln.php?id=1\")")
-
-    target.add_argument("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
-    target.add_argument("-s", "--server-addr", dest="server_addr", help="server addr (ip:port)")
+    # target.add_argument("-u", "--url", dest="url",
+    #                     help="Target URL (e.g. \"http://www.site.com/vuln.php?id=1\")")
+    #
+    # target.add_argument("-f", "--file", dest="url_file", help="Scan multiple targets given in a textual file")
+    target.add_argument("-s", "--server-addr", dest="server_addr",
+                        help="server addr format:(ip:port) eg:127.0.0.1:7778", default="127.0.0.1:7778")
 
     # Requests options
     request = parser.add_argument_group("Request", "Network request options")
-    request.add_argument("--proxy", dest="proxy", help="Use a proxy to connect to the target URL")
+    request.add_argument("--proxy", dest="proxy", help="Use a proxy to connect to the target URL eg:http@127.0.0.1:8080")
     request.add_argument("--timeout", dest="timeout", help="Seconds to wait before timeout connection (default 30)",
                          type=int, default=30)
-    request.add_argument("--retry", dest="retry", default=False, help="Time out retrials times.")
+    request.add_argument("--retry", dest="retry", type=int, help="Time out retrials times.")
 
     # Optimization options
     optimization = parser.add_argument_group("Optimization", "Optimization options")
     optimization.add_argument("--threads", dest="threads", type=int, default=21,
                               help="Max number of concurrent network requests (default 1)")
+    parser.add_argument("--active", dest="active", action="store_true",
+                        help="Active scanning from parsing response")
     optimization.add_argument("-e", dest="excludes", nargs='+',
                               help="exclude urls")
     optimization.add_argument("-i", dest="includes", nargs='+',
