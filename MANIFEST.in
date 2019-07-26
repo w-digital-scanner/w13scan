@@ -1,0 +1,2 @@
+include W13SCAN/certs/ca.crt
+include W13SCAN/certs/ca.pem

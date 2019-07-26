@@ -25,6 +25,7 @@ setuptools.setup(
     python_requires='>=3.4',
     packages=setuptools.find_packages(),
     install_requires=install_requires,
+    include_package_data=True,
     classifiers=(
         "Topic :: Security",
         "Programming Language :: Python :: 3",
