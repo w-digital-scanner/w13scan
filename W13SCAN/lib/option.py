@@ -9,9 +9,10 @@ import threading
 import time
 from queue import Queue
 
-from colorama import Fore
+from colorama import Fore, init as cinit
 
-from W13SCAN.config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS, SERVER_ADDR, DEBUG, INCLUDES, EXCLUDES, THREAD_NUM, LEVEL, TIMEOUT, \
+from W13SCAN.config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS, SERVER_ADDR, DEBUG, INCLUDES, EXCLUDES, THREAD_NUM, LEVEL, \
+    TIMEOUT, \
     RETRY, PROXY_CONFIG, ACTIVE_SCAN, PROXY_CONFIG_BOOL
 from W13SCAN.lib.common import dataToStdout
 from W13SCAN import VERSION, REPOSITORY
@@ -149,6 +150,8 @@ def _set_conf():
 
 
 def init(root, cmdline):
+    cinit(autoreset=True)
+    banner()
     _set_path(root)
     _init_conf()
     _merge_options(cmdline)
