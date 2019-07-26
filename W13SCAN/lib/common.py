@@ -15,7 +15,7 @@ from urllib.parse import urlparse, urljoin
 
 import requests
 
-from lib.const import PLACE, DEFAULT_GET_POST_DELIMITER, DEFAULT_COOKIE_DELIMITER, POST_HINT
+from W13SCAN.lib.const import PLACE, DEFAULT_GET_POST_DELIMITER, DEFAULT_COOKIE_DELIMITER, POST_HINT
 
 
 def dataToStdout(data, bold=False):

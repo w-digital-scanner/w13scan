@@ -32,7 +32,7 @@ setuptools.setup(
     ),
     entry_points={
         'console_scripts': [
-            'w13scan=W13SCAN.main:main'
+            'w13scan = W13SCAN.cli:main'
         ]
     }
 )

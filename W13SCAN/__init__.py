@@ -6,4 +6,4 @@
 
 REPOSITORY = "https://github.com/boy-hack/w13scan.git"
 
-VERSION = '0.8'
+VERSION = '0.9'
