@@ -7,7 +7,7 @@ import unittest
 
 import requests
 
-from lib.helper.diifpage import GetRatio, fuzzy_equal
+from W13SCAN.lib.helper.diifpage import GetRatio, fuzzy_equal
 
 
 class TestCase(unittest.TestCase):
