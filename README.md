@@ -5,9 +5,14 @@
 w13scan是一款插件化基于流量分析的扫描器，通过编写插件它会从访问流量中自动扫描，基于Python3。
 
 ## 安装
-- git clone https://github.com/boy-hack/w13scan & cd w13scan
-- pip3 install -r requirements.txt
-- python3 main.py
+```bash
+pip3 install w13scan
+## 帮助
+w13scan -h
+
+## 运行
+w13scan -s 127.0.0.1:7778
+```
 
 ## Https支持
 设置代理服务器(默认127.0.0.1:7778)后，访问`http://w13scan.ca`下载根证书并信任它。
@@ -151,5 +156,5 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
     * [ ] 扫描模块修改为多进程方式
     * [x] loader模块对cookie的支持
     * [ ] XXE漏洞
-    * [ ] 封装成Python模块，支持pip一键安装，开放API接口 **优先**
-
+    * [x] 封装成Python模块，支持pip一键安装，开放API接口 **优先**
+- 2019.7.26 周五，上周列了一些计划，完成了一半，将w13scan做成了Python模块的形式，使用`pip install w13scan`即可一键安装。未来会暴露API，通过引入w13scan库便可以快速编写一个扫描器！
