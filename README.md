@@ -4,6 +4,9 @@
 ## 简介
 w13scan是一款插件化基于流量分析的扫描器，通过编写插件它会从访问流量中自动扫描，基于Python3。
 
+- 支持 Windows/Linux/Mac
+- pip一键安装
+
 ## 安装
 ```bash
 pip3 install w13scan
