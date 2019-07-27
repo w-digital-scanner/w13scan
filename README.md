@@ -9,7 +9,7 @@
 ## Begin
 Demo https://www.youtube.com/watch?v=zBgfnY-qSTU
 
-Pure Python and Python version > 3
+Pure Python and Python version >= 3
 
 Can you use star to encourage the author ？
 
