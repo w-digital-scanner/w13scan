@@ -33,7 +33,7 @@ w13scan -s 127.0.0.1:7778
 
 If you want w13scan to support https, similar to BurpSuite, first need to set up a proxy server (default 127.0.0.1:7778), then go to http://w13scan.ca to download the root certificate and trust it.
 
-## ⌨️ Development
+## ⌨ Development
 
 ```python
 from W13SCAN.api import Scanner
