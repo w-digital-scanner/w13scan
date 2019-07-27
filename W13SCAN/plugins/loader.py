@@ -125,7 +125,7 @@ class W13SCAN(PluginBase):
         if method == "POST":
             post_data = unquote(post_data, encoding)
 
-            if re.search('([^=]+)=([^%s]+%s?|\Z)' % (DEFAULT_GET_POST_DELIMITER, DEFAULT_GET_POST_DELIMITER),
+            if re.search('([^=]+)=([^%s]+%s?)' % (DEFAULT_GET_POST_DELIMITER, DEFAULT_GET_POST_DELIMITER),
                          post_data):
                 self.requests.post_hint = POST_HINT.NORMAL
                 self.requests.post_data = paramToDict(post_data, place=PLACE.POST, hint=self.requests.post_hint)

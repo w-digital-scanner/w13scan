@@ -39,7 +39,7 @@ class W13SCAN(PluginBase):
 
         if method == 'POST':
 
-            regx = 'Parse error: syntax error,.*?\sin\s'
+            regx = 'Parse error: syntax error,.*?\Sin\S'
             randint = random.randint(1, 256)
             verify_result = md5(str(randint).encode())
             payloads = [
