@@ -13,7 +13,7 @@ THREAD_NUM = 51  # 线程数量
 EXCLUDES = ["google\.", "lastpass\.", 'baidu\.com']  # 扫描排除网址(正则表达式)
 INCLUDES = [".*"]  # 扫描允许网址(正则表达式)
 
-EXCLUDE_PLUGINS = []  # 不使用的插件，文件名
+EXCLUDE_PLUGINS = ['subdomain_found.py']  # 不使用的插件，文件名
 INCLUDE_PLUGINS = ['all']  # 使用插件,文件名，all为全部
 
 RETRY = 2  # 超时重试次数
