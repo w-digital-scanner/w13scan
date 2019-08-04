@@ -4,6 +4,7 @@
 # @Author  : w8ay
 # @File    : __init__.py.py
 import logging
+
 import ssl
 
 from requests.cookies import RequestsCookieJar
@@ -31,7 +32,8 @@ def session_request(self, method, url,
     merged_cookies = merge_cookies(merge_cookies(RequestsCookieJar(), self.cookies),
                                    cookies)
     default_header = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36",
+        "Connection": "close"
     }
     req = Request(
         method=method.upper(),
