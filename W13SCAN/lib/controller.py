@@ -54,14 +54,7 @@ def run_threads(num_threads, thread_function, args: tuple = ()):
 
     except KeyboardInterrupt as ex:
         KB['continue'] = False
-        if num_threads > 1:
-            logger.info("waiting for threads to finish{0}".format(
-                " (Ctrl+C was pressed)" if isinstance(ex, KeyboardInterrupt) else ""))
-        try:
-            while threading.activeCount() > 1:
-                pass
-        except KeyboardInterrupt:
-            raise
+        raise
 
     except Exception as ex:
         logger.error("thread {0}: {1}".format(threading.currentThread().getName(), str(ex)))

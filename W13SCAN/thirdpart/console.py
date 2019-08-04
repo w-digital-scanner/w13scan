@@ -48,7 +48,7 @@ def _getTerminalSize_windows():
         import struct
         (bufx, bufy, curx, cury, wattr,
          left, top, right, bottom, maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)
-        sizex = right - left + 1
+        sizex = right - left  # +1-1
         sizey = bottom - top + 1
         return sizex, sizey
     else:
@@ -66,7 +66,7 @@ def _getTerminalSize_tput():
         proc = subprocess.Popen(["tput", "lines"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         output = proc.communicate(input=None)
         rows = int(output[0])
-        return (cols, rows)
+        return (cols - 1, rows)
     except Exception:
         return None
 
