@@ -29,3 +29,7 @@ class TestCase(unittest.TestCase):
         for i in range(100):
             time.sleep(0.2)
             printProgress()
+
+
+if __name__ == '__main__':
+    unittest.main()
