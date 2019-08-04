@@ -38,6 +38,7 @@ def main():
         threading.Thread(target=baseproxy.shutdown, daemon=True).start()
         deinit()
         print("\n[*] User quit")
+    baseproxy.server_close()
 
 
 if __name__ == '__main__':

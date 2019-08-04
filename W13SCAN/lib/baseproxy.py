@@ -619,7 +619,11 @@ class MitmProxy(HTTPServer):
         self.req_plugs.append(intercept_plug)
 
 
-class AsyncMitmProxy(ThreadingMixIn, MitmProxy):
+class ProxyMinIn(ThreadingMixIn):
+    daemon_threads = True
+
+
+class AsyncMitmProxy(ProxyMinIn, MitmProxy):
     pass
 
 
