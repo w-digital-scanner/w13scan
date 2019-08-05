@@ -7,16 +7,6 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
 - 支持 Windows/Linux/Mac
 - pip一键安装
 
-## 安装
-```bash
-pip3 install w13scan
-## 帮助
-w13scan -h
-
-## 运行
-w13scan -s 127.0.0.1:7778
-```
-
 ## Https支持
 设置代理服务器(默认127.0.0.1:7778)后，访问`http://w13scan.ca`下载根证书并信任它。
 

@@ -16,6 +16,7 @@ import chardet
 from OpenSSL.crypto import load_certificate, FILETYPE_PEM, TYPE_RSA, PKey, X509, X509Extension, dump_privatekey, \
     dump_certificate, load_privatekey, X509Req
 
+from W13SCAN.lib.const import notAcceptedExt
 from W13SCAN.lib.data import PATH, KB, logger, conf
 
 __author__ = 'qiye'
@@ -419,9 +420,8 @@ class ProxyHandle(BaseHTTPRequestHandler):
         :return:
         '''
         ret = True
-        target = self.path
-        if not self.is_connected:
-            target = self._target
+        target = self._target or self.path
+
         for i in conf["includes"]:
             match = re.search(i, target, re.I)
             if match:
@@ -431,6 +431,13 @@ class ProxyHandle(BaseHTTPRequestHandler):
             if match:
                 ret = True
                 break
+        if "?" in target:
+            target = target[:target.index("?")]
+        for ext in notAcceptedExt:
+            if target.endswith(ext):
+                ret = True
+                break
+
         return ret
 
     def do_GET(self):
@@ -449,6 +456,8 @@ class ProxyHandle(BaseHTTPRequestHandler):
             except Exception as e:
                 self.send_error(500, '{} connect fail '.format(self.hostname))
                 return
+        else:
+            self._target = self.ssl_host + self.path
         # 这里就是代理发送请求，并接收响应信息
         request = Request(self)
         if request:
@@ -506,7 +515,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
         self.hostname = u.hostname
         self.port = u.port or 80
         # 将path重新封装，比如http://www.baidu.com:80/index.html会变成 /index.html
-        self._target = u.netloc
+        self._target = self.path
         self.path = urlunparse(
             ParseResult(scheme='', netloc='', params=u.params, path=u.path or '/', query=u.query, fragment=u.fragment))
         self._proxy_sock = socket()

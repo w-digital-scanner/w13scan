@@ -49,7 +49,7 @@ def cmd_line_parser(argv=None):
     # Optimization options
     optimization = parser.add_argument_group("Optimization", "Optimization options")
     optimization.add_argument('-t', "--threads", dest="threads", type=int,
-                              help="Max number of concurrent network requests (default 21)")
+                              help="Max number of concurrent network requests (default 51)")
     parser.add_argument("--no-active", dest="no_active", action="store_true",
                         help="Close active scanning from parsing response")
     optimization.add_argument("-e", dest="excludes", nargs='+',
