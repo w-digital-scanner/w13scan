@@ -16,10 +16,18 @@ Can you use star to encourage the author ？
 ## 📦 Install
 
 ```bash
-pip3 install w13scan
+$ pip3 install w13scan
 
 ## update
-pip3 install -U w13scan
+$ pip3 install -U w13scan
+```
+or
+```bash
+$ wget https://github.com/boy-hack/w13scan/archive/master.zip
+$ unzip master.zip
+$ cd master/W13SCAN
+$ pip3 install -r ../requirement.txt
+$ python3 cli.py -h
 ```
 
 ## 🔨 Usage
@@ -30,14 +38,6 @@ $ w13scan -h
 
 ## running
 $ w13scan -s 127.0.0.1:7778
-```
-or 
-```bash
-$ wget https://github.com/boy-hack/w13scan/archive/master.zip
-$ unzip master.zip
-$ cd master/W13SCAN
-$ pip3 install -r ../requirement.txt
-$ python3 cli.py -h
 ```
 
 ### HTTPS Support
