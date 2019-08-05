@@ -26,10 +26,18 @@ pip3 install -U w13scan
 
 ```bash
 ## help
-w13scan -h
+$ w13scan -h
 
 ## running
-w13scan -s 127.0.0.1:7778
+$ w13scan -s 127.0.0.1:7778
+```
+or 
+```bash
+$ wget https://github.com/boy-hack/w13scan/archive/master.zip
+$ unzip master.zip
+$ cd master/W13SCAN
+$ pip3 install -r ../requirement.txt
+$ python3 cli.py -h
 ```
 
 ### HTTPS Support
