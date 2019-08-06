@@ -4,14 +4,10 @@
 # @Author  : w8ay
 # @File    : crlf.py
 import copy
-import os
-import random
-import re
 
 import requests
 
-from W13SCAN.lib.common import random_str
-from W13SCAN.lib.const import acceptedExt, ignoreParams, Level
+from W13SCAN.lib.const import Level
 from W13SCAN.lib.output import out
 from W13SCAN.lib.plugins import PluginBase
 
