@@ -15,7 +15,7 @@ from W13SCAN.lib.baseproxy import HttpTransfer
 from W13SCAN.lib.common import paramToDict, get_links, get_parent_paths
 from W13SCAN.lib.const import JSON_RECOGNITION_REGEX, POST_HINT, XML_RECOGNITION_REGEX, \
     JSON_LIKE_RECOGNITION_REGEX, ARRAY_LIKE_RECOGNITION_REGEX, MULTIPART_RECOGNITION_REGEX, DEFAULT_GET_POST_DELIMITER, \
-    PLACE, logoutParams, Level
+    PLACE, logoutParams, Level, notAcceptedExt
 from W13SCAN.lib.controller import task_push
 from W13SCAN.lib.data import KB, conf
 from W13SCAN.lib.plugins import PluginBase
@@ -174,6 +174,11 @@ class W13SCAN(PluginBase):
                 if item in link.lower():
                     is_continue = False
                     break
+            for item in notAcceptedExt:
+                if link.endswith(item):
+                    is_continue = False
+                    break
+
             if not is_continue:
                 continue
 
