@@ -36,7 +36,7 @@ class W13SCAN(PluginBase):
                 return
 
             for k, v in cookies.items():
-                if v.lower() not in resp_headers.lower():
+                if v.lower() not in resp_str.lower():
                     continue
                 payload = "[<{}>]2333_w13scan"
                 data = copy.deepcopy(cookies)
