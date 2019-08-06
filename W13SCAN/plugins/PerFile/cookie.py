@@ -34,6 +34,8 @@ class W13SCAN(PluginBase):
         if method == 'GET':
             if p.query == '':
                 return
+            if not cookies or len(cookies) == 0:
+                return
 
             for k, v in cookies.items():
                 if v.lower() not in resp_str.lower():
