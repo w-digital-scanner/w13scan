@@ -7,7 +7,7 @@
 [简体中文](./README_CN.md) | English
 
 ## Begin
-Demo https://www.youtube.com/watch?v=zBgfnY-qSTU
+Demo https://youtu.be/WwIc2kDlKbc
 
 Pure Python and Python version >= 3
 
