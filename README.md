@@ -16,10 +16,10 @@ Can you use star to encourage the author ？
 ## 📦 Install
 
 ```bash
-$ pip3 install w13scan
+$ sudo pip3 install w13scan
 
 ## update
-$ pip3 install -U w13scan
+$ sudo pip3 install -U w13scan
 ```
 or
 ```bash
