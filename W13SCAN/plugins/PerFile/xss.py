@@ -55,6 +55,9 @@ class W13SCAN(PluginBase):
             for k, v in params.items():
                 if k.lower() in ignoreParams:
                     continue
+                # check v is in content
+                if v.lower() not in resp_str.lower():
+                    continue
                 data = copy.deepcopy(params)
                 ranstr = random_str(5)
                 data[k] = v + ranstr
