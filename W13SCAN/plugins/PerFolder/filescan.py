@@ -66,7 +66,8 @@ class W13SCAN(PluginBase):
                     {'path': '/readme.md', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
                     {'path': '/readme.html', 'tag': '', 'content-type': 'html', 'content-type_no': ''},
                     {'path': '/changelog.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
-                    {'path': '/%e6%9b%b4%e6%96%b0%e6%97%a5%e5%bf%97.txt', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/%e6%9b%b4%e6%96%b0%e6%97%a5%e5%bf%97.txt', 'tag': '', 'content-type': 'text/plain',
+                     'content-type_no': ''},
                     {'path': '/www.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
                     {'path': '/error.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
                     {'path': '/log.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
@@ -75,6 +76,8 @@ class W13SCAN(PluginBase):
                     {'path': '/db.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
                     {'path': '/data.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
                     {'path': '/app.log', 'tag': '', 'content-type': 'text/plain', 'content-type_no': ''},
+                    {'path': '/ntunnel_mysql.php', 'tag': 'Navicat HTTP Tunnel Tester', 'content-type': 'text/html',
+                     'content-type_no': ''},
                     ]
         return payloads
 
