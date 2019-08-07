@@ -7,6 +7,7 @@ import os
 import platform
 import threading
 import time
+import datetime
 from queue import Queue
 
 from colorama import Fore, init as cinit
@@ -175,3 +176,22 @@ def banner():
 '''
 
     dataToStdout(Fore.GREEN + _.format(version=VERSION, git=REPOSITORY))
+    qixi_eggs()
+
+
+def qixi_eggs():
+    data = [
+        "2019-8-7",
+        "2020-8-25",
+        "2021-8-14"
+    ]
+    i = datetime.datetime.now()
+    now = "{}-{}-{}".format(i.year, i.month, i.day)
+    msg = '''
+＞﹏＜ 又是一年七夕，善良的开发者找到女盆友没？
+(ó﹏ò｡) 没有。
+访问链接:https://github.com/boy-hack/w13scan/issues/new 向开发者表白～
+
+'''
+    if now in data:
+        dataToStdout(Fore.RED + msg)

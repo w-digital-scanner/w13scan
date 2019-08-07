@@ -162,7 +162,5 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
 - 2019.8.6 优化若干效率问题,css,jpg等后缀的文件将不会加入扫描,新增加crlf扫描插件，cookie控制的值在页面显示插件。
   
     * [ ] todo:自动检测语言，并使用对应payload
-- 2019.8.7 周三：一个普通的星期三。
-		
-		- ![WechatIMG2](W13SCAN/doc/WechatIMG2.jpeg)
+- 2019.8.7 周三：一个普通的星期三。 ![WechatIMG2](W13SCAN/doc/WechatIMG2.jpeg)
 
