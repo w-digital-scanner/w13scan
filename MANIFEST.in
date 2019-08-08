@@ -1,2 +1,3 @@
 include W13SCAN/certs/ca.crt
 include W13SCAN/certs/ca.pem
+include W13SCAN/data/wappalyzer.json
