@@ -163,4 +163,4 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
   
     * [ ] todo:自动检测语言，并使用对应payload
 - 2019.8.7 周三：一个普通的星期三。 ![WechatIMG2](W13SCAN/doc/WechatIMG2.jpeg)
-
+- 2019.8.8 添加 通过header头等信息来识别对应语言，操作系统，webserver等信息，方便插件选择payload,同时加入了wappalyzer信息探测模块，用于简单的信息收集。修复一处sql报错注入的异常。`0.9.5`版本发布。
