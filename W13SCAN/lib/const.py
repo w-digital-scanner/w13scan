@@ -218,7 +218,9 @@ PROGRAMING = {
     "PERL": "Perl",
     "PYTHON": "Python",
     "RUBY": "Ruby",
-    "SCALA": "Scala"
+    "SCALA": "Scala",
+    "ASP": "Asp",
+    "ASPX": "Aspx"
 }
 
 OPERATING_SYSTEM = {

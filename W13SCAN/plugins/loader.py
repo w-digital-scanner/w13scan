@@ -129,6 +129,17 @@ class W13SCAN(PluginBase):
         # finger basic info
         self.response.language, self.response.system, self.response.webserver = fingter_loader(resp_str,
                                                                                                self.response.build_headers())
+        if not self.response.language:
+            if p.path.endswith(".asp"):
+                self.response.language = "ASP"
+                self.response.system = "WINDOWS"
+            elif p.path.endswith(".aspx"):
+                self.response.language = "ASPX"
+                self.response.system = "WINDOWS"
+            elif p.path.endswith(".php"):
+                self.response.language = "PHP"
+            elif p.path.endswith(".jsp"):
+                self.response.language = "JAVA"
 
         if method == "POST":
             post_data = unquote(post_data, encoding)

@@ -91,20 +91,21 @@ class W13SCAN(PluginBase):
         netloc = self.requests.netloc
 
         domain = "{}://{}/".format(p.scheme, p.netloc)
-        payloads = self.generate()
+        if self.response.language is None and self.response.language == "JAVA":
+            payloads = self.generate()
 
-        for payload in payloads:
-            test_url = domain.rstrip('/') + payload["path"]
-            r = requests.get(test_url, headers=headers)
-            if r.status_code != 200:
-                continue
-            if payload["tag"]:
-                if payload["tag"] not in r.text:
+            for payload in payloads:
+                test_url = domain.rstrip('/') + payload["path"]
+                r = requests.get(test_url, headers=headers)
+                if r.status_code != 200:
                     continue
-            if payload["content-type"]:
-                if payload['content-type'] not in r.headers.get('Content-Type', ''):
-                    continue
-            if payload["content-type_no"]:
-                if payload["content-type_no"] in r.headers.get('Content-Type', ''):
-                    continue
-            out.success(test_url, self.name)
+                if payload["tag"]:
+                    if payload["tag"] not in r.text:
+                        continue
+                if payload["content-type"]:
+                    if payload['content-type'] not in r.headers.get('Content-Type', ''):
+                        continue
+                if payload["content-type_no"]:
+                    if payload["content-type_no"] in r.headers.get('Content-Type', ''):
+                        continue
+                out.success(test_url, self.name)

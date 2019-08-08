@@ -35,16 +35,18 @@ class W13SCAN(PluginBase):
 
         if p.query == '':
             return
-
-        filepath = p.path.lower()
         iswin = isunix = isjava = 0  # 三种状态 0 未知 1 确定 2 否定
 
-        if filepath.endswith(".aspx") or filepath.endswith(".asp"):
-            isunix = 2
+        if self.response.system == "WINDOWS":
             iswin = 1
-            isjava = 2
-        if filepath.endswith(".jsp"):
+            isunix = 2
+        elif self.response.system == "*NIX":
+            iswin = 2
+            isunix = 1
+        if self.response.language == "JAVA":
             isjava = 1
+        elif not self.response.language:
+            isjava = 2
 
         plainArray = [
             "; for 16-bit app support",

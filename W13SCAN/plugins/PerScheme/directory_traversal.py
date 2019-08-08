@@ -56,6 +56,9 @@ class W13SCAN(PluginBase):
         domain = "{}://{}/".format(p.scheme, p.netloc)
         payloads = self.generate()
 
+        if self.response.system != "*NIX" or not self.response.system:
+            return
+
         for payload in payloads:
             test_url = domain.rstrip('/') + payload["path"]
             r = requests.get(test_url, headers=headers)

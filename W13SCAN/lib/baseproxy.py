@@ -195,6 +195,7 @@ class Response(HttpTransfer):
         self.reason = h.reason
         self.set_headers(h.msg)
         self.decoding = None
+        self.language = self.system = self.webserver = None
 
         try:
             data = h.read()

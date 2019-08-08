@@ -36,6 +36,9 @@ class W13SCAN(PluginBase):
         if r.status_code == 200 and 'CWS' in r.text:
             out.success(payload, self.name)
 
+        if self.response.language is None or self.response.language == "PHP":
+            return
+
         payloads = ['config/config_ucenter.php.bak',
                     'config/.config_ucenter.php.swp',
                     'config/.config_global.php.swp',

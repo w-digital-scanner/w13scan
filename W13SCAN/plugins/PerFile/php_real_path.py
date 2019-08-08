@@ -37,6 +37,8 @@ class W13SCAN(PluginBase):
         exi = os.path.splitext(p.path)[1]
         if exi not in acceptedExt:
             return
+        if not self.response.language or self.response.language != "PHP":
+            return
 
         if "Warning" in resp_str and "array given" in resp_str:
             out.success(url, self.name)
