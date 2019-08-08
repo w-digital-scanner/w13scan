@@ -190,3 +190,39 @@ notAcceptedExt = [
     "wma",
     "zip"
 ]
+
+WEB_SERVER = {
+    "APACHE": "Apache",
+    "TOMCAT": "Apache Tomcat",
+    "EXPRESS": "Express",
+    "FLASK": "Flask",
+    "IIS": "IIS",
+    "JBOSS": "JBoss Application Server",
+    "NGINX": "Nginx",
+    "OPENRESTY": "OpenResty",
+    "TENGINE": "Tengine",
+    "TORNADO": "TornadoServer",
+    "GUNICORN": "gunicorn",
+    "LIGHTTPD": "lighttpd",
+}
+
+PROGRAMING = {
+    "C++": "C++",
+    "CFML": "CFML",
+    "ERLANG": "Erlang",
+    "HASKELL": "Haskell",
+    "JAVA": "Java",
+    "LUA": "Lua",
+    "NODEJS": "Node.js",
+    "PHP": "PHP",
+    "PERL": "Perl",
+    "PYTHON": "Python",
+    "RUBY": "Ruby",
+    "SCALA": "Scala"
+}
+
+OPERATING_SYSTEM = {
+    "WINDOWS": ["Windows Server", "Windows CE"],
+    "*NIX": ["CentOS", "Darwin", "Debian", "Fedora", "FreeBSD", "Red Hat", "SUSE", "Scientific Linux"
+                                                                                   "SunOS", "UNIX", "Ubuntu"]
+}

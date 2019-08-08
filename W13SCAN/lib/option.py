@@ -28,6 +28,7 @@ def _set_path(root):
     PATH['root'] = root
     PATH['certs'] = os.path.join(root, 'certs')
     PATH['plugins'] = os.path.join(root, 'plugins')
+    PATH["data"] = os.path.join(root, "data")
 
 
 def _init_kb():

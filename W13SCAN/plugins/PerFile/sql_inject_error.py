@@ -84,11 +84,13 @@ class W13SCAN(PluginBase):
             # test header
             if headers:
                 sql_flag = '\'"\('
-                new_headers = {"User-Agent": headers.get("User-Agent", "") + sql_flag,
-                               "referer": headers.get("referer", url) + sql_flag,
+                new_headers = {"user-agent": headers.get("User-Agent", "") + sql_flag,
+                               # "referer": headers.get("referer", url) + sql_flag,
                                "x-forwarded-for": headers.get("x-forwarded-for", "127.0.0.1") + sql_flag,
-                               "via": headers.get("via", "") + sql_flag}
-                r = requests.get(url, headers=new_headers)
+                               "via": headers.get("via", "") + sql_flag
+                               }
+                headers.update(new_headers)
+                r = requests.get(url, headers=headers)
                 html = r.text
                 if origin_len == len(html):
                     return

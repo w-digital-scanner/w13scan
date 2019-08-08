@@ -56,8 +56,11 @@ class OutPut(object):
             if isinstance(v, list):
                 for i in v:
                     self.log(i)
-            if isinstance(v, str):
-                msg = "{0}{1}{2}".format(k, " " * (15 - len(k)), str(v).strip())
+            elif isinstance(v, str):
+                if len(k) < 15:
+                    msg = "{0}{1}{2}".format(k, " " * (15 - len(k)), str(v).strip())
+                else:
+                    msg = "{0}{1}{2}".format(k, " " * 4, str(v).strip())
                 self.log(msg)
         self.log(' ')
         if raw:

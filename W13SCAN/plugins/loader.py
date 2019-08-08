@@ -19,6 +19,7 @@ from W13SCAN.lib.const import JSON_RECOGNITION_REGEX, POST_HINT, XML_RECOGNITION
 from W13SCAN.lib.controller import task_push
 from W13SCAN.lib.data import KB, conf
 from W13SCAN.lib.plugins import PluginBase
+from W13SCAN.lib.wappanalyzer import fingter_loader
 
 
 class FakeReq(HttpTransfer):
@@ -78,6 +79,9 @@ class FakeResp(HttpTransfer):
         self.response_version = 1.1
         self.status = resp.status_code
         self.reason = resp.reason
+        self.language = None
+        self.webserver = None
+        self.system = None
         self._body = resp.content
         self._headers = resp.headers
         self.decoding = chardet.detect(self._body)['encoding']  # 探测当前的编码
@@ -122,6 +126,10 @@ class W13SCAN(PluginBase):
         if "cookie" in headers:
             self.requests.cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
 
+        # finger basic info
+        self.response.language, self.response.system, self.response.webserver = fingter_loader(resp_str,
+                                                                                               self.response.build_headers())
+
         if method == "POST":
             post_data = unquote(post_data, encoding)
 
@@ -162,6 +170,7 @@ class W13SCAN(PluginBase):
         # Send PerScheme
         domain = "{}://{}".format(p.scheme, p.netloc)
         if KB["spiderset"].add('GET' + domain, 'PerScheme'):
+            self.requests.path = "/"
             task_push('PerScheme', self.requests, self.response)
 
         if conf["no_active"]:

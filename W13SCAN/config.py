@@ -20,7 +20,6 @@ RETRY = 2  # 超时重试次数
 TIMEOUT = 10  # 超时时间
 
 LEVEL = 0  # 根据检测深度由浅入深分为1～5级别，级别越高使用插件越多。LEVEL=0代表不使用该功能，默认使用全部插件。
-DEBUG = False  # DEBUG模式会看到报错信息
 
 ACTIVE_SCAN = False  # 是否关闭主动扫描，w13scan会自动解析返回包中的链接进行扫描
 
