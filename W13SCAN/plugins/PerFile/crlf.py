@@ -4,6 +4,7 @@
 # @Author  : w8ay
 # @File    : crlf.py
 import copy
+import re
 
 import requests
 
@@ -61,6 +62,6 @@ class W13SCAN(PluginBase):
                     data[k] = payload
                     r = requests.get(url, headers=headers, params=data)
                     resp_h = self.dict2str(r.headers)
-                    if "TestInject" in resp_h or "w13scan" in resp_h:
-                        out.success(r.url, self.name, data="{}:{}".format(k, payload), raw=r.raw)
+                    if re.search("TestInject\s*:\s*w13scan", resp_h, re.I | re.S | re.M):
+                        out.success(r.url, self.name, payload="{}:{}".format(k, payload), raw=r.raw)
                         break
