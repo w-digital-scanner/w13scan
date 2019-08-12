@@ -156,7 +156,7 @@ class W13SCAN(PluginBase):
                     except (MemoryError, OverflowError):
                         continue
 
-                    if ratio_true > self.UPPER_RATIO_BOUND or (ratio_true - ratio_false) > self.DIFF_TOLERANCE:
+                    if ratio_true > self.UPPER_RATIO_BOUND - 1 and (ratio_true - ratio_false) > self.DIFF_TOLERANCE:
                         if ratio_false <= self.UPPER_RATIO_BOUND:
                             is_inject = True
                     if not is_inject and ratio_true > 0.68 and abs(ratio_true - ratio_false) > 0.05:
