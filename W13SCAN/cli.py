@@ -11,11 +11,17 @@ except ImportError:
 from W13SCAN.lib.baseproxy import AsyncMitmProxy
 from W13SCAN.lib.cmdparse import cmd_line_parser
 from W13SCAN.lib.controller import start
-from W13SCAN.lib.data import conf
+from W13SCAN.lib.data import conf, logger
 from W13SCAN.lib.option import init
 
 
 def main():
+    # python version check
+    if sys.version.split()[0] < "3.6":
+        logger.error(
+            "incompatible Python version detected ('{}'). To successfully run sqlmap you'll have to use version >= 3.6 (visit 'https://www.python.org/downloads/')".format(
+                sys.version.split()[0]))
+        sys.exit()
     # init
     root = os.path.dirname(os.path.abspath(__file__))
     cmdline = cmd_line_parser().__dict__
