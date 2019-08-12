@@ -67,6 +67,8 @@ class PluginBase(object):
                     # msg = 'Plugin: {0} time-out retry failed!'.format(self.name)
                     # Share.dataToStdout('\r' + msg + '\n\r')
                     retry -= 1
+                except:
+                    raise
             else:
                 msg = "connect target '{0}' failed!".format(self.target)
                 # Share.dataToStdout('\r' + msg + '\n\r')

@@ -6,7 +6,7 @@
 import copy
 import os
 import re
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 import requests
 
@@ -103,9 +103,11 @@ class W13SCAN(PluginBase):
         """
         Test for 302 header redirects
         """
-        if response.status_code in [301, 302] and "Location" in response.headers and self.test_domain in unquote(
-                response.headers["Location"]):
-            return True
+        if response.status_code in [301, 302] and "Location" in response.headers:
+            url = unquote(response.headers["Location"])
+            parse = urlparse(url).netloc
+            if self.test_domain in parse:
+                return True
         return False
 
     def audit(self):
