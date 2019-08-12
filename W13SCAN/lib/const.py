@@ -88,6 +88,10 @@ POST_HINT_CONTENT_TYPES = {
     POST_HINT.XML: "application/xml",
     POST_HINT.ARRAY_LIKE: "application/x-www-form-urlencoded; charset=utf-8",
 }
+
+GITHUB_REPORT_OAUTH_TOKEN = "NTYzYjhmZWJjYzc0Njg2ODJhNzhmNDg1YzM0YzlkYjk3N2JiMzE3Nw=="
+# sqlmap report
+
 # Default delimiter in cookie values
 DEFAULT_COOKIE_DELIMITER = ';'
 

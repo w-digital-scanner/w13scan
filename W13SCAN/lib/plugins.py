@@ -3,7 +3,9 @@
 # @Time    : 2019/6/28 11:03 PM
 # @Author  : w8ay
 # @File    : plugins.py
+import platform
 import socket
+import sys
 import traceback
 from http.client import RemoteDisconnected
 
@@ -12,7 +14,9 @@ import urllib3
 from requests import ConnectTimeout, HTTPError, TooManyRedirects, ConnectionError
 from urllib3.exceptions import NewConnectionError, PoolError
 
+from W13SCAN import VERSION
 from W13SCAN.lib.baseproxy import Request, Response
+from W13SCAN.lib.common import createGithubIssue
 from W13SCAN.lib.data import Share, conf
 
 
@@ -87,9 +91,15 @@ class PluginBase(object):
         except PoolError as ex:
             pass
 
-        except Exception as e:
-            if conf["is_debug"]:
-                Share.dataToStdout('\r' + "[x]{} report:".format(self.name) + str(e) + '\n\r')
-                traceback.print_exc()
+        except:
+            errMsg = "Running version: {}\n".format(VERSION)
+            errMsg += "Python version: {}\n".format(sys.version.split()[0])
+            errMsg += "Operating system: {}\n".format(platform.platform())
+            errMsg += "Threads: {}".format(conf["threads"])
+            excMsg = traceback.format_exc()
+            Share.lock.acquire()
+            if createGithubIssue(errMsg, excMsg):
+                Share.dataToStdout('\r' + "[x] a issue has reported" + '\n\r')
+            Share.lock.release()
 
         return output

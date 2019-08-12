@@ -11,11 +11,12 @@ import random
 import re
 import string
 import sys
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, quote
 
 import requests
 
-from W13SCAN.lib.const import PLACE, DEFAULT_GET_POST_DELIMITER, DEFAULT_COOKIE_DELIMITER, POST_HINT
+from W13SCAN.lib.const import PLACE, DEFAULT_GET_POST_DELIMITER, DEFAULT_COOKIE_DELIMITER, POST_HINT, \
+    GITHUB_REPORT_OAUTH_TOKEN
 
 
 def dataToStdout(data, bold=False):
@@ -285,4 +286,50 @@ def isPythonObjectDeserialization(value: str):
     elif value.startswith("K"):
         if (ret.startswith("(dp1") or ret.startswith("(lp1")) and ret.endswith("."):
             return True
+    return False
+
+
+def createGithubIssue(errMsg, excMsg):
+    _ = re.sub(r"'[^']+'", "''", excMsg)
+    _ = re.sub(r"\s+line \d+", "", _)
+    _ = re.sub(r'File ".+?/(\w+\.py)', r"\g<1>", _)
+    _ = re.sub(r".+\Z", "", _)
+    _ = re.sub(r"(Unicode[^:]*Error:).+", r"\g<1>", _)
+    _ = re.sub(r"= _", "= ", _)
+
+    key = hashlib.md5(_.encode()).hexdigest()[:8]
+    try:
+        req = requests.get("https://api.github.com/search/issues?q={}".format(
+            quote("repo:boy-hack/w13scan Unhandled exception (#{})".format(key))))
+    except Exception as e:
+        return False
+    _ = json.loads(req.text)
+    duplicate = _["total_count"] > 0
+    closed = duplicate and _["items"][0]["state"] == "closed"
+    if duplicate:
+        warnMsg = "issue seems to be already reported"
+        if closed:
+            warnMsg += " and resolved. Please update to the latest "
+        dataToStdout('\r' + "[x] {}".format(warnMsg) + '\n\r')
+        return False
+
+    data = {
+        "title": "Unhandled exception (#{})".format(key),
+        "body": "```%s\n```\n```\n%s```" % (errMsg, excMsg),
+        "labels": ["bug"]
+    }
+
+    headers = {
+        "Authorization": "token {}".format(base64.b64decode(GITHUB_REPORT_OAUTH_TOKEN.encode()).decode())
+    }
+    try:
+        r = requests.post("https://api.github.com/repos/boy-hack/w13scan/issues", data=json.dumps(data),
+                          headers=headers)
+    except Exception as e:
+        return False
+    issueUrl = re.search(r"https://github.com/boy-hack/w13scan/issues/\d+", r.text)
+    if issueUrl:
+        infoMsg = "created Github issue can been found at the address '%s'" % issueUrl.group(0)
+        dataToStdout('\r' + "[*] {}".format(infoMsg) + '\n\r')
+        return True
     return False
