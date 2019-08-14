@@ -11,7 +11,7 @@ import re
 
 import requests
 
-from W13SCAN.lib.common import random_str
+from W13SCAN.lib.common import random_str, get_middle_text
 from W13SCAN.lib.const import acceptedExt, ignoreParams, Level
 from W13SCAN.lib.output import out
 from W13SCAN.lib.plugins import PluginBase
@@ -95,14 +95,27 @@ class W13SCAN(PluginBase):
                             out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
                                         descript="探测字符在<script>脚本内被解析,且双引号未被转义",
                                         type="javascript xss")
-                    if ("'" + ranstr) in html1:
+                    elif ("'" + ranstr) in html1:
                         data[k] = v + javascript_payload + "'"
                         r = requests.get(url, headers=headers, params=data)
                         if (javascript_payload + "'") in r.text:
                             out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
                                         descript="探测字符在<script>脚本内被解析,且单引号未被转义",
                                         type="javascript xss")
-
+                    # test domxss in javascript string
+                    if re.search('(innerHTML|document\.write)\s*=\s*[\'"].*{}'.format(ranstr), html1) or re.search(
+                            "\)\.html\(.*{}.*\)".format(ranstr), html1):
+                        data[k] = v + javascript_payload + '\\u003c\\x3c' + javascript_payload
+                        r = requests.get(url, headers=headers, params=data)
+                        middle = get_middle_text(r.text, javascript_payload, javascript_payload)
+                        if '\\u003c' in middle:
+                            out.success(url, self.name, payload="{}:{}".format(k, data[k]),
+                                        descript="字符在innerHTML标签中且\\u003c未过滤",
+                                        bug_link="https://shuimugan.com/bug/view?bug_no=16041")
+                        elif '\\x3c' in middle:
+                            out.success(url, self.name, payload="{}:{}".format(k, data[k]),
+                                        descript="字符在innerHTML标签中且\\x3c未过滤",
+                                        bug_link="https://shuimugan.com/bug/view?bug_no=16041")
                 else:
                     # check html xss
                     data[k] = v + html_payload
