@@ -110,11 +110,11 @@ class W13SCAN(PluginBase):
                         middle = get_middle_text(r.text, javascript_payload, javascript_payload)
                         if '\\u003c' in middle:
                             out.success(url, self.name, payload="{}:{}".format(k, data[k]),
-                                        descript="字符在innerHTML标签中且\\u003c未过滤",
+                                        descript="字符在(innerHTML|document.write|$(xx).html())标签中且\\u003c未过滤",
                                         bug_link="https://shuimugan.com/bug/view?bug_no=16041")
                         elif '\\x3c' in middle:
                             out.success(url, self.name, payload="{}:{}".format(k, data[k]),
-                                        descript="字符在innerHTML标签中且\\x3c未过滤",
+                                        descript="字符在(innerHTML|document.write|$(xx).html())标签中且\\x3c未过滤",
                                         bug_link="https://shuimugan.com/bug/view?bug_no=16041")
                 else:
                     # check html xss
