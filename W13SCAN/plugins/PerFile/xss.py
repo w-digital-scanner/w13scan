@@ -52,6 +52,12 @@ class W13SCAN(PluginBase):
             url_payload = "javascript&colon;{randint}".format(randint=rndStr)
             javascript_payload = "{randint}".format(randint=rndStr)
 
+            dom_xss = [
+                'location.hash',
+                'location.href',
+                'location.search'
+            ]
+
             for k, v in params.items():
                 if k.lower() in ignoreParams:
                     continue
@@ -67,12 +73,19 @@ class W13SCAN(PluginBase):
                     continue
 
                 in_script = False
+                may_dom_xss = False
                 script_group = re.findall('<script.*?>(.*?)</script>', html1, re.I | re.S | re.M)
                 if script_group:
                     for i in script_group:
                         if ranstr in i:
                             in_script = True
                             break
+                        for item in dom_xss:
+                            if item in i:
+                                may_dom_xss = item
+                                break
+                if may_dom_xss:
+                    out.success(url, self.name, descipt="可能的[dom xss]在<script> 变量{}中".format(may_dom_xss))
 
                 if in_script:
                     if ('"' + ranstr) in html1:
