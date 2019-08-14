@@ -145,4 +145,4 @@ class W13SCAN(PluginBase):
             if payload["content-type_no"]:
                 if payload["content-type_no"] in r.headers.get('Content-Type', ''):
                     continue
-            out.success(test_url, self.name)
+            out.success(test_url, self.name, length="{}".format(len(r.content)))

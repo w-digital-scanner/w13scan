@@ -1,9 +1,12 @@
 # coding:utf-8
 import http
 import os
+import platform
 import re
 import select
+import sys
 import time
+import traceback
 import zlib
 from http.client import HTTPResponse
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -16,8 +19,10 @@ import chardet
 from OpenSSL.crypto import load_certificate, FILETYPE_PEM, TYPE_RSA, PKey, X509, X509Extension, dump_privatekey, \
     dump_certificate, load_privatekey, X509Req
 
+from W13SCAN import VERSION
+from W13SCAN.lib.common import createGithubIssue
 from W13SCAN.lib.const import notAcceptedExt
-from W13SCAN.lib.data import PATH, KB, logger, conf
+from W13SCAN.lib.data import PATH, KB, logger, conf, Share
 
 __author__ = 'qiye'
 __date__ = '2018/6/15 11:45'
@@ -449,41 +454,57 @@ class ProxyHandle(BaseHTTPRequestHandler):
         if self.path == 'http://baseproxy.ca/' or self.path == 'http://w13scan.ca/':
             self._send_ca()
             return
-
-        if not self.is_connected:
-            # 如果不是https，需要连接http服务器
-            try:
-                self._proxy_to_dst()
-            except Exception as e:
-                self.send_error(500, '{} connect fail '.format(self.hostname))
-                return
-        else:
-            self._target = self.ssl_host + self.path
-        # 这里就是代理发送请求，并接收响应信息
-        request = Request(self)
-        if request:
-            if self.is_connected:
-                request.set_https(True)
-            self._proxy_sock.sendall(request.to_data())
-            # 将响应信息返回给客户端
-            try:
-                response = Response(request, self._proxy_sock)
-            except ConnectionResetError:
-                response = None
-
-            if response:
+        try:
+            if not self.is_connected:
+                # 如果不是https，需要连接http服务器
                 try:
-                    self.request.sendall(response.to_data())
-                except BrokenPipeError:
-                    pass
-                except OSError:
-                    pass
+                    self._proxy_to_dst()
+                except Exception as e:
+                    try:
+                        self.send_error(500, '{} connect fail because of "{}"'.format(self.hostname, str(e)))
+                    except BrokenPipeError:
+                        pass
+                    finally:
+                        return
             else:
-                self.send_error(404, 'response is None')
-            if not self._is_replay() and response:
-                KB['task_queue'].put(('loader', request, response))
-        else:
-            self.send_error(404, 'request is None')
+                self._target = self.ssl_host + self.path
+            # 这里就是代理发送请求，并接收响应信息
+            request = Request(self)
+            if request:
+                if self.is_connected:
+                    request.set_https(True)
+                self._proxy_sock.sendall(request.to_data())
+                # 将响应信息返回给客户端
+                try:
+                    response = Response(request, self._proxy_sock)
+                except ConnectionResetError:
+                    response = None
+
+                if response:
+                    try:
+                        self.request.sendall(response.to_data())
+                    except BrokenPipeError:
+                        pass
+                    except OSError:
+                        pass
+                else:
+                    self.send_error(404, 'response is None')
+                if not self._is_replay() and response:
+                    KB['task_queue'].put(('loader', request, response))
+
+            else:
+                self.send_error(404, 'request is None')
+        except:
+            errMsg = "W13scan baseproxy get request traceback:"
+            errMsg += "Running version: {}\n".format(VERSION)
+            errMsg += "Python version: {}\n".format(sys.version.split()[0])
+            errMsg += "Operating system: {}\n".format(platform.platform())
+            errMsg += "Threads: {}".format(conf["threads"])
+            excMsg = traceback.format_exc()
+            Share.lock.acquire()
+            if createGithubIssue(errMsg, excMsg):
+                Share.dataToStdout('\r' + "[x] a issue has reported" + '\n\r')
+            Share.lock.release()
 
     do_HEAD = do_GET
     do_POST = do_GET

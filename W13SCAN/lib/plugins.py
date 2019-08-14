@@ -94,7 +94,8 @@ class PluginBase(object):
             pass
 
         except:
-            errMsg = "Running version: {}\n".format(VERSION)
+            errMsg = "W13scan plugin traceback:"
+            errMsg += "Running version: {}\n".format(VERSION)
             errMsg += "Python version: {}\n".format(sys.version.split()[0])
             errMsg += "Operating system: {}\n".format(platform.platform())
             errMsg += "Threads: {}".format(conf["threads"])
