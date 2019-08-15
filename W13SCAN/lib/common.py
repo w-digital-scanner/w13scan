@@ -315,7 +315,7 @@ def createGithubIssue(errMsg, excMsg):
 
     data = {
         "title": "Unhandled exception (#{})".format(key),
-        "body": "```%s\n```\n```\n%s```" % (errMsg, excMsg),
+        "body": "```\n%s\n```\n```\n%s\n```" % (errMsg, excMsg),
         "labels": ["bug"]
     }
 
