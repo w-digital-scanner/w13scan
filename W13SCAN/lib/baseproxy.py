@@ -1,4 +1,5 @@
 # coding:utf-8
+import _socket
 import http
 import os
 import platform
@@ -208,6 +209,8 @@ class Response(HttpTransfer):
         except http.client.IncompleteRead:
             body_data = b''
         except zlib.error:
+            body_data = b''
+        except _socket.timeout:
             body_data = b''
         self.set_body_data(body_data)
         self._text()  # 尝试将文本进行解码
