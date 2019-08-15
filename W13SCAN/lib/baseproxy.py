@@ -294,7 +294,7 @@ class Response(HttpTransfer):
 
         res_data = '%s %s %s\r\n' % (self.response_version, self.status, self.reason)
         res_data += '%s\r\n' % self.build_headers()
-        res_data = res_data.encode(self.decoding if self.decoding else 'utf-8')
+        res_data = res_data.encode(self.decoding if self.decoding else 'utf-8', errors='ignore')
         res_data += self.get_body_data()
         return res_data
 
@@ -495,7 +495,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
             else:
                 self.send_error(404, 'request is None')
         except:
-            errMsg = "W13scan baseproxy get request traceback:"
+            errMsg = "W13scan baseproxy get request traceback:\n"
             errMsg += "Running version: {}\n".format(VERSION)
             errMsg += "Python version: {}\n".format(sys.version.split()[0])
             errMsg += "Operating system: {}\n".format(platform.platform())
