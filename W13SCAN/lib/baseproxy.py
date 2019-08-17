@@ -478,10 +478,15 @@ class ProxyHandle(BaseHTTPRequestHandler):
                     request.set_https(True)
                 self._proxy_sock.sendall(request.to_data())
                 # 将响应信息返回给客户端
+                errMsg = ''
                 try:
                     response = Response(request, self._proxy_sock)
                 except ConnectionResetError:
                     response = None
+                    errMsg = 'because ConnectionResetError'
+                except _socket.timeout:
+                    response = None
+                    errMsg = 'becasuse socket timeout'
 
                 if response:
                     try:
@@ -491,7 +496,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
                     except OSError:
                         pass
                 else:
-                    self.send_error(404, 'response is None')
+                    self.send_error(404, 'response is None {}'.format(errMsg))
                 if not self._is_replay() and response:
                     KB['task_queue'].put(('loader', request, response))
 
