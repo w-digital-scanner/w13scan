@@ -21,7 +21,7 @@ from OpenSSL.crypto import load_certificate, FILETYPE_PEM, TYPE_RSA, PKey, X509,
     dump_certificate, load_privatekey, X509Req
 
 from W13SCAN import VERSION
-from W13SCAN.lib.common import createGithubIssue
+from W13SCAN.lib.common import createGithubIssue, dataToStdout
 from W13SCAN.lib.const import notAcceptedExt
 from W13SCAN.lib.data import PATH, KB, logger, conf, Share
 
@@ -505,8 +505,10 @@ class ProxyHandle(BaseHTTPRequestHandler):
             errMsg += "Threads: {}".format(conf["threads"])
             excMsg = traceback.format_exc()
             Share.lock.acquire()
+            if conf["is_debug"]:
+                dataToStdout(errMsg)
             if createGithubIssue(errMsg, excMsg):
-                Share.dataToStdout('\r' + "[x] a issue has reported" + '\n\r')
+                dataToStdout('\r' + "[x] a issue has reported" + '\n\r')
             Share.lock.release()
 
     do_HEAD = do_GET

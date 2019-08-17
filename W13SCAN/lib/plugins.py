@@ -16,7 +16,7 @@ from urllib3.exceptions import NewConnectionError, PoolError
 
 from W13SCAN import VERSION
 from W13SCAN.lib.baseproxy import Request, Response
-from W13SCAN.lib.common import createGithubIssue
+from W13SCAN.lib.common import createGithubIssue, dataToStdout
 from W13SCAN.lib.data import Share, conf
 
 
@@ -101,8 +101,10 @@ class PluginBase(object):
             errMsg += "Threads: {}".format(conf["threads"])
             excMsg = traceback.format_exc()
             Share.lock.acquire()
+            if conf["is_debug"]:
+                dataToStdout('\r' + errMsg + '\n\r')
             if createGithubIssue(errMsg, excMsg):
-                Share.dataToStdout('\r' + "[x] a issue has reported" + '\n\r')
+                dataToStdout('\r' + "[x] a issue has reported" + '\n\r')
             Share.lock.release()
 
         return output
