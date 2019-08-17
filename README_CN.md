@@ -167,3 +167,29 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
 - 2019.8.12 周一，加入了bug自动报告机制，0.9.6发布～
 - 2019.8.14 周三，Xray今天推出了基于语义的xss检测，看起来很厉害，我也准备实现一套类似的方案，今天加入了简单的dom xss辅助插件。
 - 2019.8.15 周四，迎来了bug报告机制发布以来的第一个bug报告～迅速修复了～
+- 2019.8.17 周六，修复了多个反馈的bug，无意间发现了一个emlog的xss，嘻嘻，说明xss插件初显成效。基于语义的还在研究👀。
+    ```python
+    [XSS多种方式探测]                                                                     
+    url            http://emlog.demo/admin/admin_log.php?pid=draft                  
+    payload        pid:draft<2Fel>9402</2Fel>                                       
+    descript       探测tag被解析                                                         
+    type           html xss                                                         
+                                                                                    
+    #0 请求包                                                                          
+    GET http://emlog.demo/admin/admin_log.php?pid=draft&pid=draft%3C2Fel%3E9402%3C%2
+    F2Fel%3E                                                                        
+    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (
+    KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36                           
+    accept-encoding: gzip, deflate                                                  
+    accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/a
+    png,*/*;q=0.8,application/signed-exchange;v=b3                                  
+    Connection: close                                                               
+    host: emlog.demo                                                                
+    proxy-connection: keep-alive                                                    
+    pragma: no-cache                                                                
+    cache-control: no-cache                                                         
+    upgrade-insecure-requests: 1                                                    
+    referer: http://emlog.demo/admin/                                               
+    accept-language: zh-CN,zh;q=0.9,en;q=0.8
+    ```
+
