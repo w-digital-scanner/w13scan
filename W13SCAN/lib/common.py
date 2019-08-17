@@ -296,6 +296,7 @@ def createGithubIssue(errMsg, excMsg):
     _ = re.sub(r".+\Z", "", _)
     _ = re.sub(r"(Unicode[^:]*Error:).+", r"\g<1>", _)
     _ = re.sub(r"= _", "= ", _)
+    errMsg = re.sub("cookie: .*", 'cookie: *', errMsg, flags=re.I | re.S)
 
     key = hashlib.md5(_.encode()).hexdigest()[:8]
     try:
@@ -304,15 +305,17 @@ def createGithubIssue(errMsg, excMsg):
     except Exception as e:
         return False
     _ = json.loads(req.text)
-    duplicate = _["total_count"] > 0
-    closed = duplicate and _["items"][0]["state"] == "closed"
-    if duplicate:
-        warnMsg = "issue seems to be already reported"
-        if closed:
-            warnMsg += " and resolved. Please update to the latest "
-        dataToStdout('\r' + "[x] {}".format(warnMsg) + '\n\r')
+    try:
+        duplicate = _["total_count"] > 0
+        closed = duplicate and _["items"][0]["state"] == "closed"
+        if duplicate:
+            warnMsg = "issue seems to be already reported"
+            if closed:
+                warnMsg += " and resolved. Please update to the latest "
+            dataToStdout('\r' + "[x] {}".format(warnMsg) + '\n\r')
+            return False
+    except KeyError:
         return False
-
     data = {
         "title": "Unhandled exception (#{})".format(key),
         "body": "```\n%s\n```\n```\n%s\n```" % (errMsg, excMsg),

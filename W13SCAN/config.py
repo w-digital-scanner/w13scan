@@ -43,5 +43,5 @@ if LEVEL >= 2:
         [])
 
 # DEBUG
-DEBUG = True
+DEBUG = False
 # EXCLUDE_PLUGINS = ['subdomain_found.py', 'jsonp.py', 'js_sensitive_content.py']

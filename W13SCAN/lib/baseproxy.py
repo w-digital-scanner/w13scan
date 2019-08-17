@@ -174,7 +174,7 @@ class Request(HttpTransfer):
         req_data = '%s %s %s\r\n' % (self.command, self.path, self.request_version)
         # Add headers to the request
         req_data += '%s\r\n' % self.build_headers()
-        req_data = req_data.encode("utf-8")
+        req_data = req_data.encode("utf-8", errors='ignore')
         req_data += self.get_body_data()
         return req_data
 
@@ -457,6 +457,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
         if self.path == 'http://baseproxy.ca/' or self.path == 'http://w13scan.ca/':
             self._send_ca()
             return
+        request = None
         try:
             if not self.is_connected:
                 # 如果不是https，需要连接http服务器
@@ -508,6 +509,9 @@ class ProxyHandle(BaseHTTPRequestHandler):
             errMsg += "Python version: {}\n".format(sys.version.split()[0])
             errMsg += "Operating system: {}\n".format(platform.platform())
             errMsg += "Threads: {}".format(conf["threads"])
+            if request:
+                errMsg += '\n\nrequest raw:\n'
+                errMsg += request.to_data().decode()
             excMsg = traceback.format_exc()
             Share.lock.acquire()
             if conf["is_debug"]:

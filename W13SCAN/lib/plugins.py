@@ -99,6 +99,9 @@ class PluginBase(object):
             errMsg += "Python version: {}\n".format(sys.version.split()[0])
             errMsg += "Operating system: {}\n".format(platform.platform())
             errMsg += "Threads: {}".format(conf["threads"])
+            if request:
+                errMsg += '\n\nrequest raw:\n'
+                errMsg += request.to_data().decode()
             excMsg = traceback.format_exc()
             Share.lock.acquire()
             if conf["is_debug"]:
