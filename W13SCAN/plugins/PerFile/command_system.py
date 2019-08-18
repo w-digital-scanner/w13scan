@@ -72,8 +72,7 @@ class W13SCAN(PluginBase):
                             data[k] = flag
                         else:
                             data[k] = v + spli + flag
-                        url1 = prepare_url(netloc, params=data)
-                        r = requests.get(url1, headers=headers)
+                        r = requests.get(netloc, params=data, headers=headers)
                         html1 = r.text
                         for rule in re_list:
                             if re.search(rule, html1, re.I | re.S | re.M):

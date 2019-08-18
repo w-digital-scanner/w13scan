@@ -69,6 +69,15 @@ class FakeReq(HttpTransfer):
             self.cookies = paramToDict(headers.get("cookie", headers.get("Cookie")), place=PLACE.COOKIE)
         self._headers = headers
 
+    def to_data(self):
+        # Build request
+        req_data = '%s %s %s\r\n' % (self.command, self.path, self.request_version)
+        # Add headers to the request
+        req_data += '%s\r\n' % self.build_headers()
+        req_data = req_data.encode("utf-8", errors='ignore')
+        req_data += self.get_body_data()
+        return req_data
+
 
 class FakeResp(HttpTransfer):
 
