@@ -80,13 +80,11 @@ class PluginBase(object):
         except ConnectionError:
             msg = "connect target '{0}' failed!".format(self.target)
             # Share.dataToStdout('\r' + msg + '\n\r')
+        except ConnectionResetError:
+            pass
         except TooManyRedirects as e:
             # Share.dataToStdout('\r' + str(e) + '\n\r')
             pass
-
-        except RemoteDisconnected as e:
-            pass
-
         except NewConnectionError as ex:
             pass
 
