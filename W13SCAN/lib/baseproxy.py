@@ -503,7 +503,9 @@ class ProxyHandle(BaseHTTPRequestHandler):
 
             else:
                 self.send_error(404, 'request is None')
-        except:
+        except ConnectionResetError:
+            pass
+        except Exception:
             errMsg = "W13scan baseproxy get request traceback:\n"
             errMsg += "Running version: {}\n".format(VERSION)
             errMsg += "Python version: {}\n".format(sys.version.split()[0])
