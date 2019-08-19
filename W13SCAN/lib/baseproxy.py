@@ -507,6 +507,8 @@ class ProxyHandle(BaseHTTPRequestHandler):
             pass
         except ConnectionAbortedError:
             pass
+        except (BrokenPipeError, IOError):
+            pass
         except Exception:
             errMsg = "W13scan baseproxy get request traceback:\n"
             errMsg += "Running version: {}\n".format(VERSION)
