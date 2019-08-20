@@ -14,6 +14,8 @@ from W13SCAN.lib.common import prepare_url
 from W13SCAN.lib.const import acceptedExt, ignoreParams, Level
 from W13SCAN.lib.output import out
 from W13SCAN.lib.plugins import PluginBase
+from W13SCAN.lib.wappanalyzer import fingter_loader
+
 
 
 class W13SCAN(PluginBase):
@@ -33,9 +35,8 @@ class W13SCAN(PluginBase):
         p = self.requests.urlparse
         params = self.requests.params
         netloc = self.requests.netloc
-
-        # if not self.response.language or self.response.language != "ASP":
-        #     return
+        if self.response.language is None or self.response.language == "JAVA":
+            return
 
         if method == 'GET':
             exi = os.path.splitext(p.path)[1]
@@ -56,7 +57,7 @@ class W13SCAN(PluginBase):
             ]
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
             for payload in payloads:
-                r = requests.post(netloc, headers=headers, data=payload)
+                r = requests.post(url, headers=headers, data=payload)
                 html1 = r.text
                 for check in checks:
                     if check in html1:

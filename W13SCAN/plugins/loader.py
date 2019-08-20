@@ -147,9 +147,8 @@ class W13SCAN(PluginBase):
                 self.response.system = "WINDOWS"
             elif p.path.endswith(".php"):
                 self.response.language = "PHP"
-            elif p.path.endswith(".jsp"):
+            elif p.path.endswith(".jsp") or p.path.endswith(".do") or p.path.endswith(".action"):
                 self.response.language = "JAVA"
-
         if method == "POST":
             post_data = unquote(post_data, encoding)
 

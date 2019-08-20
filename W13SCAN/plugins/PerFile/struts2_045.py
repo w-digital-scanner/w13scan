@@ -13,7 +13,6 @@ from W13SCAN.lib.common import prepare_url
 from W13SCAN.lib.const import acceptedExt, ignoreParams, Level
 from W13SCAN.lib.output import out
 from W13SCAN.lib.plugins import PluginBase
-from W13SCAN.lib.wappanalyzer import fingter_loader
 
 class W13SCAN(PluginBase):
     name = 'Struts2-045远程代码执行'
@@ -27,13 +26,11 @@ class W13SCAN(PluginBase):
         resp_data = self.response.get_body_data()  # 返回数据 byte类型
         resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
         resp_headers = self.response.get_headers()  # 返回头 dict类型
-
         p = self.requests.urlparse
         params = self.requests.params
         netloc = self.requests.netloc
-
-        # if not self.response.language or self.response.language != "JAVA":
-        #     return
+        if self.response.language is None or self.response.language == "JAVA":
+            return
         if method == 'GET':
             exi = os.path.splitext(p.path)[1]
             if exi not in acceptedExt:
@@ -47,7 +44,7 @@ class W13SCAN(PluginBase):
 
             for payload in payloads:
                 headers['Content-Type']= payload
-                r = requests.get(netloc, headers=headers)
+                r = requests.get(url, headers=headers)
                 html1 = r.text
                 if check in html1:
                     out.success(url, self.name, playload="{}:{}".format('Content-Type',payload), method=method,check=check,raw=r.raw)

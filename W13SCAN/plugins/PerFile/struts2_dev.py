@@ -33,8 +33,8 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        # if not self.response.language or self.response.language != "JAVA":
-        #     return
+        if self.response.language is None or self.response.language == "JAVA":
+            return
 
         if method == 'GET':
             exi = os.path.splitext(p.path)[1]
@@ -49,7 +49,7 @@ class W13SCAN(PluginBase):
             ]
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
             for payload in payloads:
-                r1 = requests.post(netloc, headers=headers, data=payload)
+                r1 = requests.post(url, headers=headers, data=payload)
                 if check in r1.text:
                     out.success(url, self.name, playload="{}".format(payload), method="POST", check=check, raw=r1.raw)
                     return

