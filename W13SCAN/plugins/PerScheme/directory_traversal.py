@@ -56,7 +56,7 @@ class W13SCAN(PluginBase):
         domain = "{}://{}/".format(p.scheme, p.netloc)
         payloads = self.generate()
 
-        if self.response.system != "*NIX" or not self.response.system:
+        if self.response.system != "*NIX" and self.response.system:
             return
 
         for payload in payloads:

@@ -30,7 +30,7 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        if not self.response.language or self.response.language != "PHP":
+        if self.response.language and self.response.language != "PHP":
             return
 
         variants = [

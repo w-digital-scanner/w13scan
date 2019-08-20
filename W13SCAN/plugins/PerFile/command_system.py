@@ -59,7 +59,7 @@ class W13SCAN(PluginBase):
                     "NjE2Mjk4Mwo=6162983"
                 ]
             }
-            if not self.response.system or self.response.system == "WINDOWS":
+            if self.response.system and self.response.system == "WINDOWS":
                 del url_flag["echo `echo 6162983|base64`6162983".format(randint)]
 
             for k, v in params.items():

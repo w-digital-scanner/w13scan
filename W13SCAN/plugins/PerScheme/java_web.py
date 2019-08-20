@@ -91,7 +91,7 @@ class W13SCAN(PluginBase):
         netloc = self.requests.netloc
 
         domain = "{}://{}/".format(p.scheme, p.netloc)
-        if self.response.language is None and self.response.language == "JAVA":
+        if self.response.language is None or self.response.language == "JAVA":
             payloads = self.generate()
 
             for payload in payloads:

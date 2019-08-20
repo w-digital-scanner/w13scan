@@ -46,7 +46,7 @@ class W13SCAN(PluginBase):
             "${{@print(md5({}))}}\\",
             "'.print(md5({})).'"
         ]
-        if not self.response.language or self.response.language != "PHP":
+        if self.response.language and self.response.language != "PHP":
             return
 
         if headers and "cookie" in headers:

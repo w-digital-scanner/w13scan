@@ -29,11 +29,9 @@ class W13SCAN(PluginBase):
         params = self.requests.params
         netloc = self.requests.netloc
 
-        if not (self.response.webserver is None or self.response.webserver == "IIS" or self.response.language == "PHP"):
-            return
-
-        domain = "{}://{}/".format(p.scheme, p.netloc)
-        payload = domain + "robots.txt/.php"
-        r = requests.get(payload, headers=headers)
-        if "user-agent" in r.text.lower() and 'text/plain' not in r.headers.get("Content-Type", ''):
-            out.success(payload, self.name)
+        if self.response.language == "PHP" or self.response.language is None:
+            domain = "{}://{}/".format(p.scheme, p.netloc)
+            payload = domain + "robots.txt/.php"
+            r = requests.get(payload, headers=headers)
+            if "user-agent" in r.text.lower() and 'text/plain' not in r.headers.get("Content-Type", ''):
+                out.success(payload, self.name)
