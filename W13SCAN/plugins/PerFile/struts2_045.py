@@ -29,7 +29,7 @@ class W13SCAN(PluginBase):
         p = self.requests.urlparse
         params = self.requests.params
         netloc = self.requests.netloc
-        if self.response.language is None or self.response.language == "JAVA":
+        if self.response.language and self.response.language != "JAVA":
             return
         if method == 'GET':
             exi = os.path.splitext(p.path)[1]
