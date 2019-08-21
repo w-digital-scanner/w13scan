@@ -15,7 +15,7 @@ acceptedExt = [
     '.cgi',
     '.jsp', '.jhtml', '.jhtm', '.jws',
     '.htm', '.html',
-    '.do', ''
+    '.do', '.action',''
 ]
 
 ignoreParams = [
