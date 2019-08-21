@@ -57,3 +57,5 @@ scanner.run()
 
 By introducing the w13scan package, you can quickly create a scanner.
 
+## Contributors
+- [CONTRIBUTORS](CONTRIBUTORS.md)
