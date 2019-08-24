@@ -80,6 +80,8 @@ class PluginBase(object):
         except ConnectionError:
             msg = "connect target '{0}' failed!".format(self.target)
             # Share.dataToStdout('\r' + msg + '\n\r')
+        except requests.exceptions.ChunkedEncodingError:
+            pass
         except ConnectionResetError:
             pass
         except TooManyRedirects as e:
