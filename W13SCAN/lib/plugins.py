@@ -7,7 +7,6 @@ import platform
 import socket
 import sys
 import traceback
-from http.client import RemoteDisconnected
 
 import requests
 import urllib3
