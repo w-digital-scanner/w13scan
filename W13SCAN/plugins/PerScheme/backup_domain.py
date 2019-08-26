@@ -69,7 +69,10 @@ class W13SCAN(PluginBase):
             for i in ['.rar', '.zip']:
                 test_url = domain + payload + i
                 r = requests.get(test_url, headers=headers, allow_redirects=False, stream=True)
-                content = r.raw2.read(10)
+                try:
+                    content = r.raw2.read(10)
+                except:
+                    continue
                 if r.status_code == 200 and self._check(content):
                     rarsize = int(r.headers.get('Content-Length')) // 1024 // 1024
                     out.success(test_url, self.name, size="{}M".format(rarsize))
