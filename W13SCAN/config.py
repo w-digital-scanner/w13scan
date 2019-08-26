@@ -10,7 +10,7 @@ SERVER_ADDR = ('127.0.0.1', 7778)  # 默认监听地址
 
 THREAD_NUM = 51  # 线程数量
 
-EXCLUDES = ["google\.", "lastpass\.", 'baidu\.com']  # 扫描排除网址(正则表达式)
+EXCLUDES = ["google\.", "lastpass\.", 'baidu\.com', '\.gov\.cn']  # 扫描排除网址(正则表达式)
 INCLUDES = [".*"]  # 扫描允许网址(正则表达式)
 
 EXCLUDE_PLUGINS = ['subdomain_found.py']  # 不使用的插件，文件名
