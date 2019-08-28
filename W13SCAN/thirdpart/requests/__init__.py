@@ -64,6 +64,9 @@ def session_request(self, method, url,
     if conf["proxy_config_bool"] and not proxies:
         proxies = conf["proxy"]
 
+    prep.url = prep.url.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore')
+    # fix https://github.com/boy-hack/w13scan/issues/64
+
     settings = self.merge_environment_settings(
         prep.url, proxies, stream, verify, cert
     )
@@ -74,6 +77,7 @@ def session_request(self, method, url,
         'allow_redirects': allow_redirects,
     }
     send_kwargs.update(settings)
+
     resp = self.send(prep, **send_kwargs)
 
     if resp.encoding == 'ISO-8859-1':
