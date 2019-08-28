@@ -178,6 +178,7 @@ class W13SCAN(PluginBase):
                             #             break
 
                     if is_inject:
+                        infoMsg = "false_ratio:{} true_ratio:{} ".format(ratio_false, ratio_true)
                         out.success(url, self.name, raw=[r2.raw, r.raw], payload_true=k + ":" + payload_true,
-                                    payload_false=k + ":" + payload_false)
+                                    payload_false=k + ":" + payload_false, infoMsg=infoMsg)
                         break
