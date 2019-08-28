@@ -487,7 +487,10 @@ class ProxyHandle(BaseHTTPRequestHandler):
                     errMsg = 'because ConnectionResetError'
                 except _socket.timeout:
                     response = None
-                    errMsg = 'becasuse socket timeout'
+                    errMsg = 'because socket timeout'
+                except http.client.BadStatusLine as e:
+                    response = None
+                    errMsg = 'because BadStatusLine {}'.format(str(e))
 
                 if response:
                     try:
