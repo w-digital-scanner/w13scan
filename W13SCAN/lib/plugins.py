@@ -91,7 +91,8 @@ class PluginBase(object):
 
         except PoolError as ex:
             pass
-
+        except requests.exceptions.InvalidSchema:
+            pass
         except:
             errMsg = "W13scan plugin traceback:\n"
             errMsg += "Running version: {}\n".format(VERSION)
