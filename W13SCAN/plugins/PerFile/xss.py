@@ -12,7 +12,7 @@ import re
 import requests
 
 from W13SCAN.lib.common import random_str, get_middle_text
-from W13SCAN.lib.const import acceptedExt, ignoreParams, Level, notAcceptedExt
+from W13SCAN.lib.const import ignoreParams, Level, notAcceptedExt
 from W13SCAN.lib.output import out
 from W13SCAN.lib.plugins import PluginBase
 

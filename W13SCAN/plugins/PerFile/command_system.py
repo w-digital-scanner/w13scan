@@ -10,7 +10,6 @@ import re
 
 import requests
 
-from W13SCAN.lib.common import prepare_url
 from W13SCAN.lib.const import acceptedExt, ignoreParams, Level
 from W13SCAN.lib.output import out
 from W13SCAN.lib.plugins import PluginBase

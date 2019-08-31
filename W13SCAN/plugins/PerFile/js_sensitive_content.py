@@ -58,9 +58,9 @@ class W13SCAN(PluginBase):
             r'((?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+(?:biz|cc|club|cn|com|co|edu|fun|group|info|ink|kim|link|live|ltd|mobi|net|online|org|pro|pub|red|ren|shop|site|store|tech|top|tv|vip|wang|wiki|work|xin|xyz|me))',
         ]
         dom_xss = [
-            'location.hash',
-            'location.href',
-            'location.search'
+            'location\.hash',
+            'location\.href',
+            'location\.search'
         ]
         regx.extend(dom_xss)
         for _ in regx:
