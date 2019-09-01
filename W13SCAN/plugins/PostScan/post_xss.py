@@ -42,7 +42,7 @@ class W13SCAN(PluginBase):
                     if k.lower() in ignoreParams:
                         continue
                     rndStr = 9000 + random.randint(1, 999)
-                    payload = "<img/src=xyz OnErRor=alert(" + str(rndStr) + ")>"
+                    payload = "'\"></script></textarea><img/src=xyz OnErRor=alert(" + str(rndStr) + ")>"
                     payloads = [payload, quote(payload)]
                     for i in payloads:
                         data = copy.deepcopy(post_data)
