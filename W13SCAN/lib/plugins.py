@@ -93,7 +93,9 @@ class PluginBase(object):
             pass
         except requests.exceptions.InvalidSchema:
             pass
-        except:
+        except KeyboardInterrupt:
+            raise
+        except Exception:
             errMsg = "W13scan plugin traceback:\n"
             errMsg += "Running version: {}\n".format(VERSION)
             errMsg += "Python version: {}\n".format(sys.version.split()[0])
