@@ -586,16 +586,15 @@ class ProxyHandle(BaseHTTPRequestHandler):
             except SSLError:
                 return
 
+            self.setup()
+            self.ssl_host = 'https://%s' % self.path
+            self.handle_one_request()
         except Exception as e:
             try:
                 self.send_error(500, str(e))
             except:
                 return
             return
-
-        self.setup()
-        self.ssl_host = 'https://%s' % self.path
-        self.handle_one_request()
 
     def connect_relay(self):
         '''
