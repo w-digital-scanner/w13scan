@@ -39,6 +39,7 @@ class W13SCAN(PluginBase):
         if exi not in acceptedExt:
             return
 
+        success = False
         origin_len = len(resp_str)
         sql_flag = '鎈\'"\('
         if headers and "cookie" in headers:
@@ -57,8 +58,12 @@ class W13SCAN(PluginBase):
                         if match:
                             out.success(url, self.name, payload="cookie: {}={}".format(k, cookie[k]),
                                         dbms_type=dbms_type,
+                                        errinfo=match.group(),
                                         raw=r.raw)
+                            success = True
                             break
+        if success:
+            return
         if method == 'GET':
             if p.query == '':
                 return
@@ -79,8 +84,10 @@ class W13SCAN(PluginBase):
                     if match:
                         out.success(url, self.name, payload="{}={}".format(k, data[k]), dbms_type=dbms_type, raw=r.raw,
                                     errinfo=match.group())
+                        success = True
                         break
-
+            if success:
+                return
             # test header
             if headers:
                 sql_flag = '\'"\('
@@ -99,4 +106,5 @@ class W13SCAN(PluginBase):
                     if match:
                         out.success(url, self.name, type="header inject", dbms_type=dbms_type, raw=r.raw,
                                     errinfo=match.group())
+                        success = True
                         break

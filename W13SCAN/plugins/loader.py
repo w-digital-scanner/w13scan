@@ -177,18 +177,18 @@ class W13SCAN(PluginBase):
             # 支持自动识别并转换参数的类型有 NORMAL,JSON,ARRAY-LIKE
             if self.requests.post_hint and self.requests.post_hint in [POST_HINT.NORMAL, POST_HINT.JSON,
                                                                        POST_HINT.ARRAY_LIKE]:
-                if KB["spiderset"].add(method + url + ''.join(self.requests.post_data), 'PostScan'):
-                    task_push('PostScan', self.requests, self.response)
+                # if KB["spiderset"].add(method + url + ''.join(self.requests.post_data), 'PostScan'):
+                task_push('PostScan', self.requests, self.response)
             elif self.requests.post_hint is None:
                 print("post data数据识别失败")
 
         elif method == "GET":
-            if KB["spiderset"].add(method + url, 'PerFile'):
+            if KB["spiderset"].add(url, 'PerFile'):
                 task_push('PerFile', self.requests, self.response)
 
         # Send PerScheme
         domain = "{}://{}".format(p.scheme, p.netloc)
-        if KB["spiderset"].add('GET' + domain, 'PerScheme'):
+        if KB["spiderset"].add(domain, 'PerScheme'):
             self.requests.path = "/"
             task_push('PerScheme', self.requests, self.response)
 
@@ -211,7 +211,7 @@ class W13SCAN(PluginBase):
                 continue
 
             # 去重复
-            if not KB["spiderset"].add('GET' + link, 'get_links'):
+            if not KB["spiderset"].add(link, 'get_links'):
                 continue
             try:
                 # 超过5M拒绝请求
@@ -225,7 +225,7 @@ class W13SCAN(PluginBase):
             except Exception as e:
                 continue
 
-            if KB["spiderset"].add('GET' + resp._url, 'PerFile'):
+            if KB["spiderset"].add(resp._url, 'PerFile'):
                 task_push('PerFile', req, resp)
 
         # Collect directory from response
@@ -234,7 +234,7 @@ class W13SCAN(PluginBase):
         for link in set(links):
             urls |= set(get_parent_paths(link))
         for i in urls:
-            if not KB["spiderset"].add('GET' + i, 'get_link_directory'):
+            if not KB["spiderset"].add(i, 'get_link_directory'):
                 continue
             try:
                 r = requests.get(i, headers=headers)
@@ -242,5 +242,5 @@ class W13SCAN(PluginBase):
                 resp = FakeResp(r)
             except:
                 continue
-            if KB["spiderset"].add('GET' + resp._url, 'PerFolder'):
+            if KB["spiderset"].add(resp._url, 'PerFolder'):
                 task_push('PerFolder', req, resp)
