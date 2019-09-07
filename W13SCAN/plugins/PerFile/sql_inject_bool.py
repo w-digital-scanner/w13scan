@@ -194,13 +194,13 @@ class W13SCAN(PluginBase):
                     ret1 = self.inject(params, k, payload_false, payload_true)
                     if ret1:
                         if is_num:
-                            payload_false = "{}/10000".format(v)
+                            payload_false = "{}^1".format(v)
                         else:
                             payload_false = v + flag.format(random_str(1) + 'c', random_str(1) + 'a')
 
                         rand_str = random_str(2)
                         if is_num:
-                            payload_true = "{}*1".format(v)
+                            payload_true = "{}^0".format(v)
                         else:
                             payload_true = v + flag.format(rand_str, rand_str)
 
