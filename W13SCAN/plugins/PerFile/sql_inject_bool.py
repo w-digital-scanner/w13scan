@@ -31,7 +31,7 @@ class W13SCAN(PluginBase):
         self.DIFF_TOLERANCE = 0.05
         self.CONSTANT_RATIO = 0.9
 
-        self.retry = 5  # 重试次数
+        self.retry = 6  # 重试次数
         self.dynamic = []
 
     def findDynamicContent(self, firstPage, secondPage):
@@ -130,7 +130,7 @@ class W13SCAN(PluginBase):
         url = self.build_url()  # 请求完整URL
 
         resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        self.resp_str = resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
+        self.resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
         resp_headers = self.response.get_headers()  # 返回头 dict类型
 
         p = self.requests.urlparse
@@ -145,25 +145,23 @@ class W13SCAN(PluginBase):
             if exi not in acceptedExt:
                 return
 
-            # 重新请求一次获取一次网页
-            r = requests.get(url, headers=headers)
-            try:
-                self.seqMatcher.set_seq1(resp_str)
-                self.seqMatcher.set_seq2(r.text)
-                ratio = round(self.seqMatcher.quick_ratio(), 3)
-            except MemoryError:
-                return
-
-            if ratio <= 0.98:
-                return False
-                self.findDynamicContent(resp_str, r.text)
-                count = 0
-                while 1:
-                    count += 1
-                    if count > self.retry:
-                        return
-                    r = requests.get(url, headers=headers)
-                    self.findDynamicContent(resp_str, self.removeDynamicContent(r.text))
+            count = 0
+            ratio = 0
+            # 动态内容替换
+            while ratio <= 0.98:
+                if count > self.retry:
+                    return
+                r = requests.get(url, headers=headers)
+                html = self.removeDynamicContent(r.text)
+                self.resp_str = self.removeDynamicContent(self.resp_str)
+                try:
+                    self.seqMatcher.set_seq1(self.resp_str)
+                    self.seqMatcher.set_seq2(html)
+                    ratio = round(self.seqMatcher.quick_ratio(), 3)
+                except MemoryError:
+                    return
+                self.findDynamicContent(self.resp_str, html)
+                count += 1
 
             sql_flag = [
                 "<--isdigit-->",

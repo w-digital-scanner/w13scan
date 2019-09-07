@@ -238,7 +238,7 @@ def findDynamicContent(firstPage, secondPage):
 
             dynamicMarkings.append((prefix if prefix else None, suffix if suffix else None))
 
-    return []
+    return dynamicMarkings
 
 
 def removeDynamicContent(page, dynamicMarkings):
