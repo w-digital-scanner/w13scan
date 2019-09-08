@@ -195,3 +195,9 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
 - 2919.8.31 周六 [写在w13scan第一阶段.md](https://x.hacking8.com/post-356.html) 
 - 2019.9.4  周三，使用simhash算法优化了去重处理，版本更新到0.9.13
 - 2019.9.7  周六，优化了SQL注入相关的算法，报错注入的正则用的是w3af，但是规则太宽泛误报很多，修改了一些规则。SQL布尔盲注仅通过一次验证误报也有点高，加入了二次验证，同时完成了动态内容替换算法，在计算相似度时将更精确了。基于JS语法分析的DOM-XSS扫描器已经完成了大半(大的框架已经确定剩下就是些规则的查漏补缺了)，将在一些实战环境上测试下效果，嘿嘿😁
+- 2019.9.8  周日，今天研究了一下http走私攻击(smuggling)，准备给w13scan加上此功能，在[https://portswigger.net/web-security/request-smuggling](https://portswigger.net/web-security/request-smuggling)写的很详细了，还提供了开源的检测程序，太良心了！但是将它转换为自己的插件，还有一段路要走。
+    - 首先是网络请求包该如何包，说真的有点后悔用requests了，给human考虑的太周全了,在之前写sqlmap chunked发包时也了解到了Python底层库httplib也不提供`chunked`的支持，所以准备参考[hack-requests](https://github.com/boy-hack/hack-requests)用更底层的原生库实现一下。
+    - portswigger将这种攻击分为了三种类型，需要一一实现，但是它的开源程序里只实现了前两次
+    - 考虑到并不是每个网站都能实施该攻击，所以要有一个简单的判断来判定是否适合实施该攻击。
+    - 因为这是网站的架构环境的问题，所以检测到一次后就可以住手了，不需要多余的使用。
+    - 突然感觉这样还有点不适合被动扫描了？
