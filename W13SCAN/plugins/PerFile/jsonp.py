@@ -12,6 +12,7 @@ import re
 from W13SCAN.lib.common import random_str
 from W13SCAN.lib.const import JSON_RECOGNITION_REGEX, Level
 from W13SCAN.lib.helper.diifpage import GetRatio
+from W13SCAN.lib.helper.sensitive_info import sensitive_email, sensitive_phone, sensitive_idcard, sensitive_bankcard
 from W13SCAN.lib.output import out
 from W13SCAN.lib.plugins import PluginBase
 
@@ -51,26 +52,29 @@ class W13SCAN(PluginBase):
         domain = "{}://{}".format(p.scheme, p.netloc) + random_str(4,
                                                                    string.ascii_lowercase + string.digits) + ".com/"
 
-        sensitive_params = ['mail', 'user', 'name', 'ip', 'pass', 'add', 'phone']
+        sensitive_params = [sensitive_bankcard, sensitive_idcard, sensitive_phone, sensitive_email]
         if re.match(combine, resp_str, re.I | re.S):
             # 判断是否为jsonp
             headers["Referer"] = domain
             if method == 'GET':
                 r = requests.get(url, headers=headers)
                 if GetRatio(resp_str, r.text) >= 0.8:
-                    for i in sensitive_params:
-                        if i in r.text.lower():
-                            res = {
-                                "Referer": domain,
-                                "keyword": i,
-                                "Content-Type": r.headers.get("Content-Type", "")
-                            }
-                            response = self.jsonp_load(r.text)
-                            if response:
-                                res["response"] = response
-                                if len(response) > 500:
-                                    res["response"] = "数据太多，自行访问"
-                            out.success(url, self.name, **res)
+                    for func in sensitive_params:
+                        ret = func(r.text)
+                        if not ret:
+                            continue
+                        res = {
+                            "Referer": domain,
+                            "keyword": ret["content"],
+                            "type": ret["type"],
+                            "Content-Type": r.headers.get("Content-Type", "")
+                        }
+                        response = self.jsonp_load(r.text)
+                        if response:
+                            res["response"] = response
+                            if len(response) > 500:
+                                res["response"] = "数据太多，自行访问"
+                        out.success(url, self.name, **res)
         elif re.match(JSON_RECOGNITION_REGEX, resp_str, re.I | re.S) and 'callback' not in url:
             # 不是jsonp,是json
             headers["Referer"] = domain

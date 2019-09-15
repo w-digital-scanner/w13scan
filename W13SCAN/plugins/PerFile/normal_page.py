@@ -7,6 +7,7 @@ import re
 
 from W13SCAN.lib.const import Level
 from W13SCAN.lib.helper.phpinfo_helper import get_phpinfo
+from W13SCAN.lib.helper.sensitive_info import sensitive_idcard, sensitive_bankcard
 from W13SCAN.lib.output import out
 from W13SCAN.lib.plugins import PluginBase
 
@@ -34,14 +35,9 @@ class W13SCAN(PluginBase):
             info = get_phpinfo(resp_str)
             out.success(url, self.name, info=info)
 
-        # 手机号
-        # regx_phone = r'(?:139|138|137|136|135|134|147|150|151|152|157|158|159|178|182|183|184|187|188|198|130|131|132|155|156|166|185|186|145|175|176|133|153|177|173|180|181|189|199|170|171)[0-9]{8}'
-        # 误报太多
-        # 身份证
-        regx_identify = r'([1-9]\d{5}[12]\d{3}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])\d{3}[0-9xX])'
-        for _ in [regx_identify]:
-            texts = re.findall(_, resp_str, re.M | re.I)
-            if texts:
-                for i in set(texts):
+        for func in [sensitive_idcard, sensitive_bankcard]:
+            ret = func(resp_str)
+            if ret:
+                for i in ret:
                     if out.set(i):
-                        out.success(url, self.name, info=i)
+                        out.success(url, self.name, content=ret["content"], type=ret["type"])
