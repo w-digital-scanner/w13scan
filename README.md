@@ -6,6 +6,9 @@
 
 [简体中文](./README_CN.md) | English
 
+## 声明
+仅用于教育行为使用，其他用途后果自负
+
 ## Begin
 Demo https://youtu.be/WwIc2kDlKbc
 
