@@ -91,6 +91,11 @@ class PluginBase(object):
             pass
         except requests.exceptions.InvalidSchema:
             pass
+        except UnicodeDecodeError:
+            # 这是由于request redirect没有处理编码问题，导致一些网站编码转换被报错,又不能hook其中的关键函数
+            # 暂时先pass这个错误
+            # refer：https://github.com/boy-hack/w13scan/labels/Requests%20UnicodeDecodeError
+            pass
         except KeyboardInterrupt:
             raise
         except Exception:
