@@ -89,12 +89,14 @@ class PluginBase(object):
 
         except PoolError as ex:
             pass
-        except requests.exceptions.InvalidSchema:
-            pass
         except UnicodeDecodeError:
             # 这是由于request redirect没有处理编码问题，导致一些网站编码转换被报错,又不能hook其中的关键函数
             # 暂时先pass这个错误
             # refer：https://github.com/boy-hack/w13scan/labels/Requests%20UnicodeDecodeError
+            pass
+        except (requests.exceptions.InvalidURL, requests.exceptions.InvalidSchema):
+            # 出现在跳转上的一个奇葩错误，一些网站会在收到敏感操作后跳转到不符合规范的网址，request跟进时就会抛出这个异常
+            # refer: https://github.com/boy-hack/w13scan/labels/requests.exceptions.InvalidURL
             pass
         except KeyboardInterrupt:
             raise
