@@ -61,6 +61,8 @@ class W13SCAN(PluginBase):
                      'content-type_no': ''},
                     {'path': '/.mysql.php.swp', 'tag': '<?php', 'content-type': 'application/octet-stream',
                      'content-type_no': ''},
+                    {'path': '/config.php.bkp', 'tag': '<?php', 'content-type': 'application/octet-stream',
+                     'content-type_no': ''},
                     {'path': '/readme', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
                     {'path': '/README', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
                     {'path': '/readme.md', 'tag': '', 'content-type': '', 'content-type_no': 'html'},
