@@ -64,7 +64,7 @@ class W13SCAN(PluginBase):
                         r2 = requests.post(url, data=data, headers=headers)
                         html2 = r2.text
                         radio2 = GetRatio(resp_str, html2)
-                        if radio < 0.78:
+                        if radio2 < 0.78:
                             condition = [
                                 '{k}:{v} 与原页面 {k}:{v1} 的相似度{radio} 页面大小:{size1}'.format(k=k, v=payload1, v1=v,
                                                                                         radio=radio,
