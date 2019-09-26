@@ -35,6 +35,26 @@ class W13SCAN(PluginBase):
             return None
         return str(arr)
 
+    def info_search(self, text):
+        '''
+        从一段文本中搜索敏感信息
+        :param text:
+        :return:
+        '''
+        sensitive_params = [sensitive_bankcard, sensitive_idcard, sensitive_phone, sensitive_email]
+        sensitive_list = ['username', 'memberid', 'nickname', 'loginid', 'mobilephone', 'userid', 'passportid',
+                          'profile', 'loginname', 'loginid',
+                          'email', 'realname', 'birthday', 'sex']
+
+        for func in sensitive_params:
+            ret = func(text)
+            if ret:
+                return ret['content']
+        for item in sensitive_list:
+            ret = re.search(r'[\b\'"]{}[\b\'"]'.format(item), text, re.I)
+            if ret:
+                return item
+
     def audit(self):
         method = self.requests.command  # 请求方式 GET or POST
         headers = self.requests.get_headers()  # 请求头 dict类型
@@ -52,21 +72,17 @@ class W13SCAN(PluginBase):
         domain = "{}://{}".format(p.scheme, p.netloc) + random_str(4,
                                                                    string.ascii_lowercase + string.digits) + ".com/"
 
-        sensitive_params = [sensitive_bankcard, sensitive_idcard, sensitive_phone, sensitive_email]
         if re.match(combine, resp_str, re.I | re.S):
             # 判断是否为jsonp
             headers["Referer"] = domain
             if method == 'GET':
                 r = requests.get(url, headers=headers)
                 if GetRatio(resp_str, r.text) >= 0.8:
-                    for func in sensitive_params:
-                        ret = func(r.text)
-                        if not ret:
-                            continue
+                    ret = self.info_search(r.text)
+                    if ret:
                         res = {
                             "Referer": domain,
-                            "keyword": ret["content"],
-                            "type": ret["type"],
+                            "keyword": ret,
                             "Content-Type": r.headers.get("Content-Type", "")
                         }
                         response = self.jsonp_load(r.text)
@@ -75,6 +91,7 @@ class W13SCAN(PluginBase):
                             if len(response) > 500:
                                 res["response"] = "数据太多，自行访问"
                         out.success(url, self.name, **res)
+
         elif re.match(JSON_RECOGNITION_REGEX, resp_str, re.I | re.S) and 'callback' not in url:
             # 不是jsonp,是json
             headers["Referer"] = domain
@@ -83,6 +100,7 @@ class W13SCAN(PluginBase):
                 r = requests.get(netloc, params=params, headers=headers)
                 if r.text.startswith(params["callback"] + "({"):
                     res = {
+                        "type": "加入callback得到的数据",
                         "Referer": domain,
                         "Content-Type": r.headers.get("Content-Type", ""),
                         "callback": params["callback"],
