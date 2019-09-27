@@ -56,6 +56,8 @@ class PluginBase(object):
             retry = conf["retry"]
             while retry > 0:
                 msg = 'Plugin: {0} timeout, start it over.'.format(self.name)
+                if conf["is_debug"]:
+                    dataToStdout('\r' + msg + '\n\r')
                 # Share.dataToStdout('\r' + msg + '\n\r')
                 try:
                     output = self.audit()
