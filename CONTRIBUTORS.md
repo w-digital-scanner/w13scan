@@ -5,6 +5,9 @@ boy-hack <https://github.com/boy-hack>
 Go0p <https://github.com/Go0p>
 * 加入struts系列检测插件
 
+hackxx <https://github.com/hackxx>
+* 贡献logout不扫描规则
+
 ## Other
 
 - https://github.com/qiyeboy/BaseProxy  代理框架基于它
