@@ -30,7 +30,19 @@ logoutParams = [
     'logout',
     'log_out',
     'loginesc',
-    'loginout'
+    'loginout',
+    'delete',
+    'signout',
+    'logoff',
+    'signoff',
+    'exit',
+    'quit',
+    'byebye',
+    'bye-bye',
+    'clearuser',
+    'invalidate',
+    'reboot',
+    'shutdown',
 ]
 
 
