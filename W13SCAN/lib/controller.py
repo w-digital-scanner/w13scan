@@ -88,8 +88,8 @@ def task_run():
 
 
 def printProgress():
-    msg = '%s success | %s remaining | %s scanned in %.2f seconds' % (
-        out.count(), KB["task_queue"].qsize(), KB["finished"], time.time() - KB['start_time'])
+    msg = '%s success | %d remaining | %s scanned in %.2f seconds' % (
+        out.count(), KB["running"], KB["finished"], time.time() - KB['start_time'])
 
     _ = '\r' + ' ' * (KB['console_width'][0] - len(msg)) + msg
     Share.dataToStdout(_)

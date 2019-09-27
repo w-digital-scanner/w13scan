@@ -42,7 +42,10 @@ class W13SCAN(PluginBase):
             data = b'0\r\n\r\nS'.decode()
             temp_header = headers.copy()
             for k, v in payload_headers.items():
-                temp_header[k] = v
+                if k.lower() in temp_header:
+                    temp_header[k.lower()] = v
+                else:
+                    temp_header[k] = v
             try:
                 r = requests.post(url, headers=temp_header, data=data, timeout=30)
             except:
@@ -51,7 +54,7 @@ class W13SCAN(PluginBase):
                 out.success(url, self.name, method='POST', **payload_headers, type="CL.TE型", data='0\\r\\n\\r\\nS', )
                 return
         # request_smuggling_te_cl
-        for i in range(cycle):
+        for i in range(cycle+1):
             payload_headers = {
                 "Content-Length": "3",
                 "Transfer-Encoding": "chunked"
@@ -60,6 +63,8 @@ class W13SCAN(PluginBase):
             req = Request('POST', url, data=data, headers=headers)
             prepped = req.prepare()
             for k, v in payload_headers.items():
+                if k.lower() in prepped.headers:
+                    del prepped.headers[k.lower()]
                 prepped.headers[k] = v
             s = Session()
             try:
