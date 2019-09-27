@@ -32,7 +32,7 @@ class W13SCAN(PluginBase):
 
         if self.response.language == "PHP" or self.response.language is None:
             domain = "{}://{}/".format(p.scheme, p.netloc)
-            payload = md5(random_str())
+            payload = md5(random_str().encode())
             payload2 = base64.b64encode(payload.encode()).decode()
             headers["Accept-Encoding"] = "gzip,deflate"
             headers["Accept-Charset"] = payload2
