@@ -31,5 +31,5 @@ class W13SCAN(PluginBase):
         if url.lower().endswith(".js"):
             test_url = url + ".map"
             r = requests.get(test_url, headers=headers)
-            if r.status_code == 200 and "webpack://" in r.text:
+            if r.status_code == 200 and "webpack:/" in r.text:
                 out.success(test_url, self.name, desc=self.desc)
