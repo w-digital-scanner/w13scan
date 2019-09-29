@@ -44,7 +44,7 @@ class W13SCAN(PluginBase):
         sensitive_params = [sensitive_bankcard, sensitive_idcard, sensitive_phone, sensitive_email]
         sensitive_list = ['username', 'memberid', 'nickname', 'loginid', 'mobilephone', 'userid', 'passportid',
                           'profile', 'loginname', 'loginid',
-                          'email', 'realname', 'birthday', 'sex']
+                          'email', 'realname', 'birthday', 'sex', 'ip']
 
         for func in sensitive_params:
             ret = func(text)
