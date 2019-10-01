@@ -212,6 +212,9 @@ class Response(HttpTransfer):
             body_data = b''
         except _socket.timeout:
             body_data = b''
+        except MemoryError:
+            body_data = b''
+            logger.error('MemoryError for response')
         self.set_body_data(body_data)
         self._text()  # 尝试将文本进行解码
 
