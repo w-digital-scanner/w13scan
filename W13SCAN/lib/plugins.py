@@ -96,9 +96,12 @@ class PluginBase(object):
             # 暂时先pass这个错误
             # refer：https://github.com/boy-hack/w13scan/labels/Requests%20UnicodeDecodeError
             pass
-        except (requests.exceptions.InvalidURL, requests.exceptions.InvalidSchema):
+        except (
+        requests.exceptions.InvalidURL, requests.exceptions.InvalidSchema, requests.exceptions.ContentDecodingError):
             # 出现在跳转上的一个奇葩错误，一些网站会在收到敏感操作后跳转到不符合规范的网址，request跟进时就会抛出这个异常
             # refer: https://github.com/boy-hack/w13scan/labels/requests.exceptions.InvalidURL
+            # 奇葩的ContentDecodingError
+            # refer:https://github.com/boy-hack/w13scan/issues?q=label%3Arequests.exceptions.ContentDecodingError
             pass
         except KeyboardInterrupt:
             raise
