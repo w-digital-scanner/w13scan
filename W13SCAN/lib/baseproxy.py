@@ -432,10 +432,14 @@ class ProxyHandle(BaseHTTPRequestHandler):
         target = self._target or self.path
 
         for i in conf["includes"]:
+            if not i:
+                continue
             match = re.search(i, target, re.I)
             if match:
                 ret = False
         for i in conf["excludes"]:
+            if not i:
+                continue
             match = re.search(i, target, re.I)
             if match:
                 ret = True
