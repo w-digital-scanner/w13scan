@@ -3,7 +3,6 @@
 # @Time    : 2019/7/11 4:51 PM
 # @Author  : w8ay
 # @File    : normal_page.py
-import re
 
 from W13SCAN.lib.const import Level
 from W13SCAN.lib.helper.phpinfo_helper import get_phpinfo
@@ -38,6 +37,6 @@ class W13SCAN(PluginBase):
         for func in [sensitive_idcard, sensitive_bankcard]:
             ret = func(resp_str)
             if ret:
-                for i in ret:
-                    if out.set(i):
-                        out.success(url, self.name, content=ret["content"], type=ret["type"])
+                content = ret["content"]
+                if out.set(content):
+                    out.success(url, self.name, content=content, type=ret["type"])
