@@ -51,10 +51,13 @@ class W13SCAN(PluginBase):
             except:
                 continue
             if r.status_code == 403 and resp_str != r.text:
-                out.success(url, self.name, method='POST', **payload_headers, type="CL.TE型", data='0\\r\\n\\r\\nS', )
-                return
+                r2 = requests.get(url, headers=headers)
+                if r2 == 200:
+                    out.success(url, self.name, method='POST', **payload_headers, type="CL.TE型",
+                                data='0\\r\\n\\r\\nS', )
+                    return
         # request_smuggling_te_cl
-        for i in range(cycle+1):
+        for i in range(cycle + 1):
             payload_headers = {
                 "Content-Length": "3",
                 "Transfer-Encoding": "chunked"
@@ -72,6 +75,8 @@ class W13SCAN(PluginBase):
             except:
                 continue
             if r.status_code == 403 and resp_str != r.text:
-                out.success(url, self.name, method='POST', **payload_headers, type="TE.CL型",
-                            data='1\\r\\nD\\r\\n0\\r\\n\\r\\nS')
-                return
+                r2 = requests.get(url, headers=headers)
+                if r2.status_code == 200:
+                    out.success(url, self.name, method='POST', **payload_headers, type="TE.CL型",
+                                data='1\\r\\nD\\r\\n0\\r\\n\\r\\nS')
+                    return
