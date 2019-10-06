@@ -151,6 +151,24 @@ def _set_conf():
         }
 
 
+def _init_stdout():
+    # 不扫描网址
+    if len(conf["excludes"]):
+        logger.info("Exclude urls:{}".format(repr(conf["excludes"])))
+    # 指定扫描网址
+    if len(conf["includes"]) and conf["includes"][0] != ".*":
+        logger.info("Include urls:{}".format(repr(conf["includes"])))
+    # 不使用插件
+    if len(conf["exclude_plugins"]):
+        logger.info("Exclude plugins:{}".format(repr(conf["exclude_plugins"])))
+    # 指定使用插件
+    if len(conf["include_plugins"]) and conf["include_plugins"][0] != "all":
+        logger.info("Include plugins:{}".format(repr(conf["include_plugins"])))
+    # 主动探测
+    no_active = 'On' if str(conf["no_active"]) == "True" else "Off"
+    logger.info("Active detection mode:{}".format(no_active))
+
+
 def init(root, cmdline):
     cinit(autoreset=True)
     banner()
@@ -160,6 +178,7 @@ def init(root, cmdline):
     _set_conf()
     _init_kb()
     _init_plugins()
+    _init_stdout()
     patch_all()
 
 
