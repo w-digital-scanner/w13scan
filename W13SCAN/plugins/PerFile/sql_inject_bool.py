@@ -172,8 +172,13 @@ class W13SCAN(PluginBase):
             for k, v in params.items():
                 if k.lower() in ignoreParams:
                     continue
-
-                for flag in sql_flag:
+                temp_sql_flag = sql_flag.copy()
+                # test order by
+                if v == "desc" or v == "asc":
+                    _sql_flag = ",if('{0}'='{1}',1,(select 1 from information_schema.tables))"
+                    temp_sql_flag.append(_sql_flag)
+            
+                for flag in temp_sql_flag:
                     is_num = False
                     if flag == "<--isdigit-->":
                         if str(v).isdigit():
