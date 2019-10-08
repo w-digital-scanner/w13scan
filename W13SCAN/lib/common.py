@@ -301,7 +301,7 @@ def createGithubIssue(errMsg, excMsg):
     key = hashlib.md5(_.encode()).hexdigest()[:8]
     try:
         req = requests.get("https://api.github.com/search/issues?q={}".format(
-            quote("repo:boy-hack/w13scan Unhandled exception (#{})".format(key))))
+            quote("repo:w-digital-scanner/w13scan Unhandled exception (#{})".format(key))))
     except Exception as e:
         return False
     _ = json.loads(req.text)
@@ -326,11 +326,11 @@ def createGithubIssue(errMsg, excMsg):
         "Authorization": "token {}".format(base64.b64decode(GITHUB_REPORT_OAUTH_TOKEN.encode()).decode())
     }
     try:
-        r = requests.post("https://api.github.com/repos/boy-hack/w13scan/issues", data=json.dumps(data),
+        r = requests.post("https://api.github.com/repos/w-digital-scanner/w13scan/issues", data=json.dumps(data),
                           headers=headers)
     except Exception as e:
         return False
-    issueUrl = re.search(r"https://github.com/boy-hack/w13scan/issues/\d+", r.text)
+    issueUrl = re.search(r"https://github\.com/w-digital-scanner/w13scan/issues/\d+", r.text)
     if issueUrl:
         infoMsg = "created Github issue can been found at the address '%s'" % issueUrl.group(0)
         dataToStdout('\r' + "[*] {}".format(infoMsg) + '\n\r')
