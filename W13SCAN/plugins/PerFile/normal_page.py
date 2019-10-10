@@ -35,8 +35,9 @@ class W13SCAN(PluginBase):
             out.success(url, self.name, info=info)
 
         for func in [sensitive_idcard, sensitive_bankcard]:
-            ret = func(resp_str)
-            if ret:
-                content = ret["content"]
-                if out.set(content):
-                    out.success(url, self.name, content=content, type=ret["type"])
+            rets = func(resp_str)
+            if rets:
+                for ret in rets:
+                    content = ret["content"]
+                    if out.set(content):
+                        out.success(url, self.name, content=content, type=ret["type"])
