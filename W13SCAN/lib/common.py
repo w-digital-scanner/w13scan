@@ -148,13 +148,15 @@ def paramToDict(parameters, place=PLACE.GET, hint=POST_HINT.NORMAL) -> dict:
                 if len(parts) >= 2:
                     testableParameters[parts[0]] = ''.join(parts[1:])
         elif hint == POST_HINT.JSON:
-            data = json.loads(parameters)
             try:
+                data = json.loads(parameters)
                 if isListLike(data):
                     for i in data:
                         testableParameters[i] = ''
                 elif isinstance(data, dict):
                     testableParameters.update(data)
+            except json.decoder.JSONDecodeError:
+                pass
             except:
                 pass
         elif hint == POST_HINT.ARRAY_LIKE:
