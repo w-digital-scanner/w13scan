@@ -3,6 +3,7 @@
 # @Time    : 2019/6/29 1:28 PM
 # @Author  : w8ay
 # @File    : option.py
+import json
 import os
 import platform
 import threading
@@ -29,6 +30,7 @@ def _set_path(root):
     PATH['certs'] = os.path.join(root, 'certs')
     PATH['plugins'] = os.path.join(root, 'plugins')
     PATH["data"] = os.path.join(root, "data")
+    PATH["retirejs"] = os.path.join(PATH["data"], "definitions.json")
 
 
 def _init_kb():
@@ -43,6 +45,10 @@ def _init_kb():
     KB["lock"] = threading.Lock()
     KB["result"] = 0
     KB["running"] = 0
+
+    KB["retirejs"] = None
+    with open(PATH["retirejs"]) as f:
+        KB["retirejs"] = json.load(f)
 
 
 def _init_plugins():
