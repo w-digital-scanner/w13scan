@@ -55,6 +55,8 @@ class OutPut(object):
         for k, v in report.items():
             if isinstance(v, list):
                 for i in v:
+                    if not isinstance(i, str):
+                        i = repr(i)
                     self.log(i)
             elif isinstance(v, str):
                 if len(k) < 15:

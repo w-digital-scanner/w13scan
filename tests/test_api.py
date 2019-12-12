@@ -25,3 +25,9 @@ class TestCase(unittest.TestCase):
         scan = Scanner(include_plugins=['http_smuggling.py'])
         scan.put(url)
         scan.run()
+
+    def test_retireJs(self):
+        url = 'http://discuz.demo/1.html'
+        scan = Scanner(include_plugins=['retireJS.py'])
+        scan.put(url)
+        scan.run()

@@ -4,7 +4,7 @@
 # @Author  : w8ay
 # @File    : retireJS.py
 from W13SCAN.lib.const import Level
-from W13SCAN.lib.helper.retireJs import main_scanner
+from W13SCAN.lib.helper.retireJs import main_scanner, js_extractor
 from W13SCAN.lib.output import out
 from W13SCAN.lib.plugins import PluginBase
 
@@ -27,7 +27,15 @@ class W13SCAN(PluginBase):
         p = self.requests.urlparse
         params = self.requests.params
         netloc = self.requests.netloc
+        js_links = js_extractor(resp_str)
+        result = []
 
-        result = main_scanner(url, resp_str)
-        if result:
-            out.success(url, self.name, **result)
+        ret = main_scanner(url, resp_str)
+        if ret:
+            result.append(ret)
+        for link in js_links:
+            ret2 = main_scanner(link, '')
+            if ret2:
+                result.append(ret2)
+        for res in result:
+            out.success(url, self.name, **res)

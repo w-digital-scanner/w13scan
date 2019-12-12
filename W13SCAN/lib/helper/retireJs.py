@@ -11,7 +11,8 @@ def is_defined(o):
 
 
 def deJSON(data):
-    return data.replace('\\\\', '\\')
+    data =  data.replace('\\\\', '\\')
+    return data
 
 
 def scan(data, extractor, definitions, matcher=None):
@@ -179,6 +180,8 @@ def main_scanner(uri, response):
     filecontent = response
     filecontent_scan_result = scan_file_content(filecontent, definitions)
     uri_scan_result.extend(filecontent_scan_result)
+    if not uri_scan_result:
+        uri_scan_result = scan_filename(uri,definitions)
     result = {}
     if uri_scan_result:
         result['component'] = uri_scan_result[0]['component']
@@ -195,3 +198,13 @@ def main_scanner(uri, response):
         for vulnerability in vulnerabilities:
             result['vulnerabilities'].append(json.loads(vulnerability.replace('\'', '"')))
         return result
+
+
+def js_extractor(response):
+    """Extract js files from the response body"""
+    scripts = []
+    matches = re.findall(r'<(?:script|SCRIPT).*?(?:src|SRC)=([^\s>]+)', response)
+    for match in matches:
+        match = match.replace('\'', '').replace('"', '').replace('`', '')
+        scripts.append(match)
+    return scripts
