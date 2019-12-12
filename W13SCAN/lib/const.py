@@ -127,7 +127,6 @@ ARRAY_LIKE_RECOGNITION_REGEX = r"(\A|%s)(\w+)\[\]=.+%s\2\[\]=" % (
     DEFAULT_GET_POST_DELIMITER, DEFAULT_GET_POST_DELIMITER)
 
 notAcceptedExt = [
-    "js",
     "css",
     "jpg",
     "jpeg",
