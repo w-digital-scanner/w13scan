@@ -39,5 +39,7 @@ class W13SCAN(PluginBase):
             if rets:
                 for ret in rets:
                     content = ret["content"]
+                    if not isinstance(content, str):
+                        content = str(content)
                     if out.set(content):
                         out.success(url, self.name, content=content, type=ret["type"])
