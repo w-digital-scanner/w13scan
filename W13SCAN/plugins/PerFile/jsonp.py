@@ -49,7 +49,7 @@ class W13SCAN(PluginBase):
         for func in sensitive_params:
             ret = func(text)
             if ret:
-                return ret['content']
+                return ret
         for item in sensitive_list:
             ret = re.search(r'[\b\'"]{}[\b\'"]'.format(item), text, re.I)
             if ret:
@@ -82,7 +82,7 @@ class W13SCAN(PluginBase):
                     if ret:
                         res = {
                             "Referer": domain,
-                            "keyword": ret,
+                            "keyword": str(ret),
                             "Content-Type": r.headers.get("Content-Type", "")
                         }
                         response = self.jsonp_load(r.text)
