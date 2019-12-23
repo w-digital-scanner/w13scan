@@ -82,24 +82,25 @@ def check(results, definitions):
                 None)].get(
             "vulnerabilities",
             None)
-        for i in range(len(vulns)):
-            if (not _is_at_or_above(result.get("version", None),
-                                    vulns[i].get("below", None))):
-                if (is_defined(vulns[i].get("atOrAbove", None)) and not _is_at_or_above(
-                        result.get("version", None), vulns[i].get("atOrAbove", None))):
-                    continue
+        if vulns:
+            for i in range(len(vulns)):
+                if (not _is_at_or_above(result.get("version", None),
+                                        vulns[i].get("below", None))):
+                    if (is_defined(vulns[i].get("atOrAbove", None)) and not _is_at_or_above(
+                            result.get("version", None), vulns[i].get("atOrAbove", None))):
+                        continue
 
-                vulnerability = {"info": vulns[i].get("info", None)}
-                if (vulns[i].get("severity", None)):
-                    vulnerability["severity"] = vulns[i].get("severity", None)
+                    vulnerability = {"info": vulns[i].get("info", None)}
+                    if (vulns[i].get("severity", None)):
+                        vulnerability["severity"] = vulns[i].get("severity", None)
 
-                if (vulns[i].get("identifiers", None)):
-                    vulnerability["identifiers"] = vulns[
-                        i].get("identifiers", None)
+                    if (vulns[i].get("identifiers", None)):
+                        vulnerability["identifiers"] = vulns[
+                            i].get("identifiers", None)
 
-                result["vulnerabilities"] = result.get(
-                    "vulnerabilities", None) or []
-                result["vulnerabilities"].append(vulnerability)
+                    result["vulnerabilities"] = result.get(
+                        "vulnerabilities", None) or []
+                    result["vulnerabilities"].append(vulnerability)
 
     return results
 
