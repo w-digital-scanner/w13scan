@@ -101,7 +101,10 @@ class W13SCAN(PluginBase):
 
         for payload in payloads:
             test_url = url.rstrip('/') + payload["path"]
-            r = requests.get(test_url, headers=headers, allow_redirects=False)
+            try:
+                r = requests.get(test_url, headers=headers, allow_redirects=False)
+            except:
+                continue
             if r.status_code != 200:
                 continue
             if payload["tag"]:
