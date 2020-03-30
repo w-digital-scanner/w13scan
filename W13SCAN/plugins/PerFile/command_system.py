@@ -65,7 +65,7 @@ class W13SCAN(PluginBase):
                 if k.lower() in ignoreParams:
                     continue
                 data = copy.deepcopy(params)
-                for spli in ['', ';']:
+                for spli in ['', ';',"&&","|"]:
                     for flag, re_list in url_flag.items():
                         if spli == "":
                             data[k] = flag
