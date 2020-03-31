@@ -301,6 +301,17 @@ def createGithubIssue(errMsg, excMsg):
     errMsg = re.sub("cookie: .*", 'cookie: *', errMsg, flags=re.I | re.S)
 
     key = hashlib.md5(_.encode()).hexdigest()[:8]
+
+    msg = "\ndo you want to automatically create a new (anonymized) issue "
+    msg += "with the unhandled exception information at "
+    msg += "the official Github repository? [y/N] "
+    try:
+        choice = input(msg)
+    except:
+        choice = 'n'
+    if choice.lower() != 'y':
+        return False
+
     try:
         req = requests.get("https://api.github.com/search/issues?q={}".format(
             quote("repo:w-digital-scanner/w13scan Unhandled exception (#{})".format(key))))
