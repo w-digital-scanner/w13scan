@@ -62,3 +62,7 @@ By introducing the w13scan package, you can quickly create a scanner.
 
 ## Contributors
 - [CONTRIBUTORS](CONTRIBUTORS.md)
+
+## 关注
+微信公众号搜索"Hacking就是好玩"
+
