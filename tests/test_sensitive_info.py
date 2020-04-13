@@ -5,7 +5,7 @@
 # @File    : test_sensitive_info.py
 import unittest
 
-from W13SCAN.lib.helper.sensitive_info import *
+from lib.helper.helper_sensitive import *
 
 
 class TestCase(unittest.TestCase):

@@ -5,33 +5,22 @@
 # @File    : http_smuggling.py
 import requests
 from requests import Request, Session
-from W13SCAN.lib.const import Level
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+
+from lib.core.common import generateResponse
+from lib.core.enums import VulType, PLACE
+from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
     name = 'http smuggling 走私攻击'
     desc = '''由于前后端处理http协议时的差异，造成走私攻击，或由此获取敏感信息，本插件只有检测功能'''
-    level = Level.MIDDLE
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
-
+        url = self.requests.url
+        headers = self.requests.headers
         cycle = 5
-        timeout = 30
 
-        if self.response.status != 200:
+        if self.response.status_code != 200:
             return
         # request_smuggling_cl_te
         for i in range(cycle):
@@ -50,11 +39,15 @@ class W13SCAN(PluginBase):
                 r = requests.post(url, headers=temp_header, data=data, timeout=30)
             except:
                 continue
-            if r.status_code == 403 and resp_str != r.text:
+            if r.status_code == 403 and self.response.text != r.text:
                 r2 = requests.get(url, headers=headers)
                 if r2 == 200:
-                    out.success(url, self.name, method='POST', **payload_headers, type="CL.TE型",
-                                data='0\\r\\n\\r\\nS', )
+                    result = self.new_result()
+                    result.init_info(self.requests.url, "http smuggling 走私攻击", VulType.SMUGGLING)
+                    result.add_detail("发送畸形包", r.reqinfo, generateResponse(r),
+                                      "request_smuggling CL.TE型", "", "", PLACE.POST)
+                    result.add_detail("访问正常网页", r2.reqinfo, generateResponse(r2), "", "", "", PLACE.GET)
+                    self.success(result)
                     return
         # request_smuggling_te_cl
         for i in range(cycle + 1):
@@ -74,9 +67,13 @@ class W13SCAN(PluginBase):
                 r = s.send(prepped)
             except:
                 continue
-            if r.status_code == 403 and resp_str != r.text:
+            if r.status_code == 403 and self.response.text != r.text:
                 r2 = requests.get(url, headers=headers)
                 if r2.status_code == 200:
-                    out.success(url, self.name, method='POST', **payload_headers, type="TE.CL型",
-                                data='1\\r\\nD\\r\\n0\\r\\n\\r\\nS')
+                    result = self.new_result()
+                    result.init_info(self.requests.url, "http smuggling 走私攻击", VulType.SMUGGLING)
+                    result.add_detail("发送畸形包", r.reqinfo, generateResponse(r),
+                                      "request_smuggling TE.CL型", "", "", PLACE.POST)
+                    result.add_detail("访问正常网页", r2.reqinfo, generateResponse(r2), "", "", "", PLACE.GET)
+                    self.success(result)
                     return

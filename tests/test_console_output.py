@@ -6,9 +6,9 @@
 import time
 import unittest
 
-from W13SCAN.lib.controller import printProgress
-from W13SCAN.lib.output import OutPut, KB
-from W13SCAN.thirdpart.console import getTerminalSize
+from lib.controller import printProgress
+from lib.output import OutPut, KB
+from thirdpart.console import getTerminalSize
 from queue import Queue
 
 

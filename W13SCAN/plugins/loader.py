@@ -3,193 +3,66 @@
 # @Time    : 2019/7/4 10:18 PM
 # @Author  : w8ay
 # @File    : loader.py
-import re
-from urllib.parse import unquote
 from urllib.parse import urlparse
 
-import chardet
 import requests
-from tld import get_fld
 
-from W13SCAN.lib.baseproxy import HttpTransfer
-from W13SCAN.lib.common import paramToDict, get_links, get_parent_paths
-from W13SCAN.lib.const import JSON_RECOGNITION_REGEX, POST_HINT, XML_RECOGNITION_REGEX, \
-    JSON_LIKE_RECOGNITION_REGEX, ARRAY_LIKE_RECOGNITION_REGEX, MULTIPART_RECOGNITION_REGEX, DEFAULT_GET_POST_DELIMITER, \
-    PLACE, logoutParams, Level, notAcceptedExt
-from W13SCAN.lib.controller import task_push
-from W13SCAN.lib.data import KB, conf
-from W13SCAN.lib.plugins import PluginBase
-from W13SCAN.lib.wappanalyzer import fingter_loader
-
-
-class FakeReq(HttpTransfer):
-
-    def __init__(self, url, headers: dict, method='GET', data={}):
-        HttpTransfer.__init__(self)
-
-        self.https = False
-        self.urlparse = p = urlparse(url)
-        port = 80
-        if p.scheme == "https":
-            port = 443
-            self.https = True
-        hostname = p.netloc
-        if ":" in p.netloc:
-            try:
-                hostname, port = p.netloc.split(":")
-                port = int(port)
-            except:
-                hostname = p.netloc
-                port = 80
-        self.hostname = hostname
-        self.port = port
-
-        self.command = 'GET' if method == 'GET' else method
-        self._body = b''
-        if self.command == 'POST':
-            self.post_hint = POST_HINT.NORMAL
-            self._body = ''
-            for k, v in data.items():
-                self._body += "{}={};".format(k, v)
-            self._body = self._body.encode()
-            self.post_hint = POST_HINT.NORMAL
-            self.post_data = data
-
-        self.path = p.path
-        if p.query:
-            self.path = p.path + "?" + p.query
-        self.request_version = 1.1
-
-        # self.urlparse = None
-        self.netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
-        self.tld = get_fld(self.netloc, fix_protocol=True, fail_silently=True)
-        self.params = paramToDict(p.query, place=PLACE.GET)
-        self.cookies = None
-        if "cookie" in headers or "Cookie" in headers:
-            self.cookies = paramToDict(headers.get("cookie", headers.get("Cookie")), place=PLACE.COOKIE)
-        self._headers = headers
-
-    def to_data(self):
-        # Build request
-        req_data = '%s %s %s\r\n' % (self.command, self.path, self.request_version)
-        # Add headers to the request
-        req_data += '%s\r\n' % self.build_headers()
-        req_data = req_data.encode("utf-8", errors='ignore')
-        req_data += self.get_body_data()
-        return req_data
-
-
-class FakeResp(HttpTransfer):
-
-    def __init__(self, resp: requests.Response):
-
-        HttpTransfer.__init__(self)
-
-        self.response_version = 1.1
-        self.status = resp.status_code
-        self.reason = resp.reason
-        self.language = None
-        self.webserver = None
-        self.system = None
-        self._body = resp.content
-        self._headers = resp.headers
-        self.decoding = chardet.detect(self._body)['encoding']  # 探测当前的编码
-        self.parse = urlparse(resp.url)
-        self._url = "{}://{}{}".format(self.parse.scheme, self.parse.netloc, self.parse.path)
-        if self.parse.query:
-            self._url += "?" + self.parse.query
-
-    def get_body_str(self):
-        if self.decoding:
-            try:
-                return self.get_body_data().decode(self.decoding)
-            except Exception as e:
-                return self.get_body_data().decode('utf-8', "ignore")
-        return self.get_body_data().decode('utf-8', "ignore")
+from lib.controller.controller import task_push
+from lib.core.common import isListLike, get_links, get_parent_paths
+from lib.core.data import conf, KB
+from lib.core.enums import WEB_PLATFORM, OS
+from lib.core.plugins import PluginBase
+from lib.core.settings import logoutParams, notAcceptedExt
 
 
 class W13SCAN(PluginBase):
     type = 'loader'
     desc = '''Loader插件对请求以及响应进行解析，从而调度更多插件运行'''
     name = 'plugin loader'
-    level = Level.NONE
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-        post_data = self.requests.get_body_data().decode(errors='ignore')  # POST 数据
+        headers = self.requests.headers
+        url = self.requests.url
+        resp_str = self.response.text
 
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-        encoding = self.response.decoding or 'utf-8'
+        if conf.no_active:
+            # 语义解析获得参数,重新生成新的fakereq,fakeresps
+            pass
 
-        p = self.requests.urlparse = urlparse(url)
-        netloc = self.requests.netloc = "{}://{}{}".format(p.scheme, p.netloc, p.path)
-        self.requests.tld = get_fld(netloc, fix_protocol=True, fail_silently=True)
+        # fingerprint basic info
+        exi = self.requests.suffix.lower()
+        if exi == ".asp":
+            self.response.programing.append(WEB_PLATFORM.ASP)
+            self.response.os.append(OS.WINDOWS)
+        elif exi == ".aspx":
+            self.response.programing.append(WEB_PLATFORM.ASPX)
+            self.response.os.append(OS.WINDOWS)
+        elif exi == ".php":
+            self.response.programing.append(WEB_PLATFORM.PHP)
+        elif exi == ".jsp" or exi == ".do" or exi == ".action":
+            self.response.programing.append(WEB_PLATFORM.JAVA)
 
-        data = unquote(p.query, encoding)
-        params = paramToDict(data, place=PLACE.GET)
-        self.requests.params = params
-        if "cookie" in headers:
-            self.requests.cookies = paramToDict(headers["cookie"], place=PLACE.COOKIE)
+        for name, values in KB["fingerprint"].items():
+            if not getattr(self.response, name):
+                _result = []
+                for mod in values:
+                    m = mod.fingerprint(self.response.headers, self.response.text)
+                    if isinstance(m, str):
+                        _result.append(m)
+                    if isListLike(m):
+                        _result += list(m)
+                if _result:
+                    setattr(self.response, name, _result)
+        # fingerprint basic end
 
-        # finger basic info
-        self.response.language, self.response.system, self.response.webserver = fingter_loader(resp_str,
-                                                                                               self.response.build_headers())
-        if not self.response.language:
-            if p.path.endswith(".asp"):
-                self.response.language = "ASP"
-                self.response.system = "WINDOWS"
-            elif p.path.endswith(".aspx"):
-                self.response.language = "ASPX"
-                self.response.system = "WINDOWS"
-            elif p.path.endswith(".php"):
-                self.response.language = "PHP"
-            elif p.path.endswith(".jsp") or p.path.endswith(".do") or p.path.endswith(".action"):
-                self.response.language = "JAVA"
-        if method == "POST":
-            post_data = unquote(post_data, encoding)
-
-            if re.search('([^=]+)=([^%s]+%s?)' % (DEFAULT_GET_POST_DELIMITER, DEFAULT_GET_POST_DELIMITER),
-                         post_data):
-                self.requests.post_hint = POST_HINT.NORMAL
-                self.requests.post_data = paramToDict(post_data, place=PLACE.POST, hint=self.requests.post_hint)
-
-            elif re.search(JSON_RECOGNITION_REGEX, post_data):
-                self.requests.post_hint = POST_HINT.JSON
-                self.requests.post_data = paramToDict(post_data, place=PLACE.POST, hint=self.requests.post_hint)
-
-            elif re.search(XML_RECOGNITION_REGEX, post_data):
-                self.requests.post_hint = POST_HINT.XML
-
-            elif re.search(JSON_LIKE_RECOGNITION_REGEX, post_data):
-                self.requests.post_hint = POST_HINT.JSON_LIKE
-
-            elif re.search(ARRAY_LIKE_RECOGNITION_REGEX, post_data):
-                self.requests.post_hint = POST_HINT.ARRAY_LIKE
-                self.requests.post_data = paramToDict(post_data, place=PLACE.POST, hint=self.requests.post_hint)
-
-            elif re.search(MULTIPART_RECOGNITION_REGEX, post_data):
-                self.requests.post_hint = POST_HINT.MULTIPART
-
-            # 支持自动识别并转换参数的类型有 NORMAL,JSON,ARRAY-LIKE
-            if self.requests.post_hint and self.requests.post_hint in [POST_HINT.NORMAL, POST_HINT.JSON,
-                                                                       POST_HINT.ARRAY_LIKE]:
-                # if KB["spiderset"].add(method + url + ''.join(self.requests.post_data), 'PostScan'):
-                task_push('PostScan', self.requests, self.response)
-            elif self.requests.post_hint is None:
-                print("post data数据识别失败")
-
-        elif method == "GET":
-            if KB["spiderset"].add(url, 'PerFile'):
-                task_push('PerFile', self.requests, self.response)
+        if KB["spiderset"].add(url, 'PerFile'):
+            task_push('PerFile', self.requests, self.response)
 
         # Send PerScheme
+        p = urlparse(url)
         domain = "{}://{}".format(p.scheme, p.netloc)
         if KB["spiderset"].add(domain, 'PerScheme'):
-            self.requests.path = "/"
+            # todo perscheme fake req and resp
             task_push('PerScheme', self.requests, self.response)
 
         if conf["no_active"]:

@@ -3,151 +3,348 @@
 # @Time    : 2019/7/15 3:52 PM
 # @Author  : w8ay
 # @File    : xss.py
-# referer: https://www.anquanke.com/post/id/148357
 import copy
-import os
-import random
 import re
+import string
+from urllib.parse import unquote
 
 import requests
 
-from W13SCAN.lib.common import random_str, get_middle_text
-from W13SCAN.lib.const import ignoreParams, Level, notAcceptedExt
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from lib.core.common import random_str, generateResponse
+from lib.core.data import conf
+from lib.core.enums import HTTPMETHOD, PLACE, VulType
+from lib.core.output import ResultObject
+from lib.core.plugins import PluginBase
+from lib.core.settings import XSS_EVAL_ATTITUDES
+from lib.helper.htmlparser import SearchInputInResponse, random_upper
+from lib.helper.jscontext import SearchInputInScript
 
 
 class W13SCAN(PluginBase):
-    name = 'XSS多种方式探测'
-    desc = '''暂只支持Get请求方式'''
-    level = Level.MIDDLE
+    name = 'XSS语义化探测插件'
+
+    def init(self):
+        self.current_key = ""
+        self.origin = ""
+        self.result = ResultObject(self)
+        self.result.init_info(self.requests.url, "XSS注入发现", VulType.XSS)
+
+    def req(self, positon, params) -> requests.Response:
+        headers = self.requests.headers
+        if self.current_key in params:
+            params[self.current_key] = self.origin + params[self.current_key]
+        r = None
+        if positon == PLACE.GET:
+            r = requests.get(self.requests.netloc, params=params, headers=headers)
+        elif positon == PLACE.POST:
+            r = requests.post(self.requests.url, data=params, headers=headers)
+        elif positon == PLACE.COOKIE:
+            if self.requests.method == HTTPMETHOD.GET:
+                r = requests.get(self.requests.url, headers=headers, cookies=params)
+            elif self.requests.method == HTTPMETHOD.POST:
+                r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
+                                  cookies=params)
+        return r
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
 
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
+        iterdatas = []
+        self.init()
+        if self.requests.method == HTTPMETHOD.GET:
+            iterdatas.append((self.requests.params, PLACE.GET))
+        elif self.requests.method == HTTPMETHOD.POST:
+            iterdatas.append((self.requests.post_data, PLACE.POST))
+        if conf.level >= 3:
+            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
 
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
-
-        if method == 'GET':
-            if p.query == '':
-                return
-            exi = os.path.splitext(p.path)[1]
-            if exi.strip('.') in notAcceptedExt:
-                return
-
-            rndStr = 9000 + random.randint(1, 999)
-            tag = random_str(4)
-            html_payload = "<{tag}>{randint}</{tag}>".format(tag=tag, randint=rndStr)  # html xss
-            attr_payload = [
-                '" oNsOmeEvent="console.log(233)',  # 双引号payload
-                "' oNsOmeEvent='console.log(2333)",  # 单引号payload
-            ]
-            url_payload = "javascript&colon;{randint}".format(randint=rndStr)
-            javascript_payload = "{randint}".format(randint=rndStr)
-
-            dom_xss = [
-                'location.hash',
-                'location.href',
-                'location.search'
-            ]
-
-            for k, v in params.items():
-                if k.lower() in ignoreParams:
+        for item in iterdatas:
+            iterdata, positon = item
+            for k, v in iterdata.items():
+                data = copy.deepcopy(iterdata)
+                v = unquote(v)
+                if v not in self.response.text:
                     continue
-                # check v is in content
-                if v.lower() not in resp_str.lower():
+                # 探测回显
+                xsschecker = "0x" + random_str(6, string.digits + "abcdef")
+                data[k] = xsschecker
+                r1 = self.req(positon, data)
+                if not re.search(xsschecker, r1.text, re.I):
+                    xsschecker = "0x" + random_str(6, string.digits + "abcdef")
+                    data[k] = v + xsschecker
+                    r1 = self.req(positon, data)
+                    if not re.search(xsschecker, r1.text, re.I):
+                        continue
+                    else:
+                        self.addorigin = v
+                if 'html' not in r1.headers.get("Content-Type", "").lower():
                     continue
-                data = copy.deepcopy(params)
-                ranstr = random_str(5)
-                data[k] = v + ranstr
-                r = requests.get(url, headers=headers, params=data)
-                html1 = r.text
-                if ranstr not in html1:
-                    continue
+                self.current_key = k
 
-                in_script = False
-                may_dom_xss = False
-                script_group = re.findall('<script.*?>(.*?)</script>', html1, re.I | re.S | re.M)
-                if script_group:
-                    for i in script_group:
-                        if ranstr in i:
-                            in_script = True
-                            break
-                        for item in dom_xss:
-                            if item in i:
-                                may_dom_xss = item
+                # 反射位置查找
+                locations = SearchInputInResponse(xsschecker, r1.text)
+
+                if len(locations) == 0:
+                    # 找不到反射位置，找下自己原因?
+                    flag = random_str(5)
+                    payload = "<{}//".format(flag)
+                    data[k] = payload
+                    req = self.req(positon, data)
+                    if payload in req.text:
+                        self.result.add_detail("html代码未转义", req.reqinfo, generateResponse(req),
+                                               "可使用<svg onload=alert`1`// 进行攻击测试", k, data[k], positon)
+
+                for item in locations:
+                    _type = item["type"]
+                    details = item["details"]
+
+                    if _type == "html":
+                        if details["tagname"] == "style":
+                            payload = "expression(a({}))".format(random_str(6, string.ascii_lowercase))
+                            data[k] = payload
+                            req = self.req(positon, data)
+                            _locations = SearchInputInResponse(payload, req.text)
+                            for _item in _locations:
+                                if payload in _item["details"]["content"] and _item["details"]["tagname"] == "style":
+                                    self.result.add_detail("IE下可执行的表达式", req.reqinfo, generateResponse(req.text),
+                                                           "IE下可执行的表达式 expression(alert(1))", k, data[k], positon)
+                                    break
+                        flag = random_str(7)
+                        payload = "</{}><{}>".format(random_upper(details["tagname"]), flag)
+                        truepayload = "</{}>{}".format(random_upper(details["tagname"]), "<svg onload=alert`1`>")
+                        data[k] = payload
+                        req = self.req(positon, data)
+                        _locations = SearchInputInResponse(flag, req.text)
+                        for i in _locations:
+                            if i["details"]["tagname"] == flag:
+                                self.result.add_detail("html标签可被闭合", req.reqinfo, generateResponse(req),
+                                                       "<{}>可被闭合,可使用{}进行攻击测试".format(details["tagname"], truepayload),
+                                                       k, data[k],
+                                                       positon)
                                 break
-                if may_dom_xss:
-                    out.success(url, self.name, descipt="可能的[dom xss]在<script> 变量{}中".format(may_dom_xss))
+                    elif _type == "attibute":
+                        if details["content"] == "key":
+                            # test html
+                            flag = random_str(7)
+                            payload = "><{}".format(flag)
+                            truepayload = "><svg onload=alert`1`>"
+                            data[k] = payload
+                            req = self.req(positon, data)
+                            _locations = SearchInputInResponse(flag, req.text)
+                            for i in _locations:
+                                if i["details"]["tagname"] == flag:
+                                    self.result.add_detail("html标签可被闭合", req.reqinfo, generateResponse(req),
+                                                           "<{}>可被闭合,可使用{}进行攻击测试".format(details["tagname"],
+                                                                                         truepayload),
+                                                           k, data[k],
+                                                           positon)
+                                    break
+                            # test attibutes
+                            flag = random_str(5)
+                            payload = flag + "="
+                            data[k] = payload
+                            req = self.req(positon, data)
+                            _locations = SearchInputInResponse(flag, req.text)
+                            for i in _locations:
+                                for k, v in i["details"]["attibutes"]:
+                                    if k == flag:
+                                        self.result.add_detail("可自定义任意标签事件", req.reqinfo, generateResponse(req),
+                                                               "可以自定义类似 'onmouseover=prompt(1)'的标签事件",
+                                                               k, data[k],
+                                                               positon)
+                                        break
+                        else:
+                            # test attibutes
+                            flag = random_str(5)
+                            for _payload in ["'", "\"", ""]:
+                                payload = _payload + flag + "=" + _payload
+                                truepayload = "{payload} onmouseover=prompt(1){payload}".format(payload=_payload)
+                                data[k] = payload
+                                req = self.req(positon, data)
+                                _occerens = SearchInputInResponse(flag, req.text)
+                                for i in _occerens:
+                                    for k, v in i["details"]["attibutes"]:
+                                        if k == flag:
+                                            self.result.add_detail("引号可被闭合，可使用其他事件造成xss", req.reqinfo,
+                                                                   generateResponse(req),
+                                                                   "可使用payload:{}".format(truepayload), k, data[k],
+                                                                   positon)
+                                            break
+                            # test html
+                            flag = random_str(7)
+                            for _payload in [r"'><{}>", "\"><{}>"]:
+                                payload = _payload.format(flag)
+                                data[k] = payload
+                                req = self.req(positon, data)
+                                _occerens = SearchInputInResponse(flag, req.text)
+                                for i in _occerens:
+                                    if i["details"]["tagname"] == flag:
+                                        self.result.add_detail("html标签可被闭合", req.reqinfo, generateResponse(req),
+                                                               "可测试payload:{}".format(
+                                                                   _payload.format("svg onload=alert`1`")),
+                                                               k, data[k],
+                                                               positon)
+                                        break
+                            # 针对特殊属性进行处理
+                            specialAttributes = ['srcdoc', 'src', 'action', 'data', 'href']  # 特殊处理属性
+                            keyname = details["attibutes"][0][0]
+                            tagname = details["tagname"]
+                            if keyname in specialAttributes:
+                                flag = random_str(7)
+                                data[k] = flag
+                                req = self.req(positon, data)
+                                _occerens = SearchInputInResponse(flag, req.text)
+                                for i in _occerens:
+                                    if len(i["details"]["attibutes"]) > 0 and i["details"]["attibutes"][0][
+                                        0] == keyname and \
+                                            i["details"]["attibutes"][0][1] == flag:
+                                        truepayload = flag
+                                        if i["details"]["attibutes"][0][0] in specialAttributes:
+                                            truepayload = "javascript:alert(1)"
 
-                if in_script:
-                    if ('"' + ranstr) in html1:
-                        data[k] = v + javascript_payload + '"'
-                        r = requests.get(url, headers=headers, params=data)
-                        if (javascript_payload + '"') in r.text:
-                            out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
-                                        descript="探测字符在<script>脚本内被解析,且双引号未被转义",
-                                        type="javascript xss")
-                    elif ("'" + ranstr) in html1:
-                        data[k] = v + javascript_payload + "'"
-                        r = requests.get(url, headers=headers, params=data)
-                        if (javascript_payload + "'") in r.text:
-                            out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
-                                        descript="探测字符在<script>脚本内被解析,且单引号未被转义",
-                                        type="javascript xss")
-                    # test domxss in javascript string
-                    if re.search('(innerHTML|document\.write)\s*=\s*[\'"].*{}'.format(ranstr), html1) or re.search(
-                            "\)\.html\(.*{}.*\)".format(ranstr), html1):
-                        data[k] = v + javascript_payload + '\\u003c\\x3c' + javascript_payload
-                        r = requests.get(url, headers=headers, params=data)
-                        middle = get_middle_text(r.text, javascript_payload, javascript_payload)
-                        if '\\u003c' in middle:
-                            out.success(url, self.name, payload="{}:{}".format(k, data[k]),
-                                        descript="字符在(innerHTML|document.write|$(xx).html())标签中且\\u003c未过滤",
-                                        bug_link="https://shuimugan.com/bug/view?bug_no=16041")
-                        elif '\\x3c' in middle:
-                            out.success(url, self.name, payload="{}:{}".format(k, data[k]),
-                                        descript="字符在(innerHTML|document.write|$(xx).html())标签中且\\x3c未过滤",
-                                        bug_link="https://shuimugan.com/bug/view?bug_no=16041")
-                else:
-                    # check html xss
-                    data[k] = v + html_payload
-                    r = requests.get(url, headers=headers, params=data)
-                    html1 = r.text
-                    if html_payload in html1:
-                        out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw, descript="探测tag被解析",
-                                    type="html xss")
-                        break
-
-                    # check attr xss
-                    for payload in attr_payload:
-                        data[k] = v + payload
-                        r = requests.get(url, headers=headers, params=data)
-                        html1 = r.text
-                        if payload[0] == '"':
-                            if payload + '"' in html1:
-                                out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
-                                            type="标签属性xss")
+                                        self.result.add_detail("值可控", req.reqinfo, generateResponse(req),
+                                                               "{}的值可控，可能被恶意攻击,payload:{}".format(keyname, truepayload),
+                                                               k, data[k],
+                                                               positon)
+                                        break
+                            elif keyname == "style":
+                                payload = "expression(a({}))".format(random_str(6, string.ascii_lowercase))
+                                data[k] = payload
+                                req = self.req(positon, data)
+                                _occerens = SearchInputInResponse(payload, req.text)
+                                for _item in _occerens:
+                                    if payload in str(_item["details"]) and len(_item["details"]["attibutes"]) > 0 and \
+                                            _item["details"]["attibutes"][0][0] == keyname:
+                                        self.result.add_detail("IE下可执行的表达式", req.reqinfo, generateResponse(req.text),
+                                                               "IE下可执行的表达式 payload:expression(alert(1))", k, data[k],
+                                                               positon)
+                                        break
+                            elif keyname.lower() in XSS_EVAL_ATTITUDES:
+                                # 在任何可执行的属性中
+                                payload = random_str(6, string.ascii_lowercase)
+                                data[k] = payload
+                                req = self.req(positon, data)
+                                _occerens = SearchInputInResponse(payload, req.text)
+                                for i in _occerens:
+                                    _attibutes = i["details"]["attibutes"]
+                                    if len(_attibutes) > 0 and _attibutes[0][1] == payload and _attibutes[0][
+                                        0].lower() == keyname.lower():
+                                        self.result.add_detail("事件的值可控", req.reqinfo, generateResponse(req),
+                                                               "{}的值可控，可能被恶意攻击".format(keyname), k, data[k], positon)
+                                        break
+                    elif _type == "comment":
+                        flag = random_str(7)
+                        for _payload in ["-->", "--!>"]:
+                            payload = "{}<{}>".format(_payload, flag)
+                            truepayload = payload.format(_payload, "svg onload=alert`1`")
+                            data[k] = payload
+                            req = self.req(positon, data)
+                            _occerens = SearchInputInResponse(flag, req.text)
+                            for i in _occerens:
+                                if i["details"]["tagname"] == flag:
+                                    self.result.add_detail("html注释可被闭合", req.reqinfo, generateResponse(req),
+                                                           "html注释可被闭合 测试payload:{}".format(truepayload), k, data[k],
+                                                           positon)
+                                    break
+                    elif _type == "script":
+                        # test html
+                        flag = random_str(7)
+                        script_tag = random_upper(details["tagname"])
+                        payload = "</{}><{}>{}</{}>".format(script_tag,
+                                                            script_tag, flag,
+                                                            script_tag)
+                        truepayload = "</{}><{}>{}</{}>".format(script_tag,
+                                                                script_tag, "prompt(1)",
+                                                                script_tag)
+                        data[k] = payload
+                        req = self.req(positon, data)
+                        _occerens = SearchInputInResponse(flag, req.text)
+                        for i in _occerens:
+                            if i["details"]["content"] == flag and i["details"][
+                                "tagname"].lower() == script_tag.lower():
+                                self.result.add_detail("可以新建script标签执行任意代码", req.reqinfo, generateResponse(req),
+                                                       "可以新建script标签执行任意代码 测试payload:{}".format(truepayload), k,
+                                                       data[k],
+                                                       positon)
                                 break
-                        elif payload[0] == "'":
-                            if payload + "'" in html1:
-                                out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
-                                            type="标签属性xss")
-                                break
 
-                    # check url payload
-                    re_parren = r'''[src|href|action]=['"]'''
-                    data[k] = v + url_payload
-                    r = requests.get(url, headers=headers, params=data)
-                    html1 = r.text
-                    if re.search(re_parren + url_payload, html1):
-                        out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw,
-                                    type="url xss")
-                        break
+                        # js 语法树分析反射
+                        source = details["content"]
+                        _occurences = SearchInputInScript(xsschecker, source)
+                        for i in _occurences:
+                            _type = i["type"]
+                            _details = i["details"]
+                            if _type == "InlineComment":
+                                flag = random_str(5)
+                                payload = "\n;{};//".format(flag)
+                                truepayload = "\n;{};//".format('prompt(1)')
+                                data[k] = payload
+                                resp = self.req(positon, data).text
+                                for _item in SearchInputInResponse(flag, resp):
+                                    if _item["details"]["tagname"] != "script":
+                                        continue
+                                    resp2 = _item["details"]["content"]
+                                    output = SearchInputInScript(flag, resp2)
+                                    for _output in output:
+                                        if flag in _output["details"]["content"] and _output[
+                                            "type"] == "ScriptIdentifier":
+                                            self.result.add_detail("js单行注释bypass", req.reqinfo, generateResponse(req),
+                                                                   "js单行注释可被\\n bypass".format(truepayload), k,
+                                                                   data[k], positon)
+                                            break
+
+                            elif _type == "BlockComment":
+                                flag = "0x" + random_str(4, "abcdef123456")
+                                payload = "*/{};/*".format(flag)
+                                truepayload = "*/{};/*".format('prompt(1)')
+                                data[k] = payload
+                                resp = self.req(positon, data).text
+                                for _item in SearchInputInResponse(flag, resp):
+                                    if _item["details"]["tagname"] != "script":
+                                        continue
+                                    resp2 = _item["details"]["content"]
+                                    output = SearchInputInScript(flag, resp2)
+                                    for _output in output:
+                                        if flag in _output["details"]["content"] and _output[
+                                            "type"] == "ScriptIdentifier":
+                                            self.result.add_detail("js块注释可被bypass", req.reqinfo, generateResponse(req),
+                                                                   "js单行注释可被\\n bypass".format(truepayload), k,
+                                                                   data[k], positon)
+                                            break
+                            elif _type == "ScriptIdentifier":
+                                self.result.add_detail("可直接执行任意js命令", req.reqinfo, generateResponse(req),
+                                                       "ScriptIdentifier类型 测试payload：prompt(1);//", k,
+                                                       data[k], positon)
+                            elif _type == "ScriptLiteral":
+                                content = _details["content"]
+                                quote = content[0]
+                                flag = random_str(6)
+                                if quote == "'" or quote == "\"":
+                                    payload = '{quote}-{rand}-{quote}'.format(quote=quote, rand=flag)
+                                    truepayload = '{quote}-{rand}-{quote}'.format(quote=quote, rand="prompt(1)")
+                                else:
+                                    flag = "0x" + random_str(4, "abcdef123456")
+                                    payload = flag
+                                    truepayload = "prompt(1)"
+                                data[k] = payload
+                                resp = self.req(positon, data).text
+                                resp2 = None
+                                for _item in SearchInputInResponse(payload, resp):
+                                    if payload in _item["details"]["content"] and _item["type"] == "script":
+                                        resp2 = _item["details"]["content"]
+
+                                if not resp2:
+                                    continue
+                                output = SearchInputInScript(flag, resp2)
+
+                                if output:
+                                    for _output in output:
+                                        if flag in _output["details"]["content"] and _output[
+                                            "type"] == "ScriptIdentifier":
+                                            self.result.add_detail("script脚本内容可被任意设置", req.reqinfo,
+                                                                   generateResponse(req),
+                                                                   "测试payload:{}".format(truepayload), k,
+                                                                   data[k], positon)
+                                            break
+
+        if len(self.result.detail) > 0:
+            self.success(self.result)

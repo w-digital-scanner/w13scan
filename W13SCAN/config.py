@@ -5,12 +5,11 @@
 # @File    : config.py
 
 # default setting
-
 SERVER_ADDR = ('127.0.0.1', 7778)  # 默认监听地址
 
 THREAD_NUM = 51  # 线程数量
 
-EXCLUDES = ["google\.", "lastpass\.", 'baidu\.com', '\.gov\.cn']  # 扫描排除网址(正则表达式)
+EXCLUDES = ["google", "lastpass", 'baidu.com', '.gov.cn']  # 扫描排除网址
 INCLUDES = [".*"]  # 扫描允许网址(正则表达式)
 
 EXCLUDE_PLUGINS = ['subdomain_found.py']  # 不使用的插件，文件名
@@ -30,18 +29,17 @@ PROXY_CONFIG = {
     "https": "127.0.0.1:8080"
 }
 
-if LEVEL >= 1:
-    # 等级为1，只使用简单，对网站无影响的插件
-    INCLUDE_PLUGINS = []
-    INCLUDE_PLUGINS.extend(['jsonp.py', 'cors.py', 'errorpage.py', 'directory_browse.py',
-                            'js_sensitive_content.py', 'analyze_parameter.py', 'normal_page.py', 'redirect.py',
-                            'subdomain_found.py'
-                            ])
-if LEVEL >= 2:
-    # 等级2，会主动发送部分流量，但流量规则不会被WAF等探测到。
-    INCLUDE_PLUGINS.extend(
-        [])
-
 # DEBUG
-DEBUG = False
-# EXCLUDE_PLUGINS = ['subdomain_found.py', 'jsonp.py', 'js_sensitive_content.py']
+DEBUG = True
+
+# REVERSE
+USE_REVERSE = False  # 使用反连平台将False改为True
+REVERSE_HTTP_IP = "127.0.0.1"
+REVERSE_HTTP_PORT = 9999
+
+REVERSE_DNS = "dnslog.w13scan.hacking8.com"
+
+REVERSE_RMI_IP = "127.0.0.1"
+REVERSE_RMI_PORT = 10002
+
+REVERSE_SLEEP = 5  # 反连后延时检测时间，单位是(秒)

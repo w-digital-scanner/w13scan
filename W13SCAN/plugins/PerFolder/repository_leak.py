@@ -7,28 +7,16 @@ import re
 
 import requests
 
-from W13SCAN.lib.const import Level
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from lib.core.common import generateResponse
+from lib.core.enums import VulType, PLACE
+from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
     desc = '''基于流量动态查找目录下仓库源码泄漏'''
     name = '.git .svn .bzr .hg泄漏插件'
-    level = Level.MIDDLE
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
 
         flag = {
             "/.svn/all-wcprops": "svn:wc:ra_dav:version-url",
@@ -37,11 +25,13 @@ class W13SCAN(PluginBase):
             '/CVS/Root': ':pserver:[\s\S]*?:[\s\S]*',
             '/.hg/requires': '^revlogv1.*'
         }
+        headers = self.requests.headers
         for f in flag.keys():
-            _ = url.rstrip('/') + f
-            try:
-                r = requests.get(_, headers=headers)
-                if re.search(flag[f], r.text, re.I | re.S | re.M):
-                    out.success(_, self.name)
-            except Exception as e:
-                pass
+            _ = self.requests.url.rstrip('/') + f
+            r = requests.get(_, headers=headers)
+            if re.search(flag[f], r.text, re.I | re.S | re.M):
+                result = self.new_result()
+                result.init_info(self.requests.url, "仓库泄漏", VulType.SENSITIVE)
+                result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                  "匹配到正则:{}".format(flag[f]), "", "", PLACE.GET)
+                self.success(result)

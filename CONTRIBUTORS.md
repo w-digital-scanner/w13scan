@@ -8,6 +8,9 @@ Go0p <https://github.com/Go0p>
 hackxx <https://github.com/hackxx>
 * 贡献logout不扫描规则
 
+## 捐赠者
+- xx
+
 ## Other
 
 - https://github.com/qiyeboy/BaseProxy  代理框架基于它

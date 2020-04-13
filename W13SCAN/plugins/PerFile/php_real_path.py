@@ -8,52 +8,52 @@ import os
 
 import requests
 
-from W13SCAN.lib.common import prepare_url, get_middle_text
-from W13SCAN.lib.const import ignoreParams, acceptedExt, Level
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from lib.core.common import get_middle_text, generateResponse
+from lib.core.data import conf
+from lib.core.enums import WEB_PLATFORM, HTTPMETHOD, PLACE, VulType
+from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
     desc = '''对于一些php网站，将正常参数替换为[]可能造成真实信息泄漏'''
     name = 'php 真实路径泄漏'
-    level = Level.MIDDLE
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
+        headers = self.requests.headers
 
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
-
-        if p.query == '':
-            return
-        exi = os.path.splitext(p.path)[1]
-        if exi not in acceptedExt:
-            return
-        if self.response.language and self.response.language != "PHP":
+        if WEB_PLATFORM.PHP not in self.response.programing and conf.level < 2:
             return
 
-        if "Warning" in resp_str and "array given" in resp_str:
-            out.success(url, self.name)
+        iterdatas = []
+        if self.requests.method == HTTPMETHOD.GET:
+            iterdatas.append((self.requests.params, PLACE.GET))
+        elif self.requests.method == HTTPMETHOD.POST:
+            iterdatas.append((self.requests.post_data, PLACE.POST))
+        if conf.level >= 3:
+            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
 
-        for k, v in params.items():
-            if k.lower() in ignoreParams:
-                continue
-            data = copy.deepcopy(params)
-            del data[k]
-            data[k + "[]"] = v
-            try:
-                _ = prepare_url(netloc, params=data)
-                r = requests.get(_, headers=headers)
-                if "Warning" in r.text and "array given" in r.text:
+        for item in iterdatas:
+            iterdata, positon = item
+            for k, v in iterdata.items():
+                data = copy.deepcopy(iterdata)
+                del data[k]
+                key = k + "[]"
+                data[key] = v
+
+                if positon == PLACE.GET:
+                    r = requests.get(self.requests.netloc, params=data, headers=headers)
+                elif positon == PLACE.POST:
+                    r = requests.post(self.requests.url, data=data, headers=headers)
+                elif positon == PLACE.COOKIE:
+                    if self.requests.method == HTTPMETHOD.GET:
+                        r = requests.get(self.requests.url, headers=headers, cookies=data)
+                    elif self.requests.method == HTTPMETHOD.POST:
+                        r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
+                                          cookies=data)
+                if "Warning" in r.text and "array given in " in r.text:
                     path = get_middle_text(r.text, 'array given in ', ' on line')
-                    out.success(_, self.name, path=path, raw=r.raw)
-            except:
-                pass
+                    result = self.new_result()
+                    result.init_info(self.requests.url, self.desc, VulType.SENSITIVE)
+                    result.add_detail("payload探测", r.reqinfo, generateResponse(r),
+                                      "将参数{k}={v}替换为{k}[]={v},path路径泄漏:{p}".format(k=k, v=v, p=path), key, v, positon)
+                    self.success(result)

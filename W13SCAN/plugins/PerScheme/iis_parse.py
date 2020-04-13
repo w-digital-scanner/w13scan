@@ -3,35 +3,30 @@
 # @Time    : 2019/7/20 8:49 PM
 # @Author  : w8ay
 # @File    : iis_parse.py
+from urllib.parse import urlparse
 
 import requests
 
-from W13SCAN.lib.const import Level
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from lib.core.common import generateResponse
+from lib.core.data import conf
+from lib.core.enums import WEB_PLATFORM, VulType, PLACE
+from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
     name = 'iis解析漏洞'
-    desc = '''iis 7.5 parse'''
-    level = Level.MIDDLE
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
-
-        if self.response.language == "PHP" or self.response.language is None:
+        if WEB_PLATFORM.PHP in self.response.programing or conf.level >= 2:
+            headers = self.requests.headers
+            p = urlparse(self.requests.url)
             domain = "{}://{}/".format(p.scheme, p.netloc)
             payload = domain + "robots.txt/.php"
             r = requests.get(payload, headers=headers)
-            if "user-agent" in r.text.lower() and 'text/plain' not in r.headers.get("Content-Type", ''):
-                out.success(payload, self.name)
+            ContentType = r.headers.get("Content-Type", '')
+            if 'html' in ContentType:
+                result = self.new_result()
+                result.init_info(self.requests.url, "代码解析漏洞", VulType.CODE_INJECTION)
+                result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                  "Content-Type:{}".format(ContentType), "", "", PLACE.GET)
+                self.success(result)

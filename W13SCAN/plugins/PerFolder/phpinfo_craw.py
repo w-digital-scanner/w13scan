@@ -6,45 +6,37 @@
 
 import requests
 
-from W13SCAN.lib.const import Level
-from W13SCAN.lib.helper.phpinfo_helper import get_phpinfo
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from lib.core.common import generateResponse
+from lib.core.data import conf
+from lib.core.enums import WEB_PLATFORM, VulType, PLACE
+from lib.core.plugins import PluginBase
+from lib.helper.helper_phpinfo import get_phpinfo
 
 
 class W13SCAN(PluginBase):
     desc = '''查看此目录下是否存在phpinfo文件'''
     name = 'phpinfo遍历'
-    level = Level.MIDDLE
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
-
-        if self.response.language and self.response.language != "PHP":
-            return
-
-        variants = [
-            "phpinfo.php",
-            "pi.php",
-            "php.php",
-            "i.php",
-            "test.php",
-            "temp.php",
-            "info.php",
-        ]
-        for phpinfo in variants:
-            testURL = url.strip('/') + "/" + phpinfo
-            r = requests.get(testURL, headers=headers)
-            if "<title>phpinfo()</title>" in r.text:
-                info = get_phpinfo(r.text)
-                out.success(testURL, self.name, info=info)
+        if WEB_PLATFORM.PHP in self.response.programing or conf.level >= 2:
+            headers = self.requests.headers
+            variants = [
+                "phpinfo.php",
+                "pi.php",
+                "php.php",
+                "i.php",
+                "test.php",
+                "temp.php",
+                "info.php",
+            ]
+            for phpinfo in variants:
+                testURL = self.requests.url.rstrip("/") + "/" + phpinfo
+                r = requests.get(testURL, headers=headers)
+                flag = "<title>phpinfo()</title>"
+                if flag in r.text:
+                    info = get_phpinfo(r.text)
+                    result = self.new_result()
+                    result.init_info(self.requests.url, "phpinfo发现", VulType.SENSITIVE)
+                    result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                      "匹配到关键词:{} information:{}".format(flag, repr(info)), "", "", PLACE.GET)
+                    self.success(result)

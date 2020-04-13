@@ -50,7 +50,7 @@ If you want w13scan to support https, similar to BurpSuite, first need to set up
 ## ⌨ Development
 
 ```python
-from W13SCAN.api import Scanner
+from api import Scanner
 
 scanner = Scanner(threads=20)
 scanner.put("http://example.com/?post=1")

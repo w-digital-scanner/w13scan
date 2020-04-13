@@ -259,3 +259,5 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
 - 2020.2.11 记录xss的改造之路：https://mp.weixin.qq.com/s?__biz=MzU2NzcwNTY3Mg==&mid=2247483698&idx=1&sn=9733c6078516c34963a4c0486c6d1872&chksm=fc986815cbefe103975c2e554ef2667b931e14b2d1dcca407af9edbad83ea72f3ac88efd8d22&token=1067935935&lang=zh_CN#rd
 - 2020.3.31 要做的
     - https://mp.weixin.qq.com/s?__biz=MzU2NzcwNTY3Mg==&mid=2247483709&idx=1&sn=b906bc5bd51d59c4ec16ae10dae8df8a&chksm=fc98681acbefe10c375db4f6f566e47734efa082286d1cba9d315be10a7bee5037454eaa9bd8&token=347901747&lang=zh_CN#rd
+- 2020.4.4 最近几周零零散散开始了重构w13scan之路，今天把整个的代码结构，目录结构，插件结构重新定义了，使插件编写变得更加简洁，同时对几个重要地方都标注了类型，代码更python，更优美了。
+- 2020.4.5 完成rmi反连平台，fastjson文章参考：https://koalr.me/post/fastjson-deserialization-detection/

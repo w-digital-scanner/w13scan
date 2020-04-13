@@ -5,32 +5,22 @@
 # @File    : errorpage.py
 
 import re
+from urllib.parse import urlparse
 
 import requests
 
-from W13SCAN.lib.common import random_str
-from W13SCAN.lib.const import Level
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from lib.core.common import random_str, generateResponse
+from lib.core.enums import VulType, PLACE
+from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
     name = '错误暴露信息'
     desc = '''访问一个不存在的错误页面，可以从这个页面中获取一些信息'''
-    level = Level.LOW
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
+        headers = self.requests.headers
+        p = urlparse(self.requests.url)
 
         domain = "{}://{}/".format(p.scheme, p.netloc) + random_str(6) + ".jsp"
 
@@ -45,5 +35,9 @@ class W13SCAN(PluginBase):
         r = requests.get(domain, headers=headers)
         for k, v in re_list.items():
             if re.search(v, r.text, re.S | re.I):
-                out.success(domain, self.name, name=k)
+                result = self.new_result()
+                result.init_info(self.requests.url, "错误的配置信息", VulType.SENSITIVE)
+                result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                  "匹配组件:{} 匹配正则:{}".format(k, v), "", "", PLACE.GET)
+                self.success(result)
                 break

@@ -11,15 +11,14 @@ import re
 
 import requests
 
-from W13SCAN.lib.const import Level
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from lib.core.common import generateResponse
+from lib.core.enums import VulType, PLACE
+from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
     name = '常见备份文件'
     desc = '''扫描每个目录下的常见备份文件,以及以当前目录名命名的备份文件'''
-    level = Level.MIDDLE
 
     def _check(self, content):
         """
@@ -47,35 +46,26 @@ class W13SCAN(PluginBase):
         return False
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
 
         file_dic = ['bak.rar', 'bak.zip', 'backup.rar', 'backup.zip', 'www.zip', 'www.rar', 'web.rar', 'web.zip',
                     'wwwroot.rar',
                     'wwwroot.zip', 'log.zip', 'log.rar']
 
-        if method == "GET":
-            url = url.rstrip("/")
-            if not re.match('^https?://.*/', url):
-                return False
-            directory = os.path.basename(url)
+        url = self.requests.url.rstrip("/")
+        directory = os.path.basename(url)
+        headers = self.requests.headers
 
-            for i in ['.rar', '.zip']:
-                file_dic.append(directory + i)
+        for i in ['.rar', '.zip']:
+            file_dic.append(directory + i)
 
-            for payload in file_dic:
-                test_url = os.path.dirname(url) + "/" + payload
-                r = requests.get(test_url, headers=headers, allow_redirects=False, stream=True)
-                content = r.raw2.read(10)
-                if r.status_code == 200 and self._check(content):
-                    rarsize = int(r.headers.get('Content-Length')) // 1024 // 1024
-                    out.success(test_url, self.name, size="{}M".format(rarsize))
+        for payload in file_dic:
+            test_url = os.path.dirname(url) + "/" + payload
+            r = requests.get(test_url, headers=headers, allow_redirects=False, stream=True)
+            content = r.raw.read(10)
+            if r.status_code == 200 and self._check(content):
+                rarsize = int(r.headers.get('Content-Length')) // 1024 // 1024
+                result = self.new_result()
+                result.init_info(self.requests.url, "备份文件下载", VulType.BRUTE_FORCE)
+                result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                  "备份文件大小:{}M".format(rarsize), "", "", PLACE.GET)
+                self.success(result)

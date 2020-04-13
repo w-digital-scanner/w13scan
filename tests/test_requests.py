@@ -7,7 +7,7 @@ import unittest
 
 import requests
 
-from W13SCAN.api import Scanner
+from api import Scanner
 
 
 class TestCase(unittest.TestCase):

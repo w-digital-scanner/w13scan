@@ -3,19 +3,19 @@
 # @Time    : 2019/7/21 4:45 PM
 # @Author  : w8ay
 # @File    : backup_domain.py
+from urllib.parse import urlparse
 
 import requests
 from tld import parse_tld
 
-from W13SCAN.lib.const import Level
-from W13SCAN.lib.output import out
-from W13SCAN.lib.plugins import PluginBase
+from lib.core.common import generateResponse
+from lib.core.enums import VulType
+from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
     name = '基于域名的备份文件'
     desc = '''扫描基于域名的备份文件'''
-    level = Level.MIDDLE
 
     def _check(self, content):
         """
@@ -43,18 +43,9 @@ class W13SCAN(PluginBase):
         return False
 
     def audit(self):
-        method = self.requests.command  # 请求方式 GET or POST
-        headers = self.requests.get_headers()  # 请求头 dict类型
-        url = self.build_url()  # 请求完整URL
-
-        resp_data = self.response.get_body_data()  # 返回数据 byte类型
-        resp_str = self.response.get_body_str()  # 返回数据 str类型 自动解码
-        resp_headers = self.response.get_headers()  # 返回头 dict类型
-
-        p = self.requests.urlparse
-        params = self.requests.params
-        netloc = self.requests.netloc
-
+        headers = self.requests.headers
+        url = self.requests.url
+        p = urlparse(url)
         domain = "{}://{}/".format(p.scheme, p.netloc)
 
         try:
@@ -70,9 +61,13 @@ class W13SCAN(PluginBase):
                 test_url = domain + payload + i
                 r = requests.get(test_url, headers=headers, allow_redirects=False, stream=True)
                 try:
-                    content = r.raw2.read(10)
+                    content = r.raw.read(10)
                 except:
                     continue
                 if r.status_code == 200 and self._check(content):
                     rarsize = int(r.headers.get('Content-Length')) // 1024 // 1024
-                    out.success(test_url, self.name, size="{}M".format(rarsize))
+                    result = self.new_result()
+                    result.init_info(self.requests.url, "备份文件下载", VulType.BRUTE_FORCE)
+                    result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                      "备份文件大小:{}M".format(rarsize), "", "", PLACE.GET)
+                    self.success(result)
