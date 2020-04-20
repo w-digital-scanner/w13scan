@@ -8,7 +8,7 @@ import copy
 from lib.core.option import init
 from lib.helper.function import isJavaObjectDeserialization, isPHPObjectDeserialization, isPythonObjectDeserialization
 from lib.core.plugins import PluginBase
-from lib.core.output import output, ResultObject
+from lib.core.output import ResultObject
 from lib.core.enums import WEB_PLATFORM, PLACE, HTTPMETHOD, VulType
 from lib.core.data import conf, KB, path, logger
 from lib.core.common import paramsCombination, generateResponse
@@ -19,7 +19,7 @@ import requests
 
 __all__ = [
     'isJavaObjectDeserialization', 'isPHPObjectDeserialization', 'isPythonObjectDeserialization',
-    'PluginBase', 'output', 'ResultObject', 'WEB_PLATFORM', 'conf', 'KB',
+    'PluginBase', 'ResultObject', 'WEB_PLATFORM', 'conf', 'KB',
     'path', 'logger', 'PLACE', 'HTTPMETHOD', 'paramsCombination', 'VulType', 'generateResponse'
 ]
 

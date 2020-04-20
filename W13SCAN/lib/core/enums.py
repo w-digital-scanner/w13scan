@@ -88,7 +88,7 @@ class VulType(object):
     CMD_INNJECTION = "cmd_injection"
     CODE_INJECTION = "code_injection"
     XSS = "xss"
-    SQL = "sqldet"
+    SQL = "sqli"
     DIRSCAN = "dirscan"
     PATH_TRAVERSAL = "path_traversal"
     XXE = "xxe"

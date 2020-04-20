@@ -4,15 +4,18 @@
 # @Author  : w8ay
 # @File    : common.py
 import base64
+import copy
 import hashlib
 import json
+import os
 import random
 import re
 import string
 import sys
-from urllib.parse import urlparse, urljoin, quote
+from urllib.parse import urlparse, urljoin, quote, urlunparse
 
 import requests
+from colorama.ansi import code_to_chars
 
 from lib.core.enums import PLACE, POST_HINT
 from lib.core.settings import DEFAULT_GET_POST_DELIMITER, DEFAULT_COOKIE_DELIMITER, \
@@ -83,7 +86,7 @@ def get_links(content, domain, limit=True):
     return urls
 
 
-def random_str(length=10, chars=string.ascii_letters + string.digits):
+def random_str(length=10, chars=string.ascii_lowercase + string.digits):
     return ''.join(random.sample(chars, length))
 
 
@@ -304,3 +307,107 @@ def ltrim(text, left):
     if text[0:num] == left:
         return text[num:]
     return text
+
+
+def splitUrlPath(url, all_replace=True, flag='<--flag-->') -> list:
+    ''''
+    all_replace 默认为True 替换所有路径，False 在路径后面加
+    falg 要加入的标记符
+    '''
+    u = urlparse(url)
+    path_split = u.path.split("/")[1:]
+    path_split2 = []
+    for i in path_split:
+        if i.strip() == "":
+            continue
+        path_split2.append(i)
+
+    index = 0
+    result = []
+
+    for path in path_split2:
+        copy_path_split = copy.deepcopy(path_split2)
+        if all_replace:
+            copy_path_split[index] = flag
+        else:
+            copy_path_split[index] = path + flag
+
+        new_url = urlunparse([u.scheme, u.netloc,
+                              ('/' + '/'.join(copy_path_split)),
+                              u.params, u.query, u.fragment])
+        result.append(new_url)
+        sptext = os.path.splitext(path)
+        if sptext[1]:
+            if all_replace:
+                copy_path_split[index] = flag + sptext[1]
+            else:
+                copy_path_split[index] = sptext[0] + flag + sptext[1]
+            new_url = urlunparse([u.scheme, u.netloc,
+                                  ('/' + '/'.join(copy_path_split)),
+                                  u.params, u.query, u.fragment])
+            result.append(new_url)
+        index += 1
+
+    return result
+
+
+def random_colorama(text: str, length=4):
+    '''
+    在一段文本中随机加入colorama颜色
+    :return:
+    '''
+    records = []
+    start = -1
+    end = -1
+    index = 0
+    colors = range(30, 38)
+    w13scan = ()
+    colornum = 5
+    for char in text:
+        if char.strip() == "":
+            end = index
+            if start >= 0 and end - start >= length:
+                if text[start:end] == "w13scan":
+                    w13scan = (start, end)
+                else:
+                    records.append(
+                        (start, end)
+                    )
+            start = -1
+            end = -1
+        else:
+            if start == -1 and end == -1:
+                start = index
+        index += 1
+    if start > 0 and index - start >= length:
+        records.append((start, index))
+    length_records = len(records)
+    if length_records < colornum:
+        colornum = len(records)
+    elif 3 * colornum < colornum:
+        colornum = colornum + (length_records - 3 * colornum) // 2
+    slice = random.sample(records, colornum)  # 从list中随机获取5个元素，作为一个片断返回
+    slice2 = []
+    for start, end in slice:
+        _len = end - start
+        rdint = random.randint(length, _len)
+        # 根据rdint长度重新组织start,end
+        rdint2 = _len - rdint
+        if rdint != 0:
+            rdint2 = random.randint(0, _len - rdint)
+        new_start = rdint2 + start
+        new_end = new_start + rdint
+        slice2.append((new_start, new_end))
+    slice2.append(w13scan)
+    slice2.sort(key=lambda a: a[0])
+    new_text = ""
+    indent_start = 0
+    indent_end = 0
+    for start, end in slice2:
+        indent_end = start
+        new_text += text[indent_start:indent_end]
+        color = random.choice(colors)
+        new_text += code_to_chars(color) + text[start:end] + code_to_chars(39)
+        indent_start = end
+    new_text += text[indent_start:]
+    return new_text

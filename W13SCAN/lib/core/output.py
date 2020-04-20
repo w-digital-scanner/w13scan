@@ -3,6 +3,7 @@
 # @Time    : 2019/6/29 2:28 PM
 # @Author  : w8ay
 # @File    : output.py
+import base64
 import collections
 import json
 import os
@@ -27,8 +28,15 @@ class OutPut(object):
         folder_path = os.path.join(path.output, folder_name)
         if not os.path.isdir(folder_path):
             os.mkdir(folder_path)
-        filename = str(int(time.time()))
+        filename = str(int(time.time())) + ".json"
         self.filename = os.path.join(folder_path, filename)
+
+        html_filename = str(int(time.time())) + ".html"
+        self.html_filename = os.path.join(folder_path, html_filename)
+        with open(os.path.join(path.data, "templates.html")) as f:
+            with open(self.html_filename, 'w') as f2:
+                f2.write(f.read())
+
         logger.info("result will be saved in {}".format(self.filename))
 
     def _set(self, value):
@@ -56,6 +64,14 @@ class OutPut(object):
         self.lock.acquire()
         with open(self.filename, "a+") as f:
             f.write(json.dumps(output) + '\n')
+        # 写入html
+
+        with open(self.html_filename, 'a+') as f2:
+            content = base64.b64encode(json.dumps(output).encode()).decode()
+            content = "<script class='web-vulns'>webVulns.push(JSON.parse(atob(\"{base64}\")))</script>".format(
+                base64=content)
+            f2.write(content)
+
         self.lock.release()
         self.collect.append(output)
         vultype = output["type"]
@@ -122,6 +138,3 @@ class ResultObject(object):
             "createtime": self.createtime,
             "detail": self.detail
         }
-
-
-output = OutPut()

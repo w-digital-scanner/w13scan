@@ -8,11 +8,14 @@ from urllib.parse import urlparse
 import requests
 
 from lib.controller.controller import task_push
-from lib.core.common import isListLike, get_links, get_parent_paths
+from lib.core.common import isListLike, get_parent_paths, random_str
 from lib.core.data import conf, KB
-from lib.core.enums import WEB_PLATFORM, OS
+from lib.core.enums import WEB_PLATFORM, OS, HTTPMETHOD
 from lib.core.plugins import PluginBase
-from lib.core.settings import logoutParams, notAcceptedExt
+from lib.core.settings import TOP_RISK_POST_PARAMS, TOP_RISK_GET_PARAMS
+from lib.helper.htmlparser import getParamsFromHtml
+from lib.parse.parse_request import FakeReq
+from lib.parse.parse_responnse import FakeResp
 
 
 class W13SCAN(PluginBase):
@@ -23,11 +26,21 @@ class W13SCAN(PluginBase):
     def audit(self):
         headers = self.requests.headers
         url = self.requests.url
-        resp_str = self.response.text
 
         if conf.no_active:
             # 语义解析获得参数,重新生成新的fakereq,fakeresps
-            pass
+            parse_params = set(getParamsFromHtml(self.response.text))
+            params_data = {}
+            if self.requests.method == HTTPMETHOD.GET:
+                parse_params = (parse_params | TOP_RISK_GET_PARAMS) - set(self.requests.params.keys())
+                for key in parse_params:
+                    params_data[key] = random_str(6)
+                self.requests.params = params_data
+            elif self.requests.method == HTTPMETHOD.POST:
+                parse_params = (parse_params | TOP_RISK_POST_PARAMS) - set(self.requests.post_data.keys())
+                for key in parse_params:
+                    params_data[key] = random_str(6)
+                self.requests.post_data = params_data
 
         # fingerprint basic info
         exi = self.requests.suffix.lower()
@@ -53,8 +66,8 @@ class W13SCAN(PluginBase):
                         _result += list(m)
                 if _result:
                     setattr(self.response, name, _result)
-        # fingerprint basic end
 
+        # Fingerprint basic end
         if KB["spiderset"].add(url, 'PerFile'):
             task_push('PerFile', self.requests, self.response)
 
@@ -62,58 +75,18 @@ class W13SCAN(PluginBase):
         p = urlparse(url)
         domain = "{}://{}".format(p.scheme, p.netloc)
         if KB["spiderset"].add(domain, 'PerScheme'):
-            # todo perscheme fake req and resp
-            task_push('PerScheme', self.requests, self.response)
-
-        if conf["no_active"]:
-            return
-        # Collect from response
-        links = get_links(resp_str, url, True)
-        for link in set(links):
-            is_continue = True
-            for item in logoutParams:
-                if item in link.lower():
-                    is_continue = False
-                    break
-            for item in notAcceptedExt:
-                if link.endswith(item):
-                    is_continue = False
-                    break
-
-            if not is_continue:
-                continue
-
-            # 去重复
-            if not KB["spiderset"].add(link, 'get_links'):
-                continue
-            try:
-                # 超过5M拒绝请求
-                r = requests.head(link, headers=headers)
-                if "Content-Length" in r.headers:
-                    if int(r.headers["Content-Length"]) > 1024 * 1024 * 5:
-                        raise Exception("length > 5M")
-                r = requests.get(link, headers=headers)
-                req = FakeReq(link, headers)
-                resp = FakeResp(r)
-            except Exception as e:
-                continue
-
-            if KB["spiderset"].add(resp._url, 'PerFile'):
-                task_push('PerFile', req, resp)
+            req = requests.get(domain, headers=headers, allow_redirects=False)
+            fake_req = FakeReq(domain, headers, HTTPMETHOD.GET, "")
+            fake_resp = FakeResp(req.status_code, req.content, req.headers)
+            task_push('PerScheme', fake_req, fake_resp)
 
         # Collect directory from response
-
         urls = set(get_parent_paths(url))
-        for link in set(links):
-            urls |= set(get_parent_paths(link))
-        for i in urls:
-            if not KB["spiderset"].add(i, 'get_link_directory'):
+        for parent_url in urls:
+            if not KB["spiderset"].add(parent_url, 'get_link_directory'):
                 continue
-            try:
-                r = requests.get(i, headers=headers)
-                req = FakeReq(i, headers)
-                resp = FakeResp(r)
-            except:
-                continue
-            if KB["spiderset"].add(resp._url, 'PerFolder'):
-                task_push('PerFolder', req, resp)
+            req = requests.get(parent_url, headers=headers, allow_redirects=False)
+            if KB["spiderset"].add(req.url, 'PerFolder'):
+                fake_req = FakeReq(req.url, headers, HTTPMETHOD.GET, "")
+                fake_resp = FakeResp(req.status_code, req.content, req.headers)
+                task_push('PerFolder', fake_req, fake_resp)

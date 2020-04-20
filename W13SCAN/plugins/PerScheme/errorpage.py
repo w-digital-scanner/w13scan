@@ -12,6 +12,7 @@ import requests
 from lib.core.common import random_str, generateResponse
 from lib.core.enums import VulType, PLACE
 from lib.core.plugins import PluginBase
+from lib.helper.helper_sensitive import sensitive_page_error_message_check
 
 
 class W13SCAN(PluginBase):
@@ -23,21 +24,15 @@ class W13SCAN(PluginBase):
         p = urlparse(self.requests.url)
 
         domain = "{}://{}/".format(p.scheme, p.netloc) + random_str(6) + ".jsp"
-
-        re_list = {
-            "ASPNETPathDisclosure": "<title>Invalid\sfile\sname\sfor\smonitoring:\s'([^']*)'\.\sFile\snames\sfor\smonitoring\smust\shave\sabsolute\spaths\,\sand\sno\swildcards\.<\/title>",
-            "Struts2DevMod": "You are seeing this page because development mode is enabled.  Development mode, or devMode, enables extra",
-            "Django DEBUG MODEL": "You're seeing this error because you have <code>DEBUG = True<\/code> in",
-            "RailsDevMode": "<title>Action Controller: Exception caught<\/title>",
-            "RequiredParameter": "Required\s\w+\sparameter\s'([^']+?)'\sis\snot\spresent",
-            "Thinkphp3 Debug": '<p class="face">:\(</p>'
-        }
         r = requests.get(domain, headers=headers)
-        for k, v in re_list.items():
-            if re.search(v, r.text, re.S | re.I):
-                result = self.new_result()
-                result.init_info(self.requests.url, "错误的配置信息", VulType.SENSITIVE)
+        messages = sensitive_page_error_message_check(r.text)
+        if messages:
+            result = self.new_result()
+            result.init_info(self.requests.url, "敏感的报错信息", VulType.SENSITIVE)
+            for m in messages:
+                text = m["text"]
+                _type = m["type"]
                 result.add_detail("payload请求", r.reqinfo, generateResponse(r),
-                                  "匹配组件:{} 匹配正则:{}".format(k, v), "", "", PLACE.GET)
-                self.success(result)
-                break
+                                  "匹配组件:{} 匹配正则:{}".format(_type, text), "", "", PLACE.GET)
+
+            self.success(result)

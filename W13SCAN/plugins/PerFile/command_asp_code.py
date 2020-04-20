@@ -9,8 +9,8 @@ import random
 
 import requests
 
-from api import PluginBase, WEB_PLATFORM, conf, PLACE, HTTPMETHOD, ResultObject, VulType, output, generateResponse
-from lib.core.common import paramsCombination
+from api import PluginBase, WEB_PLATFORM, conf, PLACE, HTTPMETHOD, ResultObject, VulType, generateResponse
+from lib.core.common import paramsCombination, splitUrlPath
 
 
 class W13SCAN(PluginBase):
@@ -38,6 +38,10 @@ class W13SCAN(PluginBase):
             iterdatas.append((self.requests.post_data, PLACE.POST))
         if conf.level >= 3:
             iterdatas.append((self.requests.cookies, PLACE.COOKIE))
+        if conf.level >= 4:
+            # for uri
+            uri = splitUrlPath(self.requests.url)
+            iterdatas.append((uri, PLACE.URI))
 
         for item in iterdatas:
             iterdata, positon = item
@@ -65,5 +69,5 @@ class W13SCAN(PluginBase):
                         result.init_info(self.requests.url, "发现asp代码注入", VulType.CMD_INNJECTION)
                         result.add_detail("payload探测", r.reqinfo, generateResponse(r),
                                           "探测payload:{},并发现回显数字{}".format(data[k], randint3), k, data[k], positon)
-                        output.success(result)
+                        self.success(result)
                         return

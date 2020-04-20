@@ -4,11 +4,10 @@
 # @Author  : w8ay
 # @File    : sensitive_content.py
 # referer:https://github.com/al0ne/Vxscan/blob/master/lib/jsparse.py
-import os
 import re
 
 from lib.core.enums import VulType, PLACE
-from lib.core.output import ResultObject, output
+from lib.core.output import ResultObject
 from lib.core.plugins import PluginBase
 
 
@@ -42,18 +41,17 @@ class W13SCAN(PluginBase):
             # 匹配域名
             r'((?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+(?:biz|cc|club|cn|com|co|edu|fun|group|info|ink|kim|link|live|ltd|mobi|net|online|org|pro|pub|red|ren|shop|site|store|tech|top|tv|vip|wang|wiki|work|xin|xyz|me))',
         ]
-        dom_xss = [
-            'location\.hash',
-            'location\.href',
-            'location\.search'
-        ]
-        regx.extend(dom_xss)
         for _ in regx:
             texts = re.findall(_, self.response.text, re.M | re.I)
+            issuc = False
             if texts:
                 for text in set(texts):
                     result = ResultObject(self)
                     result.init_info(self.requests.url, "js文件中存在敏感信息", VulType.SENSITIVE)
                     result.add_detail("payload探测", self.requests.raw, self.response.raw,
                                       "发现敏感信息:{}".format(text), "", "", PLACE.GET)
-                    output.success(result)
+                    self.success(result)
+                    issuc = True
+                    break
+            if issuc:
+                break

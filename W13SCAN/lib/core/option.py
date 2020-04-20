@@ -9,14 +9,17 @@ import time
 from queue import Queue
 
 from colorama import init as cinit
+from cowpy.cow import get_cow, milk_random_cow
 
+from lib.core.settings import VERSION
 from config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS, SERVER_ADDR, DEBUG, INCLUDES, EXCLUDES, THREAD_NUM, LEVEL, \
     TIMEOUT, \
     RETRY, PROXY_CONFIG, ACTIVE_SCAN, PROXY_CONFIG_BOOL
-from lib.core.common import dataToStdout, ltrim
+from lib.core.common import dataToStdout, ltrim, random_colorama
 from lib.core.data import path, KB, logger, conf
 from lib.core.exection import PluginCheckError
 from lib.core.loader import load_file_to_module
+from lib.core.output import OutPut
 from lib.core.spiderset import SpiderSet
 from thirdpart.console import getTerminalSize
 from thirdpart.requests import patch_all
@@ -40,6 +43,7 @@ def initKb():
     KB["console_width"] = getTerminalSize()  # 控制台宽度
     KB['start_time'] = time.time()  # 开始时间
     KB["lock"] = threading.Lock()  # 线程锁
+    KB["output"] = OutPut()
 
     KB['finished'] = 0  # 完成数量
     KB["result"] = 0  # 结果数量
@@ -212,5 +216,7 @@ def init(root, cmdline):
 
 
 def banner():
-    banner = open(os.path.join(path.data, "logo.txt"), "rb").read().decode("unicode_escape")
-    dataToStdout(banner)
+    msg = "w13scan v{}".format(VERSION)
+    sfw = True
+    s = milk_random_cow(msg, sfw=sfw)
+    dataToStdout(random_colorama(s) + "\n\n")

@@ -129,6 +129,10 @@ class FakeReq(object):
     def params(self) -> dict:
         return self._params
 
+    @params.setter
+    def params(self, value):
+        self._params = value
+
     @property
     def post_hint(self) -> str:
         return self._post_hint
@@ -136,6 +140,10 @@ class FakeReq(object):
     @property
     def post_data(self) -> dict:
         return self._post_data
+
+    @post_data.setter
+    def post_data(self, postdata):
+        self._post_data = postdata
 
     @property
     def netloc(self) -> str:

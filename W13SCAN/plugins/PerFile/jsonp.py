@@ -39,7 +39,7 @@ class W13SCAN(PluginBase):
             return None
         return str(arr)
 
-    def info_search(self, text):
+    def info_search(self, text) -> dict:
         '''
         从一段文本中搜索敏感信息
         :param text:
@@ -56,7 +56,7 @@ class W13SCAN(PluginBase):
                 return ret
         for item in sensitive_list:
             if item.lower() == text.lower():
-                return item
+                return {"type": "keyword", "content": item}
 
     def check_sentive_content(self, resp: str) -> set:
         script = resp.strip()
@@ -71,7 +71,7 @@ class W13SCAN(PluginBase):
         for item in literals:
             v = self.info_search(item)
             if v:
-                result.add(v)
+                result.add(v["content"])
         return result
 
     def audit(self):
@@ -94,11 +94,11 @@ class W13SCAN(PluginBase):
         headers = self.requests.headers
         headers["Referer"] = fake_domain
         req = requests.get(self.requests.url, headers=headers)
-        result = self.check_sentive_content(req.text)
-        if not result:
+        result2 = self.check_sentive_content(req.text)
+        if not result2:
             return
         result = ResultObject(self)
         result.init_info(self.requests.url, "jsonp敏感信息", VulType.SENSITIVE)
         result.add_detail("payload探测", self.requests.raw, self.response.raw,
-                          "发现敏感信息:{}".format(repr(result)), "", "", PLACE.GET)
+                          "发现敏感信息:{}".format(repr(result2)), "", "", PLACE.GET)
         self.success(result)

@@ -20,7 +20,7 @@ import chardet
 from OpenSSL.crypto import load_certificate, FILETYPE_PEM, TYPE_RSA, PKey, X509, X509Extension, dump_privatekey, \
     dump_certificate, load_privatekey, X509Req
 
-from W13SCAN import VERSION
+from lib.core.settings import VERSION
 from lib.core.common import dataToStdout
 from lib.core.data import logger, path, conf, KB
 from lib.core.enums import HTTPMETHOD

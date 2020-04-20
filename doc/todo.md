@@ -8,15 +8,17 @@
 - [x] 基于语义的jsonp敏感信息
 - [x] net xss 语义识别
 - [ ] sql注入
-- [ ] loader模块完善
+- [x] loader模块完善
 - [ ] 对uri,header头进行探测
+- [ ] log 颜色
 - [x] json导出 
-- [ ] html导出
+- [x] html导出
     - html报告模仿参考
         - https://phtracker.herokuapp.com/productsList
+    - html tag问题 编译与调试不一致问题
     - 搭建测试靶机
 - [ ] 识别更多参数
-    - js html语义识别更多参数
+    - [x] js html语义识别更多参数
     - [ ] -u
     - [ ] -f
     - [ ] -r

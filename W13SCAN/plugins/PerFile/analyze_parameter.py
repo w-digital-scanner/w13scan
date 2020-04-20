@@ -3,7 +3,7 @@
 # @Time    : 2019/7/6 8:22 PM
 # @Author  : w8ay
 # @File    : analyze_parameter.py
-from api import PluginBase, ResultObject, output, VulType
+from api import PluginBase, ResultObject, VulType
 from api import isJavaObjectDeserialization, isPHPObjectDeserialization, isPythonObjectDeserialization
 
 
@@ -20,10 +20,11 @@ class W13SCAN(PluginBase):
             whats = "PythonObjectDeserialization"
         if whats:
             result = ResultObject(self)
-            result.init_info(self.requests.url, whats, VulType.BASELINE)
+            text_result = "发现{}反序列化参数".format(whats)
+            result.init_info(self.requests.url, text_result, VulType.BASELINE)
             result.add_detail("原始请求", self.requests.raw, self.response.raw, "参数{}发现为{}的反序列化结果".format(k, whats), k,
                               v, self.requests.method)
-            output.success(result)
+            self.success(result)
 
     def audit(self):
         params = self.requests.params

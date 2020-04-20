@@ -4,6 +4,7 @@
 # @Author  : w8ay
 # @File    : const.py
 
+VERSION = '1.0'
 
 acceptedExt = [
     '.php', '.php3', '.php4', '.php5', '.php7', '.phtml',
@@ -150,44 +151,6 @@ notAcceptedExt = [
     "zip"
 ]
 
-WEB_SERVER = {
-    "APACHE": "Apache",
-    "TOMCAT": "Apache Tomcat",
-    "EXPRESS": "Express",
-    "FLASK": "Flask",
-    "IIS": "IIS",
-    "JBOSS": "JBoss Application Server",
-    "NGINX": "Nginx",
-    "OPENRESTY": "OpenResty",
-    "TENGINE": "Tengine",
-    "TORNADO": "TornadoServer",
-    "GUNICORN": "gunicorn",
-    "LIGHTTPD": "lighttpd",
-}
-
-PROGRAMING = {
-    "C++": "C++",
-    "CFML": "CFML",
-    "ERLANG": "Erlang",
-    "HASKELL": "Haskell",
-    "JAVA": "Java",
-    "LUA": "Lua",
-    "NODEJS": "Node.js",
-    "PHP": "PHP",
-    "PERL": "Perl",
-    "PYTHON": "Python",
-    "RUBY": "Ruby",
-    "SCALA": "Scala",
-    "ASP": "Asp",
-    "ASPX": "Aspx"
-}
-
-OPERATING_SYSTEM = {
-    "WINDOWS": ["Windows Server", "Windows CE"],
-    "*NIX": ["CentOS", "Darwin", "Debian", "Fedora", "FreeBSD", "Red Hat", "SUSE", "Scientific Linux"
-                                                                                   "SunOS", "UNIX", "Ubuntu"]
-}
-
 XSS_EVAL_ATTITUDES = ['onbeforeonload', 'onsubmit', 'ondragdrop', 'oncommand', 'onbeforeeditfocus', 'onkeypress',
                       'onoverflow', 'ontimeupdate', 'onreset', 'ondragstart', 'onpagehide', 'onunhandledrejection',
                       'oncopy',
@@ -223,3 +186,6 @@ XSS_EVAL_ATTITUDES = ['onbeforeonload', 'onsubmit', 'ondragdrop', 'oncommand', '
                       'ondatasetchanged', 'onbegin', 'onmousemove', 'onratechange', 'ongesturechange',
                       'onlosecapture',
                       'onplaying', 'onfocus', 'onrowsdelete']
+
+TOP_RISK_GET_PARAMS = {"id", 'action', 'type', 'm', 'callback', 'cb'}
+TOP_RISK_POST_PARAMS = {"password", 'username', '__VIEWSTATE', 'type', 'id', 'name'}

@@ -10,7 +10,6 @@ import traceback
 
 from lib.core.common import dataToStdout
 from lib.core.data import KB, logger, conf
-from lib.core.output import output
 
 
 def exception_handled_function(thread_function, args=()):
@@ -90,7 +89,7 @@ def task_run():
 
 def printProgress():
     msg = '%s success | %d remaining | %s scanned in %.2f seconds' % (
-        output.count(), KB["running"], KB["finished"], time.time() - KB['start_time'])
+        KB.output.count(), KB.running, KB.finished, time.time() - KB.start_time)
 
     _ = '\r' + ' ' * (KB['console_width'][0] - len(msg)) + msg
     KB.lock.acquire()

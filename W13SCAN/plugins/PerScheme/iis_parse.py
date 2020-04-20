@@ -22,9 +22,9 @@ class W13SCAN(PluginBase):
             p = urlparse(self.requests.url)
             domain = "{}://{}/".format(p.scheme, p.netloc)
             payload = domain + "robots.txt/.php"
-            r = requests.get(payload, headers=headers)
+            r = requests.get(payload, headers=headers, allow_redirects=False)
             ContentType = r.headers.get("Content-Type", '')
-            if 'html' in ContentType:
+            if 'html' in ContentType and "allow" in r.text:
                 result = self.new_result()
                 result.init_info(self.requests.url, "代码解析漏洞", VulType.CODE_INJECTION)
                 result.add_detail("payload请求", r.reqinfo, generateResponse(r),

@@ -48,7 +48,7 @@ def cmd_line_parser(argv=None):
 
     # Outout options
     output = parser.add_argument_group("Output", "output")
-    output.add_argument_group("--output-html", dest="html", help="output to html")
+    output.add_argument("--output-html", dest="html", help="output to html")
 
     # Optimization options
     optimization = parser.add_argument_group("Optimization", "Optimization options")

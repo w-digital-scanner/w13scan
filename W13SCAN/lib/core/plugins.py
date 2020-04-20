@@ -13,11 +13,11 @@ import urllib3
 from requests import ConnectTimeout, HTTPError, TooManyRedirects, ConnectionError
 from urllib3.exceptions import NewConnectionError, PoolError
 
-from W13SCAN import VERSION
+from lib.core.settings import VERSION
 from lib.core.common import dataToStdout, createGithubIssue
-from lib.core.data import conf
+from lib.core.data import conf,KB
 from lib.core.exection import PluginCheckError
-from lib.core.output import ResultObject, output
+from lib.core.output import ResultObject
 from lib.parse.parse_request import FakeReq
 from lib.parse.parse_responnse import FakeResp
 
@@ -41,7 +41,7 @@ class PluginBase(object):
             pass
         else:
             raise PluginCheckError('self.success() not ResultObject')
-        output.success(msg)
+        KB.output.success(msg)
 
     def checkImplemennted(self):
         name = getattr(self, 'name')

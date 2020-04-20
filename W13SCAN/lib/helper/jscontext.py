@@ -3,12 +3,9 @@
 # @Time    : 2020/4/8 10:13 AM
 # @Author  : w8ay
 # @File    : jscontext.py
-import json
 
 import pyjsparser
 from pyjsparser import parse
-
-from urllib.parse import urlparse
 
 
 class JsParseError(Exception):
@@ -167,16 +164,6 @@ def SearchInputInScript(input, script):
     try:
         nodes = parse(script)
     except pyjsparser.pyjsparserdata.JsSyntaxError as e:
-        # if isinstance(dd, str):
-        #     url = dd
-        # else:
-        #     url = dd.get("url")
-        # net = urlparse(url).netloc
-        # if net not in learncloud_quchong:
-        #     insert_learncloud(input, script, dd)
-        #     learncloud_quchong.add(net)
-        # raise JsParseError(e, script)
-        # print(script)
         return []
     index = 0
     for node in nodes["body"]:

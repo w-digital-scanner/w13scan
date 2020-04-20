@@ -12,7 +12,7 @@ import requests
 from lib.core.common import paramsCombination, generateResponse
 from lib.core.data import conf
 from lib.core.enums import HTTPMETHOD, PLACE, OS, WEB_PLATFORM, VulType
-from lib.core.output import ResultObject, output
+from lib.core.output import ResultObject
 from lib.core.plugins import PluginBase
 
 
@@ -92,7 +92,7 @@ class W13SCAN(PluginBase):
                                 result.init_info(self.requests.url, "目录穿越导致任意文件被读取", VulType.PATH_TRAVERSAL)
                                 result.add_detail("payload探测", r.reqinfo, generateResponse(r),
                                                   "探测payload:{},并发现回显{}".format(data[k], plain), k, data[k], positon)
-                                output.success(result)
+                                self.success(result)
                                 return
                         for regex in regexArray:
                             if re.search(regex, html1, re.I | re.S | re.M):
@@ -100,5 +100,5 @@ class W13SCAN(PluginBase):
                                 result.init_info(self.requests.url, "目录穿越导致任意文件被读取", VulType.PATH_TRAVERSAL)
                                 result.add_detail("payload探测", r.reqinfo, generateResponse(r),
                                                   "探测payload:{},并发现正则回显{}".format(data[k], regex), k, data[k], positon)
-                                output.success(result)
+                                self.success(result)
                                 return

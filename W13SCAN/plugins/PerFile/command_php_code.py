@@ -14,6 +14,7 @@ from lib.core.common import md5, paramsCombination, generateResponse
 from lib.core.data import conf
 from lib.core.enums import WEB_PLATFORM, HTTPMETHOD, PLACE
 from lib.core.plugins import PluginBase
+from lib.helper.helper_sensitive import sensitive_page_error_message_check
 
 
 class W13SCAN(PluginBase):
@@ -46,6 +47,7 @@ class W13SCAN(PluginBase):
         if conf.level >= 3:
             iterdatas.append((self.requests.cookies, PLACE.COOKIE))
 
+        errors = None
         for item in iterdatas:
             iterdata, positon = item
             for k, v in iterdata.items():
@@ -84,3 +86,13 @@ class W13SCAN(PluginBase):
                                           data[k], positon)
                         self.success(result)
                         break
+                    errors = sensitive_page_error_message_check(html1) or errors
+        if errors:
+            result = self.new_result()
+            result.init_info(self.requests.url, "敏感配置信息泄漏", VulType.SENSITIVE)
+            for m in errors:
+                text = m["text"]
+                _type = m["type"]
+                result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                  "匹配组件:{} 匹配正则:{}".format(_type, text), k, data[k], positon)
+            self.success(result)

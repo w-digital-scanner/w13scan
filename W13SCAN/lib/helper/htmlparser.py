@@ -8,6 +8,10 @@ from abc import ABC
 
 from html.parser import HTMLParser
 
+import pyjsparser
+
+from lib.helper.jscontext import analyse_js
+
 
 def random_upper(text: str):
     '''
@@ -88,6 +92,13 @@ def getParamsFromHtml(html):
                 if key == "name":
                     result.add(value)
                     break
+        elif tagname == "script":
+            content = token["content"]
+            try:
+                nodes = pyjsparser.parse(content).get("body", [])
+            except pyjsparser.pyjsparserdata.JsSyntaxError as e:
+                return []
+            result |=set(analyse_js(nodes))
     return list(result)
 
 

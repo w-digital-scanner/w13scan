@@ -13,7 +13,7 @@ from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
-    name = '.net 通杀xss，通过语义分析技术进一步确认准确性'
+    name = '.net 通杀xss'
 
     def audit(self):
         p = urlparse(self.requests.url)

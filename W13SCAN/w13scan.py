@@ -8,10 +8,6 @@ from colorama import deinit
 from lib.controller.controller import start
 from lib.proxy.baseproxy import AsyncMitmProxy
 
-try:
-    from . import VERSION
-except ImportError:
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 from lib.parse.cmdparse import cmd_line_parser
 from lib.core.data import logger, conf
 from lib.core.option import init

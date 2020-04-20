@@ -18,7 +18,7 @@ INCLUDE_PLUGINS = ['all']  # 使用插件,文件名，all为全部
 RETRY = 2  # 超时重试次数
 TIMEOUT = 10  # 超时时间
 
-LEVEL = 0  # 根据检测深度由浅入深分为1～5级别，级别越高使用插件越多。LEVEL=0代表不使用该功能，默认使用全部插件。
+LEVEL = 2
 
 ACTIVE_SCAN = False  # 是否关闭主动扫描，w13scan会自动解析返回包中的链接进行扫描
 
