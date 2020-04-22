@@ -81,7 +81,7 @@ def initPlugins():
                 logger.error('Not "{}" attribute in the plugin:{}'.format(e, filename))
             except AttributeError:
                 logger.error('Filename:{} not class "{}"'.format(filename, 'W13SCAN'))
-    logger.info('load plugin:{}'.format(len(KB["registered"])))
+    logger.info('Load scanner plugins:{}'.format(len(KB["registered"])))
 
     # 加载指纹识别插件
     num = 0
@@ -102,7 +102,7 @@ def initPlugins():
             KB["fingerprint"][name].append(mod)
             num += 1
 
-    logger.info('load fingerprint plugin:{}'.format(num))
+    logger.info('Load fingerprint plugins:{}'.format(num))
 
 
 def _setConfAttributes():
@@ -155,6 +155,10 @@ def _merge_options(input_options):
 
 
 def _set_conf():
+    # show version
+    if conf.show_version:
+        exit()
+
     # server_addr
     if isinstance(conf["server_addr"], str):
         defaulf = 7778
@@ -188,15 +192,12 @@ def _init_stdout():
     # 指定扫描网址
     if len(conf["includes"]) and conf["includes"][0] != ".*":
         logger.info("Include urls:{}".format(repr(conf["includes"])))
-    # 不使用插件
-    if len(conf["exclude_plugins"]):
-        logger.info("Exclude plugins:{}".format(repr(conf["exclude_plugins"])))
     # 指定使用插件
     if len(conf["include_plugins"]) and conf["include_plugins"][0] != "all":
         logger.info("Include plugins:{}".format(repr(conf["include_plugins"])))
     # 主动探测
     no_active = 'On' if str(conf["no_active"]) == "True" else "Off"
-    logger.info("Active detection mode:{}".format(no_active))
+    logger.info("Active detection mode:[#{}]".format(no_active))
 
 
 def init(root, cmdline):

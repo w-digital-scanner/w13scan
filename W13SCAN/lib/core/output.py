@@ -33,11 +33,11 @@ class OutPut(object):
 
         html_filename = str(int(time.time())) + ".html"
         self.html_filename = os.path.join(folder_path, html_filename)
-        with open(os.path.join(path.data, "templates.html")) as f:
-            with open(self.html_filename, 'w') as f2:
-                f2.write(f.read())
+        # with open(os.path.join(path.data, "templates.html")) as f:
+        #     with open(self.html_filename, 'w') as f2:
+        #         f2.write(f.read())
 
-        logger.info("result will be saved in {}".format(self.filename))
+        logger.info("Result will be saved in '{}'".format(self.filename))
 
     def _set(self, value):
         '''
@@ -62,9 +62,14 @@ class OutPut(object):
         if not self._set(md5sum):
             return
         self.lock.acquire()
+        # 写入json
         with open(self.filename, "a+") as f:
             f.write(json.dumps(output) + '\n')
         # 写入html
+        if not os.path.exists(self.html_filename):
+            with open(os.path.join(path.data, "templates.html")) as f:
+                with open(self.html_filename, 'w') as f2:
+                    f2.write(f.read())
 
         with open(self.html_filename, 'a+') as f2:
             content = base64.b64encode(json.dumps(output).encode()).decode()

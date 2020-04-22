@@ -360,7 +360,7 @@ def random_colorama(text: str, length=4):
     start = -1
     end = -1
     index = 0
-    colors = range(30, 38)
+    colors = range(31, 38)
     w13scan = ()
     colornum = 5
     for char in text:

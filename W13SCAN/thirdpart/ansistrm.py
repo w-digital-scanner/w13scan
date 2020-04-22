@@ -162,7 +162,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
                         message = message.replace(time, ''.join(
                             (self.csi, str(self.color_map["cyan"] + 30), 'm', time, reset)), 1)
 
-                    match = re.search(r"\[(#\d+)\]", message)  # counter
+                    match = re.search(r"\[#(\S+)\]", message)  # counter
                     if match:
                         counter = match.group(1)
                         if not message.endswith(self.reset):
@@ -171,7 +171,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
                             reset = self.reset + self.bold
                         else:
                             reset = self.reset
-                        message = message.replace(counter, ''.join(
+                        message = message.replace("[#{}]".format(counter), ''.join(
                             (self.csi, str(self.color_map["yellow"] + 30), 'm', counter, reset)), 1)
 
                     if level != "PAYLOAD":
