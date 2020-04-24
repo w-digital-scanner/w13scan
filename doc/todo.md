@@ -10,7 +10,8 @@
 - [ ] sql注入
 - [x] loader模块完善
 - [ ] 对uri,header头进行探测
-- [ ] log 颜色
+- [ ] 对post json的处理
+- [x] log 颜色
 - [x] json导出 
 - [x] html导出
     - html报告模仿参考
@@ -38,3 +39,20 @@
 
 - w13scan保存json,html例子
 - w13scan webui
+
+## Test Params
+```
+/?q=1
+/?q=1'
+/?q=1"
+/?q=[1]
+/?q[]=1
+/?q=1`
+/?q=1\
+/?q=1/*'*/
+/?q=1/*!1111'*/
+/?q=1'||'asd'||'   <== concat string
+/?q=1' or '1'='1
+/?q=1 or 1=1
+/?q='or''='
+```

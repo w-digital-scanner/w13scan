@@ -411,3 +411,58 @@ def random_colorama(text: str, length=4):
         indent_start = end
     new_text += text[indent_start:]
     return new_text
+
+
+def updateJsonObjectFromStr(base_obj, update_str: str):
+    assert (type(base_obj) in (list, dict))
+    # 存储上一个value是str的对象，为的是更新当前值之前，将上一个值还原
+    last_obj = None
+    # 如果last_obj是dict，则为字符串，如果是list，则为int，为的是last_obj[last_key]执行合法
+    last_key = None
+    last_value = None
+    # 存储当前层的对象，只有list或者dict类型的对象，才会被添加进来
+    curr_list = [base_obj]
+    # 只要当前层还存在dict或list类型的对象，就会一直循环下去
+    while len(curr_list) > 0:
+        # 用于临时存储当前层的子层的list和dict对象，用来替换下一轮的当前层
+        tmp_list = []
+        for obj in curr_list:
+            # 对于字典的情况
+            if type(obj) is dict:
+                for k, v in obj.items():
+                    # 如果不是list, dict, str类型，直接跳过
+                    if type(v) not in (list, dict, str, int):
+                        continue
+                    # list, dict类型，直接存储，放到下一轮
+                    if type(v) in (list, dict):
+                        tmp_list.append(v)
+                    # 字符串类型的处理
+                    else:
+                        # 如果上一个对象不是None的，先更新回上个对象的值
+                        if last_obj is not None:
+                            last_obj[last_key] = last_value
+                        # 重新绑定上一个对象的信息
+                        last_obj = obj
+                        last_key, last_value = k, v
+                        # 执行更新
+                        obj[k] = update_str
+                        # 生成器的形式，返回整个字典
+                        yield base_obj
+
+            # 列表类型和字典差不多
+            elif type(obj) is list:
+                for i in range(len(obj)):
+                    # 为了和字典的逻辑统一，也写成k，v的形式，下面就和字典的逻辑一样了，可以把下面的逻辑抽象成函数
+                    k, v = i, obj[i]
+                    if type(v) not in (list, dict, str, int):
+                        continue
+                    if type(v) in (list, dict):
+                        tmp_list.append(v)
+                    else:
+                        if last_obj is not None:
+                            last_obj[last_key] = last_value
+                        last_obj = obj
+                        last_key, last_value = k, v
+                        obj[k] = update_str
+                        yield base_obj
+        curr_list = tmp_list
