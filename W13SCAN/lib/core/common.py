@@ -387,6 +387,7 @@ def random_colorama(text: str, length=4):
 
 def updateJsonObjectFromStr(base_obj, update_str: str):
     assert (type(base_obj) in (list, dict))
+    base_obj = copy.deepcopy(base_obj)
     # 存储上一个value是str的对象，为的是更新当前值之前，将上一个值还原
     last_obj = None
     # 如果last_obj是dict，则为字符串，如果是list，则为int，为的是last_obj[last_key]执行合法
