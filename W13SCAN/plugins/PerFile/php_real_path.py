@@ -24,13 +24,7 @@ class W13SCAN(PluginBase):
         if WEB_PLATFORM.PHP not in self.response.programing and conf.level < 2:
             return
 
-        iterdatas = []
-        if self.requests.method == HTTPMETHOD.GET:
-            iterdatas.append((self.requests.params, PLACE.GET))
-        elif self.requests.method == HTTPMETHOD.POST:
-            iterdatas.append((self.requests.post_data, PLACE.POST))
-        if conf.level >= 3:
-            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
+        iterdatas = self.generateItemdatas()
 
         for item in iterdatas:
             iterdata, positon = item

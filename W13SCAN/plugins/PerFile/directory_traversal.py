@@ -5,19 +5,66 @@
 # @File    : directory_traversal.py
 import copy
 import re
-from urllib.parse import unquote
+from urllib.parse import unquote, quote
 
-import requests
-
-from lib.core.common import paramsCombination, generateResponse
+from lib.core.common import generateResponse, updateJsonObjectFromStr
 from lib.core.data import conf
-from lib.core.enums import HTTPMETHOD, PLACE, OS, WEB_PLATFORM, VulType
+from lib.core.enums import PLACE, OS, WEB_PLATFORM, VulType, POST_HINT
 from lib.core.output import ResultObject
 from lib.core.plugins import PluginBase
+from lib.core.settings import DEFAULT_GET_POST_DELIMITER, DEFAULT_COOKIE_DELIMITER
 
 
 class W13SCAN(PluginBase):
     name = '路径穿越插件'
+
+    def paramsCombination(self, data: dict, place=PLACE.GET, payloads=[], hint=POST_HINT.NORMAL, urlsafe='/\\'):
+        """
+        组合dict参数,将相关类型参数组合成requests认识的,防止request将参数进行url转义
+
+        :param data:
+        :param hint:
+        :return: payloads -> list
+        """
+        result = []
+        if place == PLACE.POST:
+            if hint == POST_HINT.NORMAL:
+                for key, value in data.items():
+                    if ("." in value or "/" in value) or (key.lower() in ['filename', 'file', 'path', 'filepath']):
+                        new_data = copy.deepcopy(data)
+                        for payload in payloads:
+                            new_data[key] = payload
+                            result.append((key, value, payload, new_data))
+            elif hint == POST_HINT.JSON:
+                for payload in payloads:
+                    for new_data in updateJsonObjectFromStr(data, payload):
+                        result.append(('', '', payload, new_data))
+        elif place == PLACE.GET:
+            for payload in payloads:
+                for key in data.keys():
+                    value = data[key]
+                    if ("." in value or "/" in value) or (key.lower() in ['filename', 'file', 'path', 'filepath']):
+                        temp = ""
+                        for k, v in data.items():
+                            if k == key:
+                                temp += "{}={}{}".format(k, quote(payload, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
+                            else:
+                                temp += "{}={}{}".format(k, quote(v, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
+                        temp = temp.rstrip(DEFAULT_GET_POST_DELIMITER)
+                        result.append((key, data[key], payload, temp))
+        elif place == PLACE.COOKIE:
+            for payload in payloads:
+                for key in data.keys():
+                    value = data[key]
+                    if ("." in value or "/" in value) or (key.lower() in ['filename', 'file', 'path', 'filepath']):
+                        temp = ""
+                        for k, v in data.items():
+                            if k == key:
+                                temp += "{}={}{}".format(k, quote(payload, safe=urlsafe), DEFAULT_COOKIE_DELIMITER)
+                            else:
+                                temp += "{}={}{}".format(k, quote(v, safe=urlsafe), DEFAULT_COOKIE_DELIMITER)
+                        result.append((key, data[key], payload, temp))
+        return result
 
     def generate_payloads(self):
         payloads = []
@@ -58,47 +105,29 @@ class W13SCAN(PluginBase):
             "<b>Warning<\/b>:\s\sDOMDocument::load\(\)\s\[<a\shref='domdocument.load'>domdocument.load<\/a>\]:\s(Start tag expected|I\/O warning : failed to load external entity).*(Windows\/win.ini|\/etc\/passwd).*\sin\s<b>.*?<\/b>\son\sline\s<b>\d+<\/b>",
             "(<web-app[\s\S]+<\/web-app>)"
         ]
-        iterdatas = []
-        if self.requests.method == HTTPMETHOD.GET:
-            iterdatas.append((self.requests.params, PLACE.GET))
-        elif self.requests.method == HTTPMETHOD.POST:
-            iterdatas.append((self.requests.post_data, PLACE.POST))
-        if conf.level >= 3:
-            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
+        iterdatas = self.generateItemdatas()
+        payloads = self.generate_payloads()
 
-        for item in iterdatas:
-            iterdata, positon = item
-            for k, v in iterdata.items():
-                if ("." in v or "/" in v) or (k.lower() in ['filename', 'file', 'path', 'filepath']):
-                    data = copy.deepcopy(iterdata)
-                    payloads = self.generate_payloads()
-                    for payload in payloads:
-                        data[k] = payload
-                        params = paramsCombination(data, positon)
-                        if positon == PLACE.GET:
-                            r = requests.get(self.requests.netloc, params=params, headers=headers)
-                        elif positon == PLACE.POST:
-                            r = requests.post(self.requests.url, data=params, headers=headers)
-                        elif positon == PLACE.COOKIE:
-                            if self.requests.method == HTTPMETHOD.GET:
-                                r = requests.get(self.requests.url, headers=headers, cookies=params)
-                            elif self.requests.method == HTTPMETHOD.POST:
-                                r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
-                                                  cookies=params)
-                        html1 = r.text
-                        for plain in plainArray:
-                            if plain in html1:
-                                result = ResultObject(self)
-                                result.init_info(self.requests.url, "目录穿越导致任意文件被读取", VulType.PATH_TRAVERSAL)
-                                result.add_detail("payload探测", r.reqinfo, generateResponse(r),
-                                                  "探测payload:{},并发现回显{}".format(data[k], plain), k, data[k], positon)
-                                self.success(result)
-                                return
-                        for regex in regexArray:
-                            if re.search(regex, html1, re.I | re.S | re.M):
-                                result = ResultObject(self)
-                                result.init_info(self.requests.url, "目录穿越导致任意文件被读取", VulType.PATH_TRAVERSAL)
-                                result.add_detail("payload探测", r.reqinfo, generateResponse(r),
-                                                  "探测payload:{},并发现正则回显{}".format(data[k], regex), k, data[k], positon)
-                                self.success(result)
-                                return
+        for origin_dict, positon in iterdatas:
+            payloads = self.paramsCombination(origin_dict, positon, payloads)
+            for key, value, new_value, payload in payloads:
+                r = self.req(positon, payload)
+                if not r:
+                    continue
+                html1 = r.text
+                for plain in plainArray:
+                    if plain in html1:
+                        result = ResultObject(self)
+                        result.init_info(self.requests.url, "目录穿越导致任意文件被读取", VulType.PATH_TRAVERSAL)
+                        result.add_detail("payload探测", r.reqinfo, generateResponse(r),
+                                          "探测payload:{},并发现回显{}".format(payload, plain), key, new_value, positon)
+                        self.success(result)
+                        return
+                for regex in regexArray:
+                    if re.search(regex, html1, re.I | re.S | re.M):
+                        result = ResultObject(self)
+                        result.init_info(self.requests.url, "目录穿越导致任意文件被读取", VulType.PATH_TRAVERSAL)
+                        result.add_detail("payload探测", r.reqinfo, generateResponse(r),
+                                          "探测payload:{},并发现正则回显{}".format(payload, regex), key, new_value, positon)
+                        self.success(result)
+                        return

@@ -6,24 +6,75 @@
 import copy
 import random
 import re
-
-import requests
+from urllib.parse import quote
 
 from lib.api.dnslog import DnsLogApi
 from lib.api.reverse_api import reverseApi
-from lib.core.common import paramsCombination, generateResponse, random_str
+from lib.core.common import generateResponse, random_str, updateJsonObjectFromStr, splitUrlPath
 from lib.core.data import conf
-from lib.core.enums import OS, HTTPMETHOD, PLACE, VulType
+from lib.core.enums import OS, PLACE, VulType, POST_HINT
 from lib.core.plugins import PluginBase
-from lib.core.settings import acceptedExt
+from lib.core.settings import acceptedExt, DEFAULT_GET_POST_DELIMITER, DEFAULT_COOKIE_DELIMITER
 
 
 class W13SCAN(PluginBase):
     name = '系统命令注入'
     desc = '''测试系统命令注入，支持Windows/Linux,回显型的命令注入'''
 
+    def paramsCombination(self, data: dict, place=PLACE.GET, url_flag={}, hint=POST_HINT.NORMAL, urlsafe='/\\'):
+        """
+        组合dict参数,将相关类型参数组合成requests认识的,防止request将参数进行url转义
+
+        :param data:
+        :param hint:
+        :return: payloads -> list
+        """
+        result = []
+        payloads = url_flag.keys()
+        for spli in ['', ';', "&&", "|"]:
+            if place == PLACE.POST:
+                if hint == POST_HINT.NORMAL:
+                    for key, value in data.items():
+                        new_data = copy.deepcopy(data)
+                        for payload in payloads:
+                            new_data[key] = spli + payload
+                            result.append((key, value, payload, new_data, url_flag[payload]))
+                elif hint == POST_HINT.JSON:
+                    for payload in payloads:
+                        for new_data in updateJsonObjectFromStr(data, payload):
+                            result.append(('', '', payload, spli + new_data, url_flag[payload]))
+            elif place == PLACE.GET:
+                for payload in payloads:
+                    for key in data.keys():
+                        temp = ""
+                        for k, v in data.items():
+                            if k == key:
+                                temp += "{}={}{}".format(k, quote(spli + payload, safe=urlsafe),
+                                                         DEFAULT_GET_POST_DELIMITER)
+                            else:
+                                temp += "{}={}{}".format(k, quote(spli + v, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
+                        temp = temp.rstrip(DEFAULT_GET_POST_DELIMITER)
+                        result.append((key, data[key], payload, temp, url_flag[payload]))
+            elif place == PLACE.COOKIE:
+                for payload in payloads:
+                    for key in data.keys():
+                        temp = ""
+                        for k, v in data.items():
+                            if k == key:
+                                temp += "{}={}{}".format(k, quote(spli + payload, safe=urlsafe),
+                                                         DEFAULT_COOKIE_DELIMITER)
+                            else:
+                                temp += "{}={}{}".format(k, quote(spli + v, safe=urlsafe), DEFAULT_COOKIE_DELIMITER)
+                        result.append((key, data[key], payload, temp, url_flag[payload]))
+            elif place == PLACE.URI:
+                uris = splitUrlPath(data, flag="<--flag-->")
+                for payload in payloads:
+                    for uri in uris:
+                        uri = uri.replace("<--flag-->", payload)
+                        result.append(("", "", payload, uri, url_flag[payload]))
+        return result
+
     def audit(self):
-        headers = self.requests.headers
         url = self.requests.url
 
         if self.requests.suffix not in acceptedExt and conf.level < 4:
@@ -66,65 +117,42 @@ class W13SCAN(PluginBase):
             reverse_payload = "ping -nc 1 {}".format(fullname)
             url_flag[reverse_payload] = []
 
-        iterdatas = []
-        if self.requests.method == HTTPMETHOD.GET:
-            iterdatas.append((self.requests.params, PLACE.GET))
-        elif self.requests.method == HTTPMETHOD.POST:
-            iterdatas.append((self.requests.post_data, PLACE.POST))
-        if conf.level >= 3:
-            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
+        iterdatas = self.generateItemdatas()
+        for origin_dict, positon in iterdatas:
+            payloads = self.paramsCombination(origin_dict, positon, url_flag)
+            for key, value, new_value, payload, re_list in payloads:
+                r = self.req(positon, payload)
+                if not r:
+                    continue
+                html1 = r.text
+                for rule in re_list:
+                    if re.search(rule, html1, re.I | re.S | re.M):
+                        result = self.new_result()
+                        result.init_info(url, "可执行任意系统命令", VulType.CMD_INNJECTION)
+                        result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                          "执行payload:{} 并发现正则回显{}".format(new_value, rule), key, new_value, positon)
+                        self.success(result)
+                        break
+                if dnslog_payload in new_value:
+                    dnslist = dnslog.check()
+                    if dnslist:
+                        result = self.new_result()
+                        result.init_info(url, "可执行任意系统命令", VulType.CMD_INNJECTION)
+                        result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                          "执行payload:{} dnslog平台接收到返回值".format(payload, repr(dnslist)), key,
+                                          new_value,
+                                          positon)
+                        self.success(result)
+                        break
 
-        for item in iterdatas:
-            iterdata, positon = item
-            for k, v in iterdata.items():
-                data = copy.deepcopy(iterdata)
-                for spli in ['', ';', "&&", "|"]:
-                    for flag, re_list in url_flag.items():
-                        if spli == "":
-                            data[k] = flag
-                        else:
-                            data[k] = v + spli + flag
-
-                        params = paramsCombination(data, positon)
-                        if positon == PLACE.GET:
-                            r = requests.get(self.requests.netloc, params=params, headers=headers)
-                        elif positon == PLACE.POST:
-                            r = requests.post(self.requests.url, data=params, headers=headers)
-                        elif positon == PLACE.COOKIE:
-                            if self.requests.method == HTTPMETHOD.GET:
-                                r = requests.get(self.requests.url, headers=headers, cookies=params)
-                            elif self.requests.method == HTTPMETHOD.POST:
-                                r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
-                                                  cookies=params)
-                        html1 = r.text
-                        for rule in re_list:
-                            if re.search(rule, html1, re.I | re.S | re.M):
-                                result = self.new_result()
-                                result.init_info(url, "可执行任意系统命令", VulType.CMD_INNJECTION)
-                                result.add_detail("payload请求", r.reqinfo, generateResponse(r),
-                                                  "执行payload:{} 并发现正则回显{}".format(data[k], rule), k, data[k], positon)
-                                self.success(result)
-                                break
-                        if flag == dnslog_payload:
-                            dnslist = dnslog.check()
-                            if dnslist:
-                                result = self.new_result()
-                                result.init_info(url, "可执行任意系统命令", VulType.CMD_INNJECTION)
-                                result.add_detail("payload请求", r.reqinfo, generateResponse(r),
-                                                  "执行payload:{} dnslog平台接收到返回值".format(data[k], repr(dnslist)), k,
-                                                  data[k],
-                                                  positon)
-                                self.success(result)
-                                break
-                        if dns.isUseReverse():
-                            if reverse_payload == flag:
-                                dnslist = dns.check(dns_token)
-                                if dnslist:
-                                    result = self.new_result()
-                                    result.init_info(url, "可执行任意系统命令", VulType.CMD_INNJECTION)
-                                    result.add_detail("payload请求", r.reqinfo, generateResponse(r),
-                                                      "执行payload:{} dnslog平台接收到返回值".format(data[k], repr(dnslist)), k,
-                                                      data[k],
-                                                      positon)
-                                    self.success(result)
-                                    break
+                if dns.isUseReverse():
+                    dnslist = dns.check(dns_token)
+                    if dnslist:
+                        result = self.new_result()
+                        result.init_info(url, "可执行任意系统命令", VulType.CMD_INNJECTION)
+                        result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                          "执行payload:{} dnslog平台接收到返回值".format(payload, repr(dnslist)), key,
+                                          new_value,
+                                          positon)
+                        self.success(result)
+                        break

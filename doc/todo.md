@@ -9,8 +9,8 @@
 - [x] net xss 语义识别
 - [ ] sql注入
 - [x] loader模块完善
-- [ ] 对uri,header头进行探测
-- [ ] 对post json的处理
+- [x] 对uri头进行探测
+- [x] 对post json的处理
 - [x] log 颜色
 - [x] json导出 
 - [x] html导出
@@ -24,6 +24,7 @@
     - [ ] -f
     - [ ] -r
 - [ ] 整理完善命令行参数
+- [ ] ini配置文件
 - [ ] 完善readme
 
 

@@ -3,16 +3,13 @@
 # @Time    : 2019/7/4 11:49 AM
 # @Author  : w8ay
 # @File    : command_php_code.py
-import copy
 import random
 import re
 
-import requests
-
 from api import VulType
-from lib.core.common import md5, paramsCombination, generateResponse
+from lib.core.common import md5, generateResponse
 from lib.core.data import conf
-from lib.core.enums import WEB_PLATFORM, HTTPMETHOD, PLACE
+from lib.core.enums import WEB_PLATFORM
 from lib.core.plugins import PluginBase
 from lib.helper.helper_sensitive import sensitive_page_error_message_check
 
@@ -22,8 +19,6 @@ class W13SCAN(PluginBase):
     desc = '''PHP代码注入发现，可执行任意php代码'''
 
     def audit(self):
-        headers = self.requests.headers
-
         if WEB_PLATFORM.PHP not in self.response.programing and conf.level < 2:
             return
 
@@ -39,60 +34,46 @@ class W13SCAN(PluginBase):
             "${{@print(md5({}))}}\\",
             "'.print(md5({})).'"
         ]
-        iterdatas = []
-        if self.requests.method == HTTPMETHOD.GET:
-            iterdatas.append((self.requests.params, PLACE.GET))
-        elif self.requests.method == HTTPMETHOD.POST:
-            iterdatas.append((self.requests.post_data, PLACE.POST))
-        if conf.level >= 3:
-            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
+        # 载入处理位置以及原始payload
+        iterdatas = self.generateItemdatas()
 
         errors = None
-        for item in iterdatas:
-            iterdata, positon = item
-            for k, v in iterdata.items():
-                data = copy.deepcopy(iterdata)
-                for payload in payloads:
-                    if payload[0] == "p":
-                        data[k] = payload.format(randint)
-                    else:
-                        data[k] = v + payload.format(randint)
+        errors_raw = ()
+        # 根据原始payload和位置组合新的payload
+        for origin_dict, positon in iterdatas:
+            payloads = self.paramsCombination(origin_dict, positon, payloads)
+            for key, value, new_value, payload in payloads:
+                r = self.req(positon, payload)
+                if not r:
+                    continue
+                html1 = r.text
+                if verify_result in html1:
+                    result = self.new_result()
+                    result.init_info(self.requests.url, self.desc, VulType.CMD_INNJECTION)
+                    result.add_detail("payload探测", r.reqinfo, generateResponse(r),
+                                      "探测payload:{}并发现回显:{}".format(new_value, verify_result), key, value, positon)
+                    self.success(result)
+                    break
+                if re.search(regx, html1, re.I | re.S | re.M):
+                    result = self.new_result()
+                    result.init_info(self.requests.url, self.desc, VulType.CMD_INNJECTION)
+                    result.add_detail("payload探测", r.reqinfo, generateResponse(r),
+                                      "探测payload:{}并发现正则回显:{},可能是payload未闭合语句造成的错误".format(new_value, regx), key,
+                                      value, positon)
+                    self.success(result)
+                    break
+                if not errors:
+                    errors = sensitive_page_error_message_check(html1)
+                    if errors:
+                        errors_raw = (key, value)
 
-                    params = paramsCombination(data, positon)
-                    if positon == PLACE.GET:
-                        r = requests.get(self.requests.netloc, params=params, headers=headers)
-                    elif positon == PLACE.POST:
-                        r = requests.post(self.requests.url, data=params, headers=headers)
-                    elif positon == PLACE.COOKIE:
-                        if self.requests.method == HTTPMETHOD.GET:
-                            r = requests.get(self.requests.url, headers=headers, cookies=params)
-                        elif self.requests.method == HTTPMETHOD.POST:
-                            r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
-                                              cookies=params)
-                    html1 = r.text
-
-                    if verify_result in html1:
-                        result = self.new_result()
-                        result.init_info(self.requests.url, self.desc, VulType.CMD_INNJECTION)
-                        result.add_detail("payload探测", r.reqinfo, generateResponse(r),
-                                          "探测payload:{}并发现回显:{}".format(data[k], verify_result), k, data[k], positon)
-                        self.success(result)
-                        break
-                    if re.search(regx, html1, re.I | re.S | re.M):
-                        result = self.new_result()
-                        result.init_info(self.requests.url, self.desc, VulType.CMD_INNJECTION)
-                        result.add_detail("payload探测", r.reqinfo, generateResponse(r),
-                                          "探测payload:{}并发现正则回显:{},可能是payload未闭合语句造成的错误".format(data[k], regx), k,
-                                          data[k], positon)
-                        self.success(result)
-                        break
-                    errors = sensitive_page_error_message_check(html1) or errors
-        if errors:
-            result = self.new_result()
-            result.init_info(self.requests.url, "敏感配置信息泄漏", VulType.SENSITIVE)
-            for m in errors:
-                text = m["text"]
-                _type = m["type"]
-                result.add_detail("payload请求", r.reqinfo, generateResponse(r),
-                                  "匹配组件:{} 匹配正则:{}".format(_type, text), k, data[k], positon)
-            self.success(result)
+            if errors:
+                result = self.new_result()
+                key, value = errors_raw
+                result.init_info(self.requests.url, "敏感配置信息泄漏", VulType.SENSITIVE)
+                for m in errors:
+                    text = m["text"]
+                    _type = m["type"]
+                    result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                                      "匹配组件:{} 匹配正则:{}".format(_type, text), key, value, positon)
+                self.success(result)

@@ -3,14 +3,9 @@
 # @Time    : 2019/7/4 5:11 PM
 # @Author  : w8ay
 # @File    : command_asp_code.py
-import copy
-import os
 import random
 
-import requests
-
-from api import PluginBase, WEB_PLATFORM, conf, PLACE, HTTPMETHOD, ResultObject, VulType, generateResponse
-from lib.core.common import paramsCombination, splitUrlPath
+from api import PluginBase, WEB_PLATFORM, conf, ResultObject, VulType, generateResponse
 
 
 class W13SCAN(PluginBase):
@@ -24,50 +19,28 @@ class W13SCAN(PluginBase):
         randint1 = random.randint(10000, 90000)
         randint2 = random.randint(10000, 90000)
         randint3 = randint1 * randint2
-        headers = self.requests.headers
 
         payloads = [
             'response.write({}*{})'.format(randint1, randint2),
             '\'+response.write({}*{})+\''.format(randint1, randint2),
             '"response.write({}*{})+"'.format(randint1, randint2),
         ]
-        iterdatas = []
-        if self.requests.method == HTTPMETHOD.GET:
-            iterdatas.append((self.requests.params, PLACE.GET))
-        elif self.requests.method == HTTPMETHOD.POST:
-            iterdatas.append((self.requests.post_data, PLACE.POST))
-        if conf.level >= 3:
-            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
-        if conf.level >= 4:
-            # for uri
-            uri = splitUrlPath(self.requests.url)
-            iterdatas.append((uri, PLACE.URI))
 
-        for item in iterdatas:
-            iterdata, positon = item
-            for k, v in iterdata.items():
-                data = copy.deepcopy(iterdata)
-                for payload in payloads:
-                    if payload[0] == "r":
-                        data[k] = payload
-                    else:
-                        data[k] = v + payload
-                    params = paramsCombination(data, positon)
-                    if positon == PLACE.GET:
-                        r = requests.get(self.requests.netloc, params=params, headers=headers)
-                    elif positon == PLACE.POST:
-                        r = requests.post(self.requests.url, data=params, headers=headers)
-                    elif positon == PLACE.COOKIE:
-                        if self.requests.method == HTTPMETHOD.GET:
-                            r = requests.get(self.requests.url, headers=headers, cookies=params)
-                        elif self.requests.method == HTTPMETHOD.POST:
-                            r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
-                                              cookies=params)
-                    html1 = r.text
-                    if str(randint3) in html1:
-                        result = ResultObject(self)
-                        result.init_info(self.requests.url, "发现asp代码注入", VulType.CMD_INNJECTION)
-                        result.add_detail("payload探测", r.reqinfo, generateResponse(r),
-                                          "探测payload:{},并发现回显数字{}".format(data[k], randint3), k, data[k], positon)
-                        self.success(result)
-                        return
+        # 载入处理位置以及原始payload
+        iterdatas = self.generateItemdatas()
+
+        # 根据原始payload和位置组合新的payload
+        for origin_dict, positon in iterdatas:
+            payloads = self.paramsCombination(origin_dict, positon, payloads)
+            for key, value, new_value, payload in payloads:
+                r = self.req(positon, payload)
+                if not r:
+                    continue
+                html = r.text
+                if str(randint3) in html:
+                    result = ResultObject(self)
+                    result.init_info(self.requests.url, "发现asp代码注入", VulType.CMD_INNJECTION)
+                    result.add_detail("payload探测", r.reqinfo, generateResponse(r),
+                                      "探测payload:{},并发现回显数字{}".format(new_value, randint3), key, payload, positon)
+                    self.success(result)
+                    return True

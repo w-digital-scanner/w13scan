@@ -4,23 +4,16 @@
 # @Author  : w8ay
 # @File    : config.py
 
-# default setting
+# Default setting
 SERVER_ADDR = ('127.0.0.1', 7778)  # 默认监听地址
 
-THREAD_NUM = 51  # 线程数量
+THREAD_NUM = 31  # 线程数量
 
-EXCLUDES = ["google", "lastpass", 'baidu.com', '.gov.cn']  # 扫描排除网址
-INCLUDES = [".*"]  # 扫描允许网址(正则表达式)
-
-EXCLUDE_PLUGINS = ['subdomain_found.py']  # 不使用的插件，文件名
-INCLUDE_PLUGINS = ['all']  # 使用插件,文件名，all为全部
+EXCLUDES = ["google", "lastpass", '.gov.cn']  # 扫描排除网址
 
 RETRY = 2  # 超时重试次数
 TIMEOUT = 10  # 超时时间
-
-LEVEL = 2
-
-ACTIVE_SCAN = False  # 是否关闭主动扫描，w13scan会自动解析返回包中的链接进行扫描
+LEVEL = 2  # 发包等级
 
 # 所有扫描请求可以转发到另外一个代理上
 PROXY_CONFIG_BOOL = False
@@ -34,12 +27,12 @@ DEBUG = True
 
 # REVERSE
 USE_REVERSE = False  # 使用反连平台将False改为True
-REVERSE_HTTP_IP = "127.0.0.1"
-REVERSE_HTTP_PORT = 9999
+REVERSE_HTTP_IP = "127.0.0.1"  # 回连http IP地址，需要改为服务器ip，不能改为0.0.0.0，因为程序无法识别
+REVERSE_HTTP_PORT = 9999  # 回连http端口
 
 REVERSE_DNS = "dnslog.w13scan.hacking8.com"
 
-REVERSE_RMI_IP = "127.0.0.1"
-REVERSE_RMI_PORT = 10002
+REVERSE_RMI_IP = "127.0.0.1"  # Java RMI 回连IP,需要改为服务器ip，不能改为0.0.0.0，因为程序无法识别
+REVERSE_RMI_PORT = 10002  # Java RMI 回连端口
 
 REVERSE_SLEEP = 5  # 反连后延时检测时间，单位是(秒)

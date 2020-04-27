@@ -551,12 +551,6 @@ class ProxyHandle(BaseHTTPRequestHandler):
             excMsg = traceback.format_exc()
             dataToStdout(errMsg)
             dataToStdout(excMsg)
-            # Share.lock.acquire()
-            # if conf["is_debug"]:
-            #     dataToStdout(errMsg)
-            # if createGithubIssue(errMsg, excMsg):
-            #     dataToStdout('\r' + "[x] a issue has reported" + '\n\r')
-            # Share.lock.release()
 
     do_HEAD = do_GET
     do_POST = do_GET

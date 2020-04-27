@@ -163,34 +163,6 @@ def paramToDict(parameters, place=PLACE.GET, hint=POST_HINT.NORMAL) -> dict:
     return testableParameters
 
 
-def paramsCombination(data: dict, place=PLACE.GET, hint=POST_HINT.NORMAL, urlsafe='/\\'):
-    """
-    组合dict参数,将相关类型参数组合成requests认识的,防止request将参数进行url转义
-
-    :param data:
-    :param hint:
-    :return:
-    """
-    if place == PLACE.POST:
-        if hint == POST_HINT.NORMAL:
-            return data
-        elif hint == POST_HINT.JSON:
-            return json.dumps(data)
-        elif hint == POST_HINT.ARRAY_LIKE:
-            return data
-    elif place == PLACE.GET:
-        temp = ""
-        for k, v in data.items():
-            temp += "{}={}{}".format(k, quote(v, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
-        temp = temp.rstrip(DEFAULT_GET_POST_DELIMITER)
-        return temp
-    elif place == PLACE.COOKIE:
-        temp = ""
-        for k, v in data.items():
-            temp += "{}={}{}".format(k, quote(v, safe=urlsafe), DEFAULT_COOKIE_DELIMITER)
-        return temp
-
-
 def isListLike(value):
     """
     Returns True if the given value is a list-like instance

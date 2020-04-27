@@ -31,7 +31,7 @@ class W13SCAN(PluginBase):
 
             for payload in payloads:
                 headers['Content-Type'] = payload
-                r = requests.get(self.requests.url, headers=headers)
+                r = requests.get(self.requests.url, headers=headers,timeout=30)
                 html1 = r.text
                 if check in html1:
                     result = self.new_result()
