@@ -27,20 +27,20 @@ class W13SCAN(PluginBase):
         headers = self.requests.headers
         url = self.requests.url
 
-        if conf.no_active:
-            # 语义解析获得参数,重新生成新的fakereq,fakeresps
-            parse_params = set(getParamsFromHtml(self.response.text))
-            params_data = {}
-            if self.requests.method == HTTPMETHOD.GET:
-                parse_params = (parse_params | TOP_RISK_GET_PARAMS) - set(self.requests.params.keys())
-                for key in parse_params:
-                    params_data[key] = random_str(6)
-                self.requests.params = params_data
-            elif self.requests.method == HTTPMETHOD.POST:
-                parse_params = (parse_params | TOP_RISK_POST_PARAMS) - set(self.requests.post_data.keys())
-                for key in parse_params:
-                    params_data[key] = random_str(6)
-                self.requests.post_data = params_data
+        # if conf.no_active:
+        #     # 语义解析获得参数,重新生成新的fakereq,fakeresps
+        #     parse_params = set(getParamsFromHtml(self.response.text))
+        #     params_data = {}
+        #     if self.requests.method == HTTPMETHOD.GET:
+        #         parse_params = (parse_params | TOP_RISK_GET_PARAMS) - set(self.requests.params.keys())
+        #         for key in parse_params:
+        #             params_data[key] = random_str(6)
+        #         self.requests.params = params_data
+        #     elif self.requests.method == HTTPMETHOD.POST:
+        #         parse_params = (parse_params | TOP_RISK_POST_PARAMS) - set(self.requests.post_data.keys())
+        #         for key in parse_params:
+        #             params_data[key] = random_str(6)
+        #         self.requests.post_data = params_data
 
         # fingerprint basic info
         exi = self.requests.suffix.lower()

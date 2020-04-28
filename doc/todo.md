@@ -18,13 +18,14 @@
         - https://phtracker.herokuapp.com/productsList
     - html tag问题 编译与调试不一致问题
     - 搭建测试靶机
-- [ ] 识别更多参数
+- [x] 识别更多参数
     - [x] js html语义识别更多参数
-    - [ ] -u
-    - [ ] -f
-    - [ ] -r
-- [ ] 整理完善命令行参数
-- [ ] ini配置文件
+    - [x] -u
+    - [x] -f
+    - [x] -r
+- [x] 整理完善命令行参数
+- [ ] 显示当前运行的插件
+- [ ] 
 - [ ] 完善readme
 
 

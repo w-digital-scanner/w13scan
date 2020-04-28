@@ -13,9 +13,10 @@ Go0p <https://github.com/Go0p>
 
 hackxx <https://github.com/hackxx>
 * 贡献logout不扫描规则
+
 ## Links
 - https://github.com/amcai/myscan 
-    - @amcai的被动扫描器，提供了很多灵感
+    - @amcai的被动扫描器，部分内容在它的启发下完成
 - https://github.com/qiyeboy/BaseProxy  代理框架基于它
 - https://github.com/chaitin/xray  灵感来源，部分规则基于它
 - https://github.com/knownsec/pocsuite3  代码框架模仿自它

@@ -9,17 +9,17 @@ import time
 from queue import Queue
 
 from colorama import init as cinit
-from cowpy.cow import get_cow, milk_random_cow
+from cowpy.cow import milk_random_cow
 
-from lib.core.settings import VERSION
-from config import EXCLUDE_PLUGINS, INCLUDE_PLUGINS, SERVER_ADDR, DEBUG, INCLUDES, EXCLUDES, THREAD_NUM, LEVEL, \
+from config import DEBUG, EXCLUDES, THREAD_NUM, LEVEL, \
     TIMEOUT, \
-    RETRY, PROXY_CONFIG, ACTIVE_SCAN, PROXY_CONFIG_BOOL
+    RETRY, PROXY_CONFIG, PROXY_CONFIG_BOOL, DISABLE, ABLE
 from lib.core.common import dataToStdout, ltrim, random_colorama
 from lib.core.data import path, KB, logger, conf
 from lib.core.exection import PluginCheckError
 from lib.core.loader import load_file_to_module
 from lib.core.output import OutPut
+from lib.core.settings import VERSION
 from lib.core.spiderset import SpiderSet
 from thirdpart.console import getTerminalSize
 from thirdpart.requests import patch_all
@@ -35,7 +35,7 @@ def setPaths(root):
 
 
 def initKb():
-    KB['continue'] = True  # 线程是否继续
+    KB['continue'] = True  # 线程一直继续
     KB['registered'] = dict()  # 注册的漏洞插件列表
     KB['fingerprint'] = dict()  # 注册的指纹插件列表
     KB['task_queue'] = Queue()  # 初始化队列
@@ -44,6 +44,7 @@ def initKb():
     KB['start_time'] = time.time()  # 开始时间
     KB["lock"] = threading.Lock()  # 线程锁
     KB["output"] = OutPut()
+    KB["running_plugins"] = dict()
 
     KB['finished'] = 0  # 完成数量
     KB["result"] = 0  # 结果数量
@@ -55,14 +56,10 @@ def initPlugins():
     for root, dirs, files in os.walk(path.plugins):
         files = filter(lambda x: not x.startswith("__") and x.endswith(".py"), files)
         for _ in files:
-            if len(INCLUDE_PLUGINS) == 1 and INCLUDE_PLUGINS[0] == 'all':
-                pass
-            else:
-                if "loader.py" not in INCLUDE_PLUGINS:
-                    INCLUDE_PLUGINS.append("loader.py")
-                if _ not in INCLUDE_PLUGINS:
-                    continue
-            if _ in EXCLUDE_PLUGINS:
+            q = os.path.splitext(_)[0]
+            if conf.able and q not in conf.able and q != 'loader':
+                continue
+            if conf.disable and q in conf.disable:
                 continue
             filename = os.path.join(root, _)
             mod = load_file_to_module(filename)
@@ -105,39 +102,25 @@ def initPlugins():
     logger.info('Load fingerprint plugins:{}'.format(num))
 
 
-def _setConfAttributes():
-    conf.show_version = False
-    conf.is_debug = False
-    conf.level = 1
+def _init_conf():
+    conf.version = False
+    conf.debug = DEBUG
+    conf.level = LEVEL
+    conf.server_addr = None
     conf.url = None
     conf.url_file = None
-    conf.server_addr = None
-    conf.proxy = None
-    conf.timeout = 30
-    conf.retry = 2
-    conf.threads = 21
-    conf.excludes = []
-    conf.includes = []
-    conf.exclude_plugins = []
-    conf.include_plugins = []
-    conf.no_active = False
-    conf.proxy_config_bool = False
-
-
-def _init_conf():
-    conf["is_debug"] = DEBUG
-    conf["server_addr"] = SERVER_ADDR
-    conf["threads"] = THREAD_NUM
-    conf["excludes"] = EXCLUDES
-    conf["includes"] = INCLUDES
-    conf["exclude_plugins"] = EXCLUDE_PLUGINS
-    conf["include_plugins"] = INCLUDE_PLUGINS
-    conf["retry"] = RETRY
-    conf["timeout"] = TIMEOUT
-    conf["level"] = LEVEL
-    conf["no_active"] = ACTIVE_SCAN
-    conf["proxy"] = PROXY_CONFIG
-    conf["proxy_config_bool"] = PROXY_CONFIG_BOOL
+    conf.from_json = None
+    conf.proxy = PROXY_CONFIG
+    conf.proxy_config_bool = PROXY_CONFIG_BOOL
+    conf.timeout = TIMEOUT
+    conf.retry = RETRY
+    conf.html = None
+    conf.json = None
+    conf.threads = THREAD_NUM
+    conf.disable = DISABLE
+    conf.able = ABLE
+    # not in cmd parser params
+    conf.excludes = EXCLUDES
 
 
 def _merge_options(input_options):
@@ -156,7 +139,7 @@ def _merge_options(input_options):
 
 def _set_conf():
     # show version
-    if conf.show_version:
+    if conf.version:
         exit()
 
     # server_addr
@@ -171,11 +154,6 @@ def _set_conf():
     # threads
     conf["threads"] = int(conf["threads"])
 
-    # conf["excludes"] = EXCLUDES
-    # conf["includes"] = INCLUDES
-    # conf["exclude_plugins"] = EXCLUDE_PLUGINS
-    # conf["include_plugins"] = INCLUDE_PLUGINS
-
     # proxy
     if isinstance(conf["proxy"], str) and "@" in conf["proxy"]:
         conf["proxy_config_bool"] = True
@@ -184,31 +162,35 @@ def _set_conf():
             method: ip
         }
 
+    # output html
+    if conf.html == "x":
+        conf.html = False
+    elif conf.html == None:
+        conf.html = ""
+
 
 def _init_stdout():
     # 不扫描网址
     if len(conf["excludes"]):
-        logger.info("Exclude urls:{}".format(repr(conf["excludes"])))
-    # 指定扫描网址
-    if len(conf["includes"]) and conf["includes"][0] != ".*":
-        logger.info("Include urls:{}".format(repr(conf["includes"])))
+        logger.info("Not scanned:{}".format(repr(conf["excludes"])))
+    # 指定扫描插件
+    if conf.able:
+        logger.info("Use plugins:{}".format(repr(conf.able)))
     # 指定使用插件
-    if len(conf["include_plugins"]) and conf["include_plugins"][0] != "all":
-        logger.info("Include plugins:{}".format(repr(conf["include_plugins"])))
-    # 主动探测
-    no_active = 'On' if str(conf["no_active"]) == "True" else "Off"
-    logger.info("Active detection mode:[#{}]".format(no_active))
+    if conf.disable:
+        logger.info("Not use plugins:{}".format(repr(conf.disable)))
+    logger.info("Level of contracting: [#{}]".format(conf.level))
+    if conf.html:
+        logger.info("Html will be saved in '{}'".format(KB.output.get_html_filename()))
+    logger.info("Result will be saved in '{}'".format(KB.output.get_filename()))
 
 
 def init(root, cmdline):
     cinit(autoreset=True)
     setPaths(root)
     banner()
-    _setConfAttributes()
-    # 从config.py读取配置信息
-    _init_conf()
-    # 从cmdline读取配置
-    _merge_options(cmdline)
+    _init_conf()  # 从config.py读取配置信息
+    _merge_options(cmdline)  # 从cmdline读取配置
     _set_conf()
     initKb()
     initPlugins()

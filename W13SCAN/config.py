@@ -5,8 +5,6 @@
 # @File    : config.py
 
 # Default setting
-SERVER_ADDR = ('127.0.0.1', 7778)  # 默认监听地址
-
 THREAD_NUM = 31  # 线程数量
 
 EXCLUDES = ["google", "lastpass", '.gov.cn']  # 扫描排除网址
@@ -21,6 +19,8 @@ PROXY_CONFIG = {
     "http": "127.0.0.1:8080",
     "https": "127.0.0.1:8080"
 }
+ABLE = []  # 允许使用的插件
+DISABLE = []  # 不允许使用的插件
 
 # DEBUG
 DEBUG = True

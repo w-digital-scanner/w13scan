@@ -67,6 +67,8 @@ W13Scan仅提供给授权的渗透测试以及教育行为使用
 ### 简单的主动扫描
 
 ### 被动扫描
+#### HTTPS支持
+If you want w13scan to support https, similar to BurpSuite, first need to set up a proxy server (default 127.0.0.1:7778), then go to http://w13scan.ca to download the root certificate and trust it.
 
 ### 结合动态爬虫扫描
 ### 与Burpsuite结合扫描

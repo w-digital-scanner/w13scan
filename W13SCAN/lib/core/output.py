@@ -33,11 +33,12 @@ class OutPut(object):
 
         html_filename = str(int(time.time())) + ".html"
         self.html_filename = os.path.join(folder_path, html_filename)
-        # with open(os.path.join(path.data, "templates.html")) as f:
-        #     with open(self.html_filename, 'w') as f2:
-        #         f2.write(f.read())
 
-        logger.info("Result will be saved in '{}'".format(self.filename))
+    def get_filename(self):
+        return self.filename
+
+    def get_html_filename(self):
+        return self.html_filename
 
     def _set(self, value):
         '''

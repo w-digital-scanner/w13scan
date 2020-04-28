@@ -11,7 +11,7 @@ from lib.core.plugins import PluginBase
 from lib.core.output import ResultObject
 from lib.core.enums import WEB_PLATFORM, PLACE, HTTPMETHOD, VulType
 from lib.core.data import conf, KB, path, logger
-from lib.core.common import paramsCombination, generateResponse
+from lib.core.common import generateResponse
 from lib.parse.parse_request import FakeReq
 from lib.parse.parse_responnse import FakeResp
 from w13scan import modulePath

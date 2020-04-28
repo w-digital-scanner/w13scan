@@ -3,13 +3,17 @@ import os
 import sys
 import threading
 
+import requests
 from colorama import deinit
 
-from lib.controller.controller import start
+from lib.controller.controller import start, task_push_from_name
+from lib.core.enums import HTTPMETHOD
+from lib.parse.parse_request import FakeReq
+from lib.parse.parse_responnse import FakeResp
 from lib.proxy.baseproxy import AsyncMitmProxy
 
 from lib.parse.cmdparse import cmd_line_parser
-from lib.core.data import logger, conf
+from lib.core.data import logger, conf, KB
 from lib.core.option import init
 
 
@@ -43,22 +47,46 @@ def main():
     cmdline = cmd_line_parser()
     init(root, cmdline)
 
-    # 启动漏洞扫描器
-    scanner = threading.Thread(target=start)
-    scanner.setDaemon(True)
-    scanner.start()
+    if conf.url:
+        domain = conf.url
+        req = requests.get(domain)
+        fake_req = FakeReq(domain, {}, HTTPMETHOD.GET, "")
+        fake_resp = FakeResp(req.status_code, req.content, req.headers)
+        task_push_from_name('loader', fake_req, fake_resp)
+        start()
+    elif conf.url_file:
+        urlfile = conf.url_file
+        if not os.path.exists(urlfile):
+            logger.error("File:{} don't exists".format(urlfile))
+            sys.exit()
+        with open(urlfile) as f:
+            _urls = f.readlines()
+            urls = [i.strip() for i in _urls]
+        for domain in urls:
+            req = requests.get(domain)
+            fake_req = FakeReq(domain, {}, HTTPMETHOD.GET, "")
+            fake_resp = FakeResp(req.status_code, req.content, req.headers)
+            task_push_from_name('loader', fake_req, fake_resp)
+        start()
+    elif conf.from_json:
+        pass
+    elif conf.server_addr:
+        KB["continue"] = True
+        # 启动漏洞扫描器
+        scanner = threading.Thread(target=start)
+        scanner.setDaemon(True)
+        scanner.start()
+        # 启动代理服务器
+        baseproxy = AsyncMitmProxy(server_addr=conf.server_addr, https=True)
 
-    # 启动代理服务器
-    baseproxy = AsyncMitmProxy(server_addr=conf["server_addr"], https=True)
-
-    try:
-        baseproxy.serve_forever()
-    except KeyboardInterrupt:
-        scanner.join(0.1)
-        threading.Thread(target=baseproxy.shutdown, daemon=True).start()
-        deinit()
-        print("\n[*] User quit")
-    baseproxy.server_close()
+        try:
+            baseproxy.serve_forever()
+        except KeyboardInterrupt:
+            scanner.join(0.1)
+            threading.Thread(target=baseproxy.shutdown, daemon=True).start()
+            deinit()
+            print("\n[*] User quit")
+        baseproxy.server_close()
 
 
 if __name__ == '__main__':

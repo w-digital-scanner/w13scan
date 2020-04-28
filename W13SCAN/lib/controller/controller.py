@@ -26,7 +26,7 @@ def run_threads(num_threads, thread_function, args: tuple = ()):
     threads = []
 
     try:
-        info_msg = "Staring {0} threads".format(num_threads)
+        info_msg = "Staring [#{0}] threads".format(num_threads)
         logger.info(info_msg)
 
         # Start the threads
@@ -68,11 +68,14 @@ def start():
 
 
 def task_run():
-    while KB["continue"]:
+    while KB["continue"] and not KB["task_queue"].empty():
         poc_module_name, request, response = KB["task_queue"].get()
-        KB["lock"].acquire()
-        KB["running"] += 1
-        KB["lock"].release()
+        KB.lock.acquire()
+        KB.running += 1
+        if poc_module_name not in KB.running_plugins:
+            KB.running_plugins[poc_module_name] = 0
+        KB.running_plugins[poc_module_name] += 1
+        KB.lock.release()
         poc_module = copy.deepcopy(KB["registered"][poc_module_name])
 
         poc_module.execute(request, response)
@@ -80,6 +83,10 @@ def task_run():
         KB.lock.acquire()
         KB.finished += 1
         KB.running -= 1
+        KB.running_plugins[poc_module_name] -= 1
+        if KB.running_plugins[poc_module_name] == 0:
+            del KB.running_plugins[poc_module_name]
+
         KB.lock.release()
         printProgress()
     printProgress()
@@ -88,6 +95,7 @@ def task_run():
 
 
 def printProgress():
+    KB.output.log(repr(KB.running_plugins))
     msg = '%s success | %d remaining | %s scanned in %.2f seconds' % (
         KB.output.count(), KB.running, KB.finished, time.time() - KB.start_time)
 
@@ -102,3 +110,7 @@ def task_push(plugin_type, request, response):
         module = KB["registered"][_]
         if module.type == plugin_type:
             KB['task_queue'].put((_, copy.deepcopy(request), copy.deepcopy(response)))
+
+
+def task_push_from_name(pluginName, req, resp):
+    KB['task_queue'].put((pluginName, copy.deepcopy(req), copy.deepcopy(resp)))
