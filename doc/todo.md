@@ -27,9 +27,8 @@
 - [x] 显示当前运行的扫描插件
 - [ ] conf参数完善
     - [ ] debug模式
-    - [ ] 不扫描网址 loader处理
-    - [ ] json指定文件名导出
-    - [ ] html导出
+    - [x] 不扫描网址 loader处理
+    - [x] html导出
     - [ ] disable able 命令处理
     - [ ] -u -file 处理
 - [ ] 完善readme
@@ -40,15 +39,12 @@
 ## Useage
 
 - w13scan主动扫描(单个url或多个url)
-- w13scan只用指纹识别(单个url或多个url)
 - w13scan被动扫描
 - w13scan反连平台
-- w13scan专用burpsuite模块
 - w13scan漏洞扫描api接口
 - crawlergo调用w13scan
 
 - w13scan保存json,html例子
-- w13scan webui
 
 ## Test Params
 ```

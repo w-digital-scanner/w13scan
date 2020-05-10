@@ -8,12 +8,10 @@ from urllib.parse import urlparse
 import requests
 
 from lib.controller.controller import task_push
-from lib.core.common import isListLike, get_parent_paths, random_str
+from lib.core.common import isListLike, get_parent_paths
 from lib.core.data import conf, KB
 from lib.core.enums import WEB_PLATFORM, OS, HTTPMETHOD
 from lib.core.plugins import PluginBase
-from lib.core.settings import TOP_RISK_POST_PARAMS, TOP_RISK_GET_PARAMS
-from lib.helper.htmlparser import getParamsFromHtml
 from lib.parse.parse_request import FakeReq
 from lib.parse.parse_responnse import FakeResp
 
@@ -26,21 +24,10 @@ class W13SCAN(PluginBase):
     def audit(self):
         headers = self.requests.headers
         url = self.requests.url
-
-        # if conf.no_active:
-        #     # 语义解析获得参数,重新生成新的fakereq,fakeresps
-        #     parse_params = set(getParamsFromHtml(self.response.text))
-        #     params_data = {}
-        #     if self.requests.method == HTTPMETHOD.GET:
-        #         parse_params = (parse_params | TOP_RISK_GET_PARAMS) - set(self.requests.params.keys())
-        #         for key in parse_params:
-        #             params_data[key] = random_str(6)
-        #         self.requests.params = params_data
-        #     elif self.requests.method == HTTPMETHOD.POST:
-        #         parse_params = (parse_params | TOP_RISK_POST_PARAMS) - set(self.requests.post_data.keys())
-        #         for key in parse_params:
-        #             params_data[key] = random_str(6)
-        #         self.requests.post_data = params_data
+        p = urlparse(url)
+        for rule in conf.exclude:
+            if rule in p.netloc:
+                return
 
         # fingerprint basic info
         exi = self.requests.suffix.lower()

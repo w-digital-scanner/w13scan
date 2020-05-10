@@ -8,13 +8,13 @@ import collections
 import json
 import os
 import time
+from datetime import datetime
 from threading import Lock
 
 from colorama import Fore
 
 from lib.core.common import dataToStdout, md5
-from lib.core.data import KB, path, logger
-from datetime import datetime
+from lib.core.data import KB, path, conf
 
 
 class OutPut(object):
@@ -30,6 +30,7 @@ class OutPut(object):
             os.mkdir(folder_path)
         filename = str(int(time.time())) + ".json"
         self.filename = os.path.join(folder_path, filename)
+        self.ishtml = conf.html
 
         html_filename = str(int(time.time())) + ".html"
         self.html_filename = os.path.join(folder_path, html_filename)
@@ -66,17 +67,19 @@ class OutPut(object):
         # 写入json
         with open(self.filename, "a+") as f:
             f.write(json.dumps(output) + '\n')
-        # 写入html
-        if not os.path.exists(self.html_filename):
-            with open(os.path.join(path.data, "templates.html")) as f:
-                with open(self.html_filename, 'w') as f2:
-                    f2.write(f.read())
 
-        with open(self.html_filename, 'a+') as f2:
-            content = base64.b64encode(json.dumps(output).encode()).decode()
-            content = "<script class='web-vulns'>webVulns.push(JSON.parse(atob(\"{base64}\")))</script>".format(
-                base64=content)
-            f2.write(content)
+        if self.ishtml:
+            # 写入html
+            if not os.path.exists(self.html_filename):
+                with open(os.path.join(path.data, "templates.html")) as f:
+                    with open(self.html_filename, 'w') as f2:
+                        f2.write(f.read())
+
+            with open(self.html_filename, 'a+') as f2:
+                content = base64.b64encode(json.dumps(output).encode()).decode()
+                content = "<script class='web-vulns'>webVulns.push(JSON.parse(atob(\"{base64}\")))</script>".format(
+                    base64=content)
+                f2.write(content)
 
         self.lock.release()
         self.collect.append(output)

@@ -15,8 +15,8 @@ from lib.core.data import conf
 from lib.core.enums import HTTPMETHOD, PLACE, VulType
 from lib.core.output import ResultObject
 from lib.core.plugins import PluginBase
-from lib.core.settings import XSS_EVAL_ATTITUDES
-from lib.helper.htmlparser import SearchInputInResponse, random_upper
+from lib.core.settings import XSS_EVAL_ATTITUDES, TOP_RISK_GET_PARAMS
+from lib.helper.htmlparser import SearchInputInResponse, random_upper, getParamsFromHtml
 from lib.helper.jscontext import SearchInputInScript
 
 
@@ -47,6 +47,19 @@ class W13SCAN(PluginBase):
         return r
 
     def audit(self):
+
+        parse_params = set(getParamsFromHtml(self.response.text))
+        params_data = {}
+        if self.requests.method == HTTPMETHOD.GET:
+            parse_params = (parse_params | TOP_RISK_GET_PARAMS) - set(self.requests.params.keys())
+            for key in parse_params:
+                params_data[key] = random_str(6)
+            self.requests.params = params_data
+        elif self.requests.method == HTTPMETHOD.POST:
+            parse_params = (parse_params | TOP_RISK_POST_PARAMS) - set(self.requests.post_data.keys())
+            for key in parse_params:
+                params_data[key] = random_str(6)
+            self.requests.post_data = params_data
 
         iterdatas = []
         self.init()

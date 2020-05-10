@@ -28,7 +28,7 @@ from thirdpart.requests import patch_all
 def setPaths(root):
     path.root = root
     path.certs = os.path.join(root, 'certs')
-    path.plugins = os.path.join(root, 'plugins')
+    path.scanners = os.path.join(root, 'scanners')
     path.data = os.path.join(root, "data")
     path.fingprints = os.path.join(root, "fingprints")
     path.output = os.path.join(root, "output")
@@ -53,7 +53,7 @@ def initKb():
 
 def initPlugins():
     # 加载检测插件
-    for root, dirs, files in os.walk(path.plugins):
+    for root, dirs, files in os.walk(path.scanners):
         files = filter(lambda x: not x.startswith("__") and x.endswith(".py"), files)
         for _ in files:
             q = os.path.splitext(_)[0]
@@ -114,8 +114,8 @@ def _init_conf():
     conf.proxy_config_bool = PROXY_CONFIG_BOOL
     conf.timeout = TIMEOUT
     conf.retry = RETRY
-    conf.html = None
-    conf.json = None
+    conf.html = False
+    conf.json = False
     conf.threads = THREAD_NUM
     conf.disable = DISABLE
     conf.able = ABLE
@@ -161,12 +161,6 @@ def _set_conf():
         conf["proxy"] = {
             method: ip
         }
-
-    # output html
-    if conf.html == "x":
-        conf.html = False
-    elif conf.html == None:
-        conf.html = ""
 
 
 def _init_stdout():

@@ -4,7 +4,7 @@
 # @Author  : w8ay
 # @File    : const.py
 
-VERSION = '1.0'
+VERSION = '2.0'
 
 acceptedExt = [
     '.php', '.php3', '.php4', '.php5', '.php7', '.phtml',
@@ -188,4 +188,3 @@ XSS_EVAL_ATTITUDES = ['onbeforeonload', 'onsubmit', 'ondragdrop', 'oncommand', '
                       'onplaying', 'onfocus', 'onrowsdelete']
 
 TOP_RISK_GET_PARAMS = {"id", 'action', 'type', 'm', 'callback', 'cb'}
-TOP_RISK_POST_PARAMS = {"password", 'username', '__VIEWSTATE', 'type', 'id', 'name'}
