@@ -68,8 +68,6 @@ def main():
             fake_resp = FakeResp(req.status_code, req.content, req.headers)
             task_push_from_name('loader', fake_req, fake_resp)
         start()
-    elif conf.from_json:
-        pass
     elif conf.server_addr:
         KB["continue"] = True
         # 启动漏洞扫描器
