@@ -14,21 +14,23 @@ from lib.core.data import conf, KB, path, logger
 from lib.core.common import generateResponse
 from lib.parse.parse_request import FakeReq
 from lib.parse.parse_responnse import FakeResp
+from lib.controller.controller import task_push_from_name, task_push, start
 from w13scan import modulePath
 import requests
 
 __all__ = [
     'isJavaObjectDeserialization', 'isPHPObjectDeserialization', 'isPythonObjectDeserialization',
     'PluginBase', 'ResultObject', 'WEB_PLATFORM', 'conf', 'KB',
-    'path', 'logger', 'PLACE', 'HTTPMETHOD', 'VulType', 'generateResponse'
+    'path', 'logger', 'PLACE', 'HTTPMETHOD', 'VulType', 'generateResponse', 'task_push_from_name', 'task_push', 'start'
 ]
 
 
-def scan(url, module_name):
+def scan(url, module_name, conf={}):
     root = modulePath()
     cmdline = {
         "level": 5
     }
+    cmdline.update(conf)
     init(root, cmdline)
     r = requests.get(url)
     req = FakeReq(url, {}, HTTPMETHOD.GET)

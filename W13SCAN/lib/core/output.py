@@ -10,6 +10,7 @@ import os
 import time
 from datetime import datetime
 from threading import Lock
+from urllib.parse import quote
 
 from colorama import Fore
 
@@ -28,8 +29,11 @@ class OutPut(object):
         folder_path = os.path.join(path.output, folder_name)
         if not os.path.isdir(folder_path):
             os.mkdir(folder_path)
-        filename = str(int(time.time())) + ".json"
-        self.filename = os.path.join(folder_path, filename)
+        if conf.json:
+            self.filename = conf.json
+        else:
+            filename = str(int(time.time())) + ".json"
+            self.filename = os.path.join(folder_path, filename)
         self.ishtml = conf.html
 
         html_filename = str(int(time.time())) + ".html"
@@ -76,8 +80,9 @@ class OutPut(object):
                         f2.write(f.read())
 
             with open(self.html_filename, 'a+') as f2:
-                content = base64.b64encode(json.dumps(output).encode()).decode()
-                content = "<script class='web-vulns'>webVulns.push(JSON.parse(atob(\"{base64}\")))</script>".format(
+                # content = base64.b64encode(json.dumps(output).encode()).decode()
+                content = quote(json.dumps(output))
+                content = "<script class='web-vulns'>webVulns.push(JSON.parse(decodeURIComponent(\"{base64}\")))</script>".format(
                     base64=content)
                 f2.write(content)
 

@@ -1,12 +1,12 @@
 <h1 align="center">W13Scan</h1>
 
-> W13scan 是基于Python3的一款开源的安全评估器,它支持主动扫描模式和被动扫描模式，也可以轻松集成在Burpsuite上，能运行在Windows、Linux、Mac上。
+> W13scan 是基于Python3的一款开源的Web漏洞发现工具,它支持主动扫描模式和被动扫描模式，能运行在Windows、Linux、Mac上。
 
 [![GitHub issues](https://img.shields.io/github/issues/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/issues)  [![GitHub stars](https://img.shields.io/github/stars/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/stargazers) [![GitHub forks](https://img.shields.io/github/forks/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/network) [![GitHub license](https://img.shields.io/github/license/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/blob/master/LICENSE)
 
 
 ## 声明
-W13Scan仅提供给授权的渗透测试以及教育行为使用
+W13Scan仅提供给授权的渗透测试以及教育行为使用。
 
 ## 特点
 相比于其他专业的扫描工具，w13scan也有自己独有的优点。
@@ -43,6 +43,8 @@ W13Scan仅提供给授权的渗透测试以及教育行为使用
 - [x] struts2漏洞检测
     - 包括s2-016、s2-032、s2-045漏洞
 - [x] webpack打包源文件泄漏
+### 扫描平台对比
+w13scan测试了多个扫描平台，以下为扫描平台的测试报告
 
 ### 扫描细节的处理
 分享w13scan的一些扫描细节处理
@@ -51,8 +53,8 @@ W13Scan仅提供给授权的渗透测试以及教育行为使用
 - w13scan会记录发包过程及详情，并推荐可能的测试方案。
     - 有时候漏洞检测无法知道是否是漏扫插件的误报还是程序本身有问题，w13scan会详细说明扫描到的漏洞是怎么被发现的，以及一些判定过程。
 - 在扫描过程中会进行简单的信息收集，如收集`网站框架`，`操作系统`，`编程语言`,`web中间件`等信息，后续的检测中会根据信息收集的程度构造payload，信息收集插件在`fingprints`目录。
-- 扫描器会通过`html与js的语义化分析`自动从网页中寻找更多参数用于测试,以及根据wooyun漏洞库top参数合并，并根据算法只保留动态的参数进行测试。
-- w13scan会实时将结果以json的格式写入到output目录下,开启`--html`后，会实时生成html格式的漏洞报告。
+- 扫描器在扫描XSS时会通过`html与js的语义化分析`自动从网页中寻找更多参数用于测试,以及根据wooyun漏洞库top参数合并，并根据算法只保留动态的参数进行测试。
+- w13scan会实时将结果以json的格式写入到output目录下,开启`--html`后，会实时生成精美的html格式的漏洞报告。
 - level发包等级，从1~5，会发送越来越多的数据包
     - 1 发送简单的检测数据包
     - 2 无视指纹识别的环境进行插件扫描(部分插件需要指纹识别到环境才会进行扫描)
@@ -63,8 +65,12 @@ W13Scan仅提供给授权的渗透测试以及教育行为使用
 ## 使用
 
 ### 安装
-### Help
-
+安装w13scan需要依赖Python3.6以上环境.
+```bash
+git clone https://github.com/w-digital-scanner/w13scan.git
+pip3 install -r requirements.txt
+python3 W13scan/w13scan.py -h
+```
 ### 简单的主动扫描
 
 ### 被动扫描
@@ -72,7 +78,9 @@ W13Scan仅提供给授权的渗透测试以及教育行为使用
 If you want w13scan to support https, similar to BurpSuite, first need to set up a proxy server (default 127.0.0.1:7778), then go to http://w13scan.ca to download the root certificate and trust it.
 
 ### 结合动态爬虫扫描
-### 与Burpsuite结合扫描
+在目录`crawlergo_example`展示了如何与crawlergo爬虫结合
 ### 开发
-## Contributors
+w13scan是开源的，我们也鼓励将w13scan集成到自己的扫描器中。
+
+## 贡献&感谢
 - [CONTRIBUTORS](CONTRIBUTORS.md)

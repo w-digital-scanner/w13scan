@@ -12,6 +12,7 @@ class W13SCAN(PluginBase):
     name = 'ASP代码注入'
     desc = '''暂只支持回显型的ASP代码注入,当level>4时会无视环境识别因素进行fuzz'''
 
+
     def audit(self):
         if WEB_PLATFORM.ASP not in self.response.programing and conf.level < 2:
             return

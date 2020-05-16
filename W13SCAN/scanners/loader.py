@@ -9,7 +9,7 @@ import requests
 
 from lib.controller.controller import task_push
 from lib.core.common import isListLike, get_parent_paths
-from lib.core.data import conf, KB
+from lib.core.data import conf, KB, logger
 from lib.core.enums import WEB_PLATFORM, OS, HTTPMETHOD
 from lib.core.plugins import PluginBase
 from lib.parse.parse_request import FakeReq
@@ -25,8 +25,9 @@ class W13SCAN(PluginBase):
         headers = self.requests.headers
         url = self.requests.url
         p = urlparse(url)
-        for rule in conf.exclude:
+        for rule in conf.excludes:
             if rule in p.netloc:
+                logger.info("Skip domain:{}".format(url))
                 return
 
         # fingerprint basic info

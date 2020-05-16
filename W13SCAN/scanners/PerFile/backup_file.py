@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Time    : 2019/7/21 4:45 PM
+# @Time    : 2020/5/10 9:02 PM
 # @Author  : w8ay
-# @File    : backup_domain.py
-from urllib.parse import urlparse
+# @File    : backup_file.py
+import os
 
 import requests
-from tld import parse_tld
 
 from lib.core.common import generateResponse
 from lib.core.enums import VulType, PLACE
@@ -14,8 +13,8 @@ from lib.core.plugins import PluginBase
 
 
 class W13SCAN(PluginBase):
-    name = '基于域名的备份文件'
-    desc = '''扫描基于域名的备份文件'''
+    name = '基于文件的备份文件'
+    desc = '''扫描基于文件的备份文件'''
 
     def _check(self, content):
         """
@@ -45,26 +44,24 @@ class W13SCAN(PluginBase):
     def audit(self):
         headers = self.requests.headers
         url = self.requests.url
-        p = urlparse(url)
-        domain = "{}://{}/".format(p.scheme, p.netloc)
 
-        try:
-            payloads = parse_tld(domain, fix_protocol=True, fail_silently=True)
-        except AttributeError:
-            payloads = None
-        if not payloads:
+        a, b = os.path.splitext(url)
+        if not b:
             return
+        payloads = []
+        payloads.append(a + ".bak")
+        payloads.append(a + ".rar")
+        payloads.append(a + ".zip")
+        payloads.append(url + ".bak")
+        payloads.append(url + ".rar")
+        payloads.append(url + ".zip")
 
+        # http://xxxxx.com/index.php => index.php.bak index.bak index.rar
         for payload in payloads:
-
-            for i in ['.rar', '.zip']:
-                test_url = domain + payload + i
-                r = requests.get(test_url, headers=headers, allow_redirects=False, stream=True)
-                try:
-                    content = r.raw.read(10)
-                except:
-                    continue
-                if r.status_code == 200 and self._check(content):
+            r = requests.get(payload, headers=headers, allow_redirects=False)
+            if r.status_code == 200:
+                content = r.content
+                if self._check(content) or "application/octet-stream" in r.headers.get("Content-Type"):
                     rarsize = int(r.headers.get('Content-Length')) // 1024 // 1024
                     result = self.new_result()
                     result.init_info(self.requests.url, "备份文件下载", VulType.BRUTE_FORCE)

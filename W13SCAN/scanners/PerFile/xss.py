@@ -24,74 +24,50 @@ class W13SCAN(PluginBase):
     name = 'XSS语义化探测插件'
 
     def init(self):
-        self.current_key = ""
-        self.origin = ""
         self.result = ResultObject(self)
-        self.result.init_info(self.requests.url, "XSS注入发现", VulType.XSS)
-
-    def req(self, positon, params) -> requests.Response:
-        headers = self.requests.headers
-        if self.current_key in params:
-            params[self.current_key] = self.origin + params[self.current_key]
-        r = None
-        if positon == PLACE.GET:
-            r = requests.get(self.requests.netloc, params=params, headers=headers)
-        elif positon == PLACE.POST:
-            r = requests.post(self.requests.url, data=params, headers=headers)
-        elif positon == PLACE.COOKIE:
-            if self.requests.method == HTTPMETHOD.GET:
-                r = requests.get(self.requests.url, headers=headers, cookies=params)
-            elif self.requests.method == HTTPMETHOD.POST:
-                r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
-                                  cookies=params)
-        return r
+        self.result.init_info(self.requests.url, "XSS脚本注入", VulType.XSS)
 
     def audit(self):
 
         parse_params = set(getParamsFromHtml(self.response.text))
+        resp = self.response.text
         params_data = {}
         if self.requests.method == HTTPMETHOD.GET:
             parse_params = (parse_params | TOP_RISK_GET_PARAMS) - set(self.requests.params.keys())
             for key in parse_params:
                 params_data[key] = random_str(6)
-            self.requests.params = params_data
+            params = params_data.update(self.requests.params)
+            resp = requests.get(self.requests.netloc, params=params, headers=self.requests.headers).text
         elif self.requests.method == HTTPMETHOD.POST:
-            parse_params = (parse_params | TOP_RISK_POST_PARAMS) - set(self.requests.post_data.keys())
+            parse_params = (parse_params) - set(self.requests.post_data.keys())
             for key in parse_params:
                 params_data[key] = random_str(6)
-            self.requests.post_data = params_data
+            post_data = params_data.update(self.requests.post_data)
+            resp = requests.post(self.requests.url, data=post_data, headers=self.requests.headers).text
 
-        iterdatas = []
         self.init()
-        if self.requests.method == HTTPMETHOD.GET:
-            iterdatas.append((self.requests.params, PLACE.GET))
-        elif self.requests.method == HTTPMETHOD.POST:
-            iterdatas.append((self.requests.post_data, PLACE.POST))
-        if conf.level >= 3:
-            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
+        iterdatas = self.generateItemdatas()
 
-        for item in iterdatas:
-            iterdata, positon = item
-            for k, v in iterdata.items():
-                data = copy.deepcopy(iterdata)
+        for origin_dict, positon in iterdatas:
+            # 先不支持uri上的xss，只支持get post cookie上的xss
+            if positon == PLACE.URI:
+                continue
+            for k, v in origin_dict.items():
+                data = copy.deepcopy(origin_dict)
                 v = unquote(v)
-                if v not in self.response.text:
+                if v not in resp:
                     continue
+
                 # 探测回显
                 xsschecker = "0x" + random_str(6, string.digits + "abcdef")
                 data[k] = xsschecker
                 r1 = self.req(positon, data)
+
                 if not re.search(xsschecker, r1.text, re.I):
-                    xsschecker = "0x" + random_str(6, string.digits + "abcdef")
-                    data[k] = v + xsschecker
-                    r1 = self.req(positon, data)
-                    if not re.search(xsschecker, r1.text, re.I):
-                        continue
-                    else:
-                        self.addorigin = v
-                if 'html' not in r1.headers.get("Content-Type", "").lower():
                     continue
-                self.current_key = k
+                html_type = r1.headers.get("Content-Type", "").lower()
+                if 'html' not in html_type:
+                    continue
 
                 # 反射位置查找
                 locations = SearchInputInResponse(xsschecker, r1.text)

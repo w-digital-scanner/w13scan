@@ -64,9 +64,9 @@ class PluginBase(object):
             iterdatas.append((self.requests.post_data, PLACE.POST))
         if conf.level >= 3:
             iterdatas.append((self.requests.cookies, PLACE.COOKIE))
-        if conf.level >= 4:
-            # for uri
-            iterdatas.append((self.requests.url, PLACE.URI))
+        # if conf.level >= 4:
+        #     # for uri
+        #     iterdatas.append((self.requests.url, PLACE.URI))
         return iterdatas
     
     def paramsCombination(self, data: dict, place=PLACE.GET, payloads=[], hint=POST_HINT.NORMAL, urlsafe='/\\'):

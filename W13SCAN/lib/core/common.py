@@ -385,6 +385,17 @@ def random_colorama(text: str, length=4):
     return new_text
 
 
+def url_dict2str(d: dict):
+    if isinstance(d, str):
+        return d
+    temp = ""
+    urlsafe = "!#$%&'()*+,/:;=?@[]~"
+    for k, v in d.items():
+        temp += "{}={}{}".format(k, quote(v, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
+    temp = temp.rstrip(DEFAULT_GET_POST_DELIMITER)
+    return temp
+
+
 def updateJsonObjectFromStr(base_obj, update_str: str):
     assert (type(base_obj) in (list, dict))
     base_obj = copy.deepcopy(base_obj)

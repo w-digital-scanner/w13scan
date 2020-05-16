@@ -47,23 +47,25 @@ def main():
     cmdline = cmd_line_parser()
     init(root, cmdline)
 
-    if conf.url:
-        domain = conf.url
-        req = requests.get(domain)
-        fake_req = FakeReq(domain, {}, HTTPMETHOD.GET, "")
-        fake_resp = FakeResp(req.status_code, req.content, req.headers)
-        task_push_from_name('loader', fake_req, fake_resp)
-        start()
-    elif conf.url_file:
-        urlfile = conf.url_file
-        if not os.path.exists(urlfile):
-            logger.error("File:{} don't exists".format(urlfile))
-            sys.exit()
-        with open(urlfile) as f:
-            _urls = f.readlines()
-            urls = [i.strip() for i in _urls]
+    if conf.url or conf.url_file:
+        urls = []
+        if conf.url:
+            urls.append(conf.url)
+        if conf.url_file:
+            urlfile = conf.url_file
+            if not os.path.exists(urlfile):
+                logger.error("File:{} don't exists".format(urlfile))
+                sys.exit()
+            with open(urlfile) as f:
+                _urls = f.readlines()
+            _urls = [i.strip() for i in _urls]
+            urls.extend(_urls)
         for domain in urls:
-            req = requests.get(domain)
+            try:
+                req = requests.get(domain)
+            except Exception as e:
+                logger.error("request {} faild,{}".format(domain, str(e)))
+                continue
             fake_req = FakeReq(domain, {}, HTTPMETHOD.GET, "")
             fake_resp = FakeResp(req.status_code, req.content, req.headers)
             task_push_from_name('loader', fake_req, fake_resp)

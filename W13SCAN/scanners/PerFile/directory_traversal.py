@@ -103,7 +103,9 @@ class W13SCAN(PluginBase):
             "System\.IO\.FileNotFoundException: Could not find file\s'\w:",
             "System\.IO\.DirectoryNotFoundException: Could not find a part of the path\s'\w:",
             "<b>Warning<\/b>:\s\sDOMDocument::load\(\)\s\[<a\shref='domdocument.load'>domdocument.load<\/a>\]:\s(Start tag expected|I\/O warning : failed to load external entity).*(Windows\/win.ini|\/etc\/passwd).*\sin\s<b>.*?<\/b>\son\sline\s<b>\d+<\/b>",
-            "(<web-app[\s\S]+<\/web-app>)"
+            "(<web-app[\s\S]+<\/web-app>)",
+            "Warning: fopen\(",
+            "open_basedir restriction in effect"
         ]
         iterdatas = self.generateItemdatas()
         payloads = self.generate_payloads()

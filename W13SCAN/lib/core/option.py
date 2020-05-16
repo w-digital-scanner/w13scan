@@ -109,7 +109,6 @@ def _init_conf():
     conf.server_addr = None
     conf.url = None
     conf.url_file = None
-    conf.from_json = None
     conf.proxy = PROXY_CONFIG
     conf.proxy_config_bool = PROXY_CONFIG_BOOL
     conf.timeout = TIMEOUT

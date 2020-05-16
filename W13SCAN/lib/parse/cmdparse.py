@@ -67,8 +67,8 @@ def cmd_line_parser(argv=None):
 
     args = parser.parse_args()
     dd = args.__dict__
-    if not any((dd.get("server_addr"), dd.get("url"), dd.get("url_file"), dd.get("from_json"))):
-        errMsg = "missing a mandatory option (-s, --server-addr, -u, -f, -r, --url, --file, --from-json). "
+    if not any((dd.get("server_addr"), dd.get("url"), dd.get("url_file"))):
+        errMsg = "missing a mandatory option (-s, --server-addr, -u, -f, -r, --url, --file). "
         errMsg += "Use -h for basic and -hh for advanced help\n"
         parser.error(errMsg)
     return dd
