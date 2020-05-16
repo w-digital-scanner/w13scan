@@ -4,7 +4,7 @@
 # @Author  : w8ay
 # @File    : sqli_error.py
 
-from W13SCAN.lib.helper.helper_sqli import Get_sql_errors
+from lib.helper.helper_sqli import Get_sql_errors
 from lib.core.common import generateResponse
 from lib.core.enums import VulType
 from lib.core.plugins import PluginBase

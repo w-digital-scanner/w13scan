@@ -35,7 +35,7 @@ def setPaths(root):
 
 
 def initKb():
-    KB['continue'] = True  # 线程一直继续
+    KB['continue'] = False  # 线程一直继续
     KB['registered'] = dict()  # 注册的漏洞插件列表
     KB['fingerprint'] = dict()  # 注册的指纹插件列表
     KB['task_queue'] = Queue()  # 初始化队列
@@ -132,8 +132,13 @@ def _merge_options(input_options):
         input_options_items = input_options.__dict__.items()
 
     for key, value in input_options_items:
-        if key not in conf or value not in (None, False):
+        # if key not in conf or not value:
+        if key not in conf:
             conf[key] = value
+        else:
+            _ = conf[key]
+            if not _:
+                conf[key] = value
 
 
 def _set_conf():
@@ -165,7 +170,7 @@ def _set_conf():
 def _init_stdout():
     # 不扫描网址
     if len(conf["excludes"]):
-        logger.info("Not scanned:{}".format(repr(conf["excludes"])))
+        logger.info("No scanning:{}".format(repr(conf["excludes"])))
     # 指定扫描插件
     if conf.able:
         logger.info("Use plugins:{}".format(repr(conf.able)))

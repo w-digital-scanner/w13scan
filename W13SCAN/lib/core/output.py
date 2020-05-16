@@ -16,6 +16,7 @@ from colorama import Fore
 
 from lib.core.common import dataToStdout, md5
 from lib.core.data import KB, path, conf
+from lib.core.settings import VERSION
 
 
 class OutPut(object):
@@ -77,7 +78,9 @@ class OutPut(object):
             if not os.path.exists(self.html_filename):
                 with open(os.path.join(path.data, "templates.html")) as f:
                     with open(self.html_filename, 'w') as f2:
-                        f2.write(f.read())
+                        content = f.read()
+                        content = content.replace('^w13scan_version^', VERSION)
+                        f2.write(content)
 
             with open(self.html_filename, 'a+') as f2:
                 # content = base64.b64encode(json.dumps(output).encode()).decode()

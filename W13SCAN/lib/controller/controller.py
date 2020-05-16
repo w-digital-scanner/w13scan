@@ -68,7 +68,7 @@ def start():
 
 
 def task_run():
-    while KB["continue"] and not KB["task_queue"].empty():
+    while KB["continue"] or not KB["task_queue"].empty():
         poc_module_name, request, response = KB["task_queue"].get()
         KB.lock.acquire()
         KB.running += 1
@@ -95,7 +95,9 @@ def task_run():
 
 
 def printProgress():
-    KB.output.log(repr(KB.running_plugins))
+    if conf.debug:
+        # 查看当前正在运行的插件
+        KB.output.log(repr(KB.running_plugins))
     msg = '%s success | %d remaining | %s scanned in %.2f seconds' % (
         KB.output.count(), KB.running, KB.finished, time.time() - KB.start_time)
 

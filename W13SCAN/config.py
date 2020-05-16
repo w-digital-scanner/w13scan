@@ -23,7 +23,7 @@ ABLE = []  # 允许使用的插件
 DISABLE = []  # 不允许使用的插件
 
 # DEBUG
-DEBUG = True
+DEBUG = False
 
 # REVERSE
 USE_REVERSE = False  # 使用反连平台将False改为True

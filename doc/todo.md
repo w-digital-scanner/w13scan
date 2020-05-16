@@ -7,7 +7,9 @@
 - [x] 基于语义的xss漏洞扫描
 - [x] 基于语义的jsonp敏感信息
 - [x] net xss 语义识别
-- [ ] sql注入插件
+- [x] sql注入插件
+    - [x] sql错误注入
+    - [x] sql布尔注入
 - [x] loader模块完善
 - [x] 对uri头进行探测
 - [x] 对post json的处理
@@ -25,16 +27,29 @@
     - [x] -r
 - [x] 整理完善命令行参数
 - [x] 显示当前运行的扫描插件
-- [ ] conf参数完善
-    - [ ] debug模式
+- [x] conf参数完善
+    - [x] debug模式
     - [x] 不扫描网址 loader处理
     - [x] html导出
-    - [ ] disable able 命令处理
-    - [ ] -u -file 处理
+    - [x] disable able 命令处理
+    - [x] -u -file 处理
 - [ ] 完善readme
     - [ ] 开发文档
     - [ ] 漏洞测试平台报告对比
+        - [x] 完成了crawlergo调用程序
     - [ ] 使用文档
+- [x] 插件改善
+    - [x] 目录穿越 http://testphp.vulnweb.com/showimage.php?file=../../../../../../../../../../../../../sbin/../etc/./rc.d/../rc.d/.././passwd
+    - [x] .idea插件
+        - 由于开发人员使用JetBrains系列开发工具开发web应用，上传代码至服务器时，未排除web开发目录下的.idea文件夹导致该目录被上传至服务器web目录。	
+        - http://testphp.vulnweb.com:80/.idea/workspace.xml
+    - [x] xss
+        - `http://testphp.vulnweb.com/hpp/params.php?p=valid&pp=12%27%3E%22%3E%3C%2Ftitle%3E%3C%2Fscript%3E%3Cscript%3Eprompt%28357357%29%3C%2Fscript%3E`
+    - [x] 备份文件规则
+        - index.bak
+        - index.zip
+    - [ ] 敏感文件
+        - https://xz.aliyun.com/t/3677#toc-0
 
 ## Useage
 

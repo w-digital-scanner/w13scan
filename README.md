@@ -4,9 +4,11 @@
 
 [![GitHub issues](https://img.shields.io/github/issues/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/issues)  [![GitHub stars](https://img.shields.io/github/stars/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/stargazers) [![GitHub forks](https://img.shields.io/github/forks/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/network) [![GitHub license](https://img.shields.io/github/license/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/blob/master/LICENSE)
 
+![Jietu20200516-184214](./doc/Jietu20200516-184214.jpg)
 
 ## 声明
-W13Scan仅提供给授权的渗透测试以及教育行为使用。
+
+使用W13Scan前请遵守当地法律,W13Scan仅提供给授权的渗透测试以及教育行为使用。
 
 ## 特点
 相比于其他专业的扫描工具，w13scan也有自己独有的优点。
@@ -46,8 +48,16 @@ W13Scan仅提供给授权的渗透测试以及教育行为使用。
 ### 扫描平台对比
 w13scan测试了多个扫描平台，以下为扫描平台的测试报告
 
+| 平台名称                                              | 扫描结果                                                     | 扫描模式                   |
+| ----------------------------------------------------- | ------------------------------------------------------------ | -------------------------- |
+| [WVS PHP Vulnweb](http://testphp.vulnweb.com/)        | [查看](https://i.hacking8.com/static/testphp.vulnweb.html)   | crawlergo+w13scan 自动扫描 |
+| [WVS AJAX Vulnweb](http://testphp.vulnweb.com/AJAX/#) | [查看](https://i.hacking8.com/static/testphp.vulnweb-ajax.html) | 被动扫描                   |
+| [demo.aisec.cn](http://demo.aisec.cn/demo/aisec/)     | [查看](https://i.hacking8.com/static/demo.aisec.cn.html)     | 被动扫描                   |
+
+
+
 ### 扫描细节的处理
-分享w13scan的一些扫描细节处理
+w13scan的在一些扫描细节处理
 - 支持扫描在 Get,Post,Cookie,Uri(伪静态) 上检测
 - w13scan内置第三方`dnslog.cn`反连平台(默认开启)，也内置有自己的反连平台(默认不开启，需配置)，用于检测无回显漏洞。
 - w13scan会记录发包过程及详情，并推荐可能的测试方案。
@@ -69,18 +79,41 @@ w13scan测试了多个扫描平台，以下为扫描平台的测试报告
 ```bash
 git clone https://github.com/w-digital-scanner/w13scan.git
 pip3 install -r requirements.txt
-python3 W13scan/w13scan.py -h
+cd W13SCAN
+python3 w13scan.py -h
 ```
-### 简单的主动扫描
-
 ### 被动扫描
+
+```
+python3 w13scan.py -s 127.0.0.1:8887 --html # 端口可省略，默认为8887,开启--html即实时生成html报告
+```
+
 #### HTTPS支持
-If you want w13scan to support https, similar to BurpSuite, first need to set up a proxy server (default 127.0.0.1:7778), then go to http://w13scan.ca to download the root certificate and trust it.
+
+如果想让w13scan被动模式支持https，先启动w13scan
+
+```
+python3 w13scan.py -s 127.0.0.1:8887 --html
+```
+
+在浏览器中访问 http://w13scan.ca 下载证书并信任它。
+### 主动扫描
+
+```
+-u     输入一个url进行扫描
+--file 从文件中读取url扫描
+```
+
+w13scan会对url进行参数分析并使用插件扫描，但不会进行爬虫。
 
 ### 结合动态爬虫扫描
-在目录`crawlergo_example`展示了如何与crawlergo爬虫结合
-### 开发
-w13scan是开源的，我们也鼓励将w13scan集成到自己的扫描器中。
+
+#### crawlergo + w13scan 自动扫描
+
+在目录`crawlergo_example`展示了如何与crawlergo爬虫结合，
+## 集成到自己扫描器
+
+w13scan是开源的，我们也希望安全研究人员将w13scan集成到自己的扫描器中,。
 
 ## 贡献&感谢
 - [CONTRIBUTORS](CONTRIBUTORS.md)

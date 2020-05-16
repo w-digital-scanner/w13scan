@@ -60,11 +60,14 @@ class W13SCAN(PluginBase):
         for payload in payloads:
             r = requests.get(payload, headers=headers, allow_redirects=False)
             if r.status_code == 200:
-                content = r.content
+                try:
+                    content = r.raw.read(10)
+                except:
+                    continue
                 if self._check(content) or "application/octet-stream" in r.headers.get("Content-Type"):
                     rarsize = int(r.headers.get('Content-Length')) // 1024 // 1024
                     result = self.new_result()
                     result.init_info(self.requests.url, "备份文件下载", VulType.BRUTE_FORCE)
-                    result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                    result.add_detail("payload请求", r.reqinfo, content.decode(errors='ignores'),
                                       "备份文件大小:{}M".format(rarsize), "", "", PLACE.GET)
                     self.success(result)

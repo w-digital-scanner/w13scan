@@ -86,9 +86,6 @@ class W13SCAN(PluginBase):
         return payloads
 
     def audit(self):
-
-        headers = self.requests.headers
-
         plainArray = [
             "; for 16-bit app support",
             "[MCI Extensions.BAK]",

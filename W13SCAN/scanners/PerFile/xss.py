@@ -11,7 +11,6 @@ from urllib.parse import unquote
 import requests
 
 from lib.core.common import random_str, generateResponse
-from lib.core.data import conf
 from lib.core.enums import HTTPMETHOD, PLACE, VulType
 from lib.core.output import ResultObject
 from lib.core.plugins import PluginBase
@@ -36,14 +35,14 @@ class W13SCAN(PluginBase):
             parse_params = (parse_params | TOP_RISK_GET_PARAMS) - set(self.requests.params.keys())
             for key in parse_params:
                 params_data[key] = random_str(6)
-            params = params_data.update(self.requests.params)
-            resp = requests.get(self.requests.netloc, params=params, headers=self.requests.headers).text
+            params_data.update(self.requests.params)
+            resp = requests.get(self.requests.netloc, params=params_data, headers=self.requests.headers).text
         elif self.requests.method == HTTPMETHOD.POST:
             parse_params = (parse_params) - set(self.requests.post_data.keys())
             for key in parse_params:
                 params_data[key] = random_str(6)
-            post_data = params_data.update(self.requests.post_data)
-            resp = requests.post(self.requests.url, data=post_data, headers=self.requests.headers).text
+            params_data.update(self.requests.post_data)
+            resp = requests.post(self.requests.url, data=params_data, headers=self.requests.headers).text
 
         self.init()
         iterdatas = self.generateItemdatas()
@@ -66,8 +65,8 @@ class W13SCAN(PluginBase):
                 if not re.search(xsschecker, r1.text, re.I):
                     continue
                 html_type = r1.headers.get("Content-Type", "").lower()
-                if 'html' not in html_type:
-                    continue
+                # if 'html' not in html_type:
+                #     continue
 
                 # 反射位置查找
                 locations = SearchInputInResponse(xsschecker, r1.text)
@@ -80,7 +79,8 @@ class W13SCAN(PluginBase):
                     req = self.req(positon, data)
                     if payload in req.text:
                         self.result.add_detail("html代码未转义", req.reqinfo, generateResponse(req),
-                                               "可使用<svg onload=alert`1`// 进行攻击测试", k, data[k], positon)
+                                               "可使用<svg onload=alert`1`// 进行攻击测试,注意返回格式为:" + html_type, k, data[k],
+                                               positon)
 
                 for item in locations:
                     _type = item["type"]
@@ -106,7 +106,8 @@ class W13SCAN(PluginBase):
                         for i in _locations:
                             if i["details"]["tagname"] == flag:
                                 self.result.add_detail("html标签可被闭合", req.reqinfo, generateResponse(req),
-                                                       "<{}>可被闭合,可使用{}进行攻击测试".format(details["tagname"], truepayload),
+                                                       "<{}>可被闭合,可使用{}进行攻击测试,注意返回格式为:{}".format(details["tagname"],
+                                                                                                truepayload, html_type),
                                                        k, data[k],
                                                        positon)
                                 break
@@ -122,8 +123,9 @@ class W13SCAN(PluginBase):
                             for i in _locations:
                                 if i["details"]["tagname"] == flag:
                                     self.result.add_detail("html标签可被闭合", req.reqinfo, generateResponse(req),
-                                                           "<{}>可被闭合,可使用{}进行攻击测试".format(details["tagname"],
-                                                                                         truepayload),
+                                                           "<{}>可被闭合,可使用{}进行攻击测试,注意返回格式为:{}".format(details["tagname"],
+                                                                                                    truepayload,
+                                                                                                    html_type),
                                                            k, data[k],
                                                            positon)
                                     break
@@ -137,8 +139,8 @@ class W13SCAN(PluginBase):
                                 for k, v in i["details"]["attibutes"]:
                                     if k == flag:
                                         self.result.add_detail("可自定义任意标签事件", req.reqinfo, generateResponse(req),
-                                                               "可以自定义类似 'onmouseover=prompt(1)'的标签事件",
-                                                               k, data[k],
+                                                               "可以自定义类似 'onmouseover=prompt(1)'的标签事件,注意返回格式为:" + html_type,
+                                                               k, payload,
                                                                positon)
                                         break
                         else:
@@ -155,7 +157,9 @@ class W13SCAN(PluginBase):
                                         if k == flag:
                                             self.result.add_detail("引号可被闭合，可使用其他事件造成xss", req.reqinfo,
                                                                    generateResponse(req),
-                                                                   "可使用payload:{}".format(truepayload), k, data[k],
+                                                                   "可使用payload:{},注意返回格式为:{}".format(truepayload,
+                                                                                                     html_type), k,
+                                                                   payload,
                                                                    positon)
                                             break
                             # test html
@@ -169,7 +173,8 @@ class W13SCAN(PluginBase):
                                     if i["details"]["tagname"] == flag:
                                         self.result.add_detail("html标签可被闭合", req.reqinfo, generateResponse(req),
                                                                "可测试payload:{}".format(
-                                                                   _payload.format("svg onload=alert`1`")),
+                                                                   _payload.format(
+                                                                       "svg onload=alert`1`")) + ",返回格式为:" + html_type,
                                                                k, data[k],
                                                                positon)
                                         break
@@ -191,7 +196,9 @@ class W13SCAN(PluginBase):
                                             truepayload = "javascript:alert(1)"
 
                                         self.result.add_detail("值可控", req.reqinfo, generateResponse(req),
-                                                               "{}的值可控，可能被恶意攻击,payload:{}".format(keyname, truepayload),
+                                                               "{}的值可控，可能被恶意攻击,payload:{},注意返回格式为:{}".format(keyname,
+                                                                                                             truepayload,
+                                                                                                             html_type),
                                                                k, data[k],
                                                                positon)
                                         break
@@ -218,7 +225,8 @@ class W13SCAN(PluginBase):
                                     if len(_attibutes) > 0 and _attibutes[0][1] == payload and _attibutes[0][
                                         0].lower() == keyname.lower():
                                         self.result.add_detail("事件的值可控", req.reqinfo, generateResponse(req),
-                                                               "{}的值可控，可能被恶意攻击".format(keyname), k, data[k], positon)
+                                                               "{}的值可控，可能被恶意攻击,注意返回格式为:{}".format(keyname, html_type),
+                                                               k, data[k], positon)
                                         break
                     elif _type == "comment":
                         flag = random_str(7)
@@ -231,7 +239,9 @@ class W13SCAN(PluginBase):
                             for i in _occerens:
                                 if i["details"]["tagname"] == flag:
                                     self.result.add_detail("html注释可被闭合", req.reqinfo, generateResponse(req),
-                                                           "html注释可被闭合 测试payload:{}".format(truepayload), k, data[k],
+                                                           "html注释可被闭合 测试payload:{},注意返回格式为:{}".format(truepayload,
+                                                                                                       html_type), k,
+                                                           data[k],
                                                            positon)
                                     break
                     elif _type == "script":
@@ -251,7 +261,9 @@ class W13SCAN(PluginBase):
                             if i["details"]["content"] == flag and i["details"][
                                 "tagname"].lower() == script_tag.lower():
                                 self.result.add_detail("可以新建script标签执行任意代码", req.reqinfo, generateResponse(req),
-                                                       "可以新建script标签执行任意代码 测试payload:{}".format(truepayload), k,
+                                                       "可以新建script标签执行任意代码 测试payload:{},注意返回格式为:{}".format(truepayload,
+                                                                                                           html_type),
+                                                       k,
                                                        data[k],
                                                        positon)
                                 break
@@ -277,7 +289,8 @@ class W13SCAN(PluginBase):
                                         if flag in _output["details"]["content"] and _output[
                                             "type"] == "ScriptIdentifier":
                                             self.result.add_detail("js单行注释bypass", req.reqinfo, generateResponse(req),
-                                                                   "js单行注释可被\\n bypass".format(truepayload), k,
+                                                                   "js单行注释可被\\n bypass,注意返回格式为:" + html_type.format(
+                                                                       truepayload), k,
                                                                    data[k], positon)
                                             break
 
@@ -296,12 +309,14 @@ class W13SCAN(PluginBase):
                                         if flag in _output["details"]["content"] and _output[
                                             "type"] == "ScriptIdentifier":
                                             self.result.add_detail("js块注释可被bypass", req.reqinfo, generateResponse(req),
-                                                                   "js单行注释可被\\n bypass".format(truepayload), k,
+                                                                   "js单行注释可被\\n bypass,注意返回格式为:" + html_type.format(
+                                                                       truepayload), k,
                                                                    data[k], positon)
                                             break
                             elif _type == "ScriptIdentifier":
                                 self.result.add_detail("可直接执行任意js命令", req.reqinfo, generateResponse(req),
-                                                       "ScriptIdentifier类型 测试payload：prompt(1);//", k,
+                                                       "ScriptIdentifier类型 测试payload：prompt(1);//,注意返回格式为:" + html_type,
+                                                       k,
                                                        data[k], positon)
                             elif _type == "ScriptLiteral":
                                 content = _details["content"]
@@ -331,7 +346,8 @@ class W13SCAN(PluginBase):
                                             "type"] == "ScriptIdentifier":
                                             self.result.add_detail("script脚本内容可被任意设置", req.reqinfo,
                                                                    generateResponse(req),
-                                                                   "测试payload:{}".format(truepayload), k,
+                                                                   "测试payload:{},注意返回格式为:{}".format(truepayload,
+                                                                                                    html_type), k,
                                                                    data[k], positon)
                                             break
 

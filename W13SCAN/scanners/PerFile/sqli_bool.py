@@ -5,15 +5,14 @@
 # @File    : sql_inject_bool.py
 import copy
 import difflib
-import os
 import re
 
 import requests
 
-from W13SCAN.lib.helper.diifpage import findDynamicContent, getFilteredPageContent
 from lib.core.common import random_str, generateResponse, url_dict2str
 from lib.core.enums import PLACE, VulType, HTTPMETHOD
 from lib.core.plugins import PluginBase
+from lib.helper.diifpage import findDynamicContent, getFilteredPageContent
 
 
 class W13SCAN(PluginBase):
@@ -92,7 +91,7 @@ class W13SCAN(PluginBase):
         if ratio_true > self.UPPER_RATIO_BOUND and abs(ratio_true - ratio_false) > self.DIFF_TOLERANCE:
             if ratio_false <= self.UPPER_RATIO_BOUND:
                 is_inject = True
-        if not is_inject and ratio_true > 0.68:
+        if not is_inject and ratio_true > 0.68 and ratio_true > ratio_false:
             originalSet = set(getFilteredPageContent(self.resp_str, True, "\n").split("\n"))
             trueSet = set(getFilteredPageContent(truePage, True, "\n").split("\n"))
             falseSet = set(getFilteredPageContent(falsePage, True, "\n").split("\n"))

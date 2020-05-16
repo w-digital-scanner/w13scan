@@ -434,22 +434,9 @@ class ProxyHandle(BaseHTTPRequestHandler):
         决定是否放行
         :return:
         '''
-        ret = True
+        ret = False
         target = self._target or self.path
 
-        for i in conf["includes"]:
-            if not i:
-                continue
-            match = re.search(i, target, re.I)
-            if match:
-                ret = False
-        for i in conf["excludes"]:
-            if not i:
-                continue
-            match = re.search(i, target, re.I)
-            if match:
-                ret = True
-                break
         if "?" in target:
             target = target[:target.index("?")]
         for ext in notAcceptedExt:
