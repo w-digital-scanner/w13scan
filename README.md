@@ -109,11 +109,32 @@ w13scan会对url进行参数分析并使用插件扫描，但不会进行爬虫�
 ### 结合动态爬虫扫描
 
 #### crawlergo + w13scan 自动扫描
+在目录`crawlergo_example` `spider.py`展示了如何与crawlergo爬虫结合联动。
 
-在目录`crawlergo_example`展示了如何与crawlergo爬虫结合，
+### 反连平台(非必须)
+修改`config.py`下有关反连平台的设置,可类似修改为
+```python
+# REVERSE
+USE_REVERSE = True  # 使用反连平台将False改为True
+REVERSE_HTTP_IP = "127.0.0.1"  # 回连http IP地址，需要改为服务器ip，不能改为0.0.0.0，因为程序无法识别
+REVERSE_HTTP_PORT = 9999  # 回连http端口
+
+REVERSE_DNS = "dnslog.w13scan.hacking8.com" # 修改为自己的域名，并将域名dns修改为本机IP
+
+REVERSE_RMI_IP = "127.0.0.1"  # Java RMI 回连IP,需要改为服务器ip，不能改为0.0.0.0，因为程序无法识别
+REVERSE_RMI_PORT = 10002  # Java RMI 回连端口
+
+REVERSE_SLEEP = 5  # 反连后延时检测时间，单位是(秒)
+```
+之后启动反连平
+```bash
+python3 reverse.py
+```
+在启动w13scan即可
 ## 集成到自己扫描器
 
-w13scan是开源的，我们也希望安全研究人员将w13scan集成到自己的扫描器中,。
+w13scan是开源的，我们也希望安全研究人员将w13scan集成到自己的扫描器中。
 
+请点击 [开发文档](./doc/dev.md)
 ## 贡献&感谢
 - [CONTRIBUTORS](CONTRIBUTORS.md)
