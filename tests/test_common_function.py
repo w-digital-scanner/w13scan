@@ -10,8 +10,6 @@ from urllib.parse import urlparse
 
 import requests
 
-from W13SCAN import VERSION
-from lib.common import get_parent_paths, get_links, createGithubIssue
 
 
 class TestCase(unittest.TestCase):

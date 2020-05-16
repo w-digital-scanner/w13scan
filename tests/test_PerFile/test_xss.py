@@ -4,10 +4,11 @@
 # @Author  : w8ay
 # @File    : test_xss.py
 
-from api import scan, output
+from W13SCAN.api import scan,KB
 
-url = "https://passport.house.163.com/sign/login.html?&scope=userinfo&response_type=code&redirect_uri=https%3A%2F%2Fesf.house.163.com%2Ffurion%2Fconsumer%2Fcode%3Furl%3Dhttps%253A%252F%252Fesf.house.163.com&state=cb5f7795e47a0d91608c77387c38b82f&client_id=c27585tefc45465eqw23240c263915fv"
+url = "http://scanbox.io/xss/reflect_xss.php?name=a&submit=submit"
+url = "http://demo.aisec.cn/demo/aisec/js_link.php?id=1&msg=aaaaa"
 module_name = "xss"
 scan(url, module_name)
-for item in output.collect:
+for item in KB.output.collect:
     print(item)
