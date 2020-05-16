@@ -138,3 +138,6 @@ w13scan是开源的，我们也希望安全研究人员将w13scan集成到自己
 请点击 [开发文档](./doc/dev.md)
 ## 贡献&感谢
 - [CONTRIBUTORS](CONTRIBUTORS.md)
+
+## 关注
+微信公众号搜索"Hacking就是好玩"
