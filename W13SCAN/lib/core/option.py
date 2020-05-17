@@ -88,7 +88,7 @@ def initPlugins():
             filename = os.path.join(root, _)
             if not os.path.exists(filename):
                 continue
-            name = os.path.dirname(filename).split("/")[-1]
+            name = os.path.split(os.path.dirname(filename))[-1]
             mod = load_file_to_module(filename)
 
             if not getattr(mod, 'fingerprint'):

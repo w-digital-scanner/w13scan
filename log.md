@@ -253,7 +253,7 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
     - 加入了存在漏洞的js组件检查
     - https://github.com/m4ll0k/WAScan 这个项目也可以集成些payload
 - 2019.12.22 想解决代理hsts的问题，但是太菜了。。留下没有技术的眼泪。
-- 2020.1.14 [ ]todo:语义解析jsonp 
+- 2020.1.14 [x]todo:语义解析jsonp 
     - https://www.anquanke.com/post/id/197120
 - 2020.2.4 按照xray的思想用html语义和js语义分析，重写了xss扫描插件(暂时还未推到主分支)，批量测试跑全网的src站点，效果很不错！
 - 2020.2.11 记录xss的改造之路：https://mp.weixin.qq.com/s?__biz=MzU2NzcwNTY3Mg==&mid=2247483698&idx=1&sn=9733c6078516c34963a4c0486c6d1872&chksm=fc986815cbefe103975c2e554ef2667b931e14b2d1dcca407af9edbad83ea72f3ac88efd8d22&token=1067935935&lang=zh_CN#rd
@@ -262,3 +262,4 @@ w13scan是一款插件化基于流量分析的扫描器，通过编写插件它�
 - 2020.4.4 最近几周零零散散开始了重构w13scan之路，今天把整个的代码结构，目录结构，插件结构重新定义了，使插件编写变得更加简洁，同时对几个重要地方都标注了类型，代码更python，更优美了。
 - 2020.4.5 完成rmi反连平台，fastjson文章参考：https://koalr.me/post/fastjson-deserialization-detection/
 - 2020.4.12 总结近段时间的更新: https://mp.weixin.qq.com/s?__biz=MzU2NzcwNTY3Mg==&mid=2247483728&idx=1&sn=1bf4ca5d0ee085011047366d4f24aafb&chksm=fc986877cbefe161e591b8898ef1ed76293e426b5091006f539a8e026615bdcb4f1a7f8df892&token=975818607&lang=zh_CN#rd
+- 2020.5.16 完成了w13scan 2.0的制作，重写了扫描模块，支持实时报表生成，
