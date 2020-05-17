@@ -28,7 +28,6 @@
 - [x] sql注入
     - 基于报错SQL注入检测
     - 基于网页相似度布尔类型的SQL注入检测
-    - 基于时间的SQL注入检测
 - [x] http smuggling 走私攻击
 - [x] Fastjson检测与利用
 - [x] .Net通杀Xss检测
@@ -54,24 +53,6 @@ w13scan测试了多个扫描平台，以下为扫描平台的测试报告
 | [WVS AJAX Vulnweb](http://testphp.vulnweb.com/AJAX/#) | [查看](https://i.hacking8.com/static/testphp.vulnweb-ajax.html) | 被动扫描                   |
 | [demo.aisec.cn](http://demo.aisec.cn/demo/aisec/)     | [查看](https://i.hacking8.com/static/demo.aisec.cn.html)     | 被动扫描                   |
 
-
-
-### 扫描细节的处理
-w13scan的在一些扫描细节处理
-- 支持扫描在 Get,Post,Cookie,Uri(伪静态) 上检测
-- w13scan内置第三方`dnslog.cn`反连平台(默认开启)，也内置有自己的反连平台(默认不开启，需配置)，用于检测无回显漏洞。
-- w13scan会记录发包过程及详情，并推荐可能的测试方案。
-    - 有时候漏洞检测无法知道是否是漏扫插件的误报还是程序本身有问题，w13scan会详细说明扫描到的漏洞是怎么被发现的，以及一些判定过程。
-- 在扫描过程中会进行简单的信息收集，如收集`网站框架`，`操作系统`，`编程语言`,`web中间件`等信息，后续的检测中会根据信息收集的程度构造payload，信息收集插件在`fingprints`目录。
-- 扫描器在扫描XSS时会通过`html与js的语义化分析`自动从网页中寻找更多参数用于测试,以及根据wooyun漏洞库top参数合并，并根据算法只保留动态的参数进行测试。
-- w13scan会实时将结果以json的格式写入到output目录下,开启`--html`后，会实时生成精美的html格式的漏洞报告。
-- level发包等级，从1~5，会发送越来越多的数据包
-    - 1 发送简单的检测数据包
-    - 2 无视指纹识别的环境进行插件扫描(部分插件需要指纹识别到环境才会进行扫描)
-    - 3 带上cookie扫描
-    - 4 对uri进行探测(分离url，可探测伪静态情况)
-    - 5 针对所有情况发送请求包
-
 ## 使用
 
 ### 安装
@@ -90,13 +71,7 @@ python3 w13scan.py -s 127.0.0.1:8887 --html # 端口可省略，默认为8887,�
 
 #### HTTPS支持
 
-如果想让w13scan被动模式支持https，先启动w13scan
-
-```
-python3 w13scan.py -s 127.0.0.1:8887 --html
-```
-
-在浏览器中访问 http://w13scan.ca 下载证书并信任它。
+如果想让w13scan被动模式支持https，先启动w13scan,然后在浏览器中访问 http://w13scan.ca 下载证书并信任它。
 ### 主动扫描
 
 ```
@@ -126,11 +101,12 @@ REVERSE_RMI_PORT = 10002  # Java RMI 回连端口
 
 REVERSE_SLEEP = 5  # 反连后延时检测时间，单位是(秒)
 ```
-之后启动反连平
+之后先启动反连平台
 ```bash
 python3 reverse.py
 ```
-在启动w13scan即可
+再启动w13scan即可
+
 ## 集成到自己扫描器
 
 w13scan是开源的，我们也希望安全研究人员将w13scan集成到自己的扫描器中。
@@ -140,4 +116,5 @@ w13scan是开源的，我们也希望安全研究人员将w13scan集成到自己
 - [CONTRIBUTORS](CONTRIBUTORS.md)
 
 ## 关注
-微信公众号搜索"Hacking就是好玩"
+- 微信公众号搜索"Hacking就是好玩"
+- 有关w13scan 2.0的介绍 https://mp.weixin.qq.com/s?__biz=MzU2NzcwNTY3Mg==&mid=2247483743&idx=1&sn=b8c7288dd0e77ecd8b615808e9fef589&chksm=fc986878cbefe16e94fffbb58318177b719d27649fa07f8d124811b7cdae365e6d12ed75439e&token=1791849119&lang=zh_CN#rd
