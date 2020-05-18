@@ -4,77 +4,37 @@
 # @Author  : w8ay
 # @File    : __init__.py.py
 import copy
-import os
-import threading
-import time
 
+from lib.core.option import init
+from lib.helper.function import isJavaObjectDeserialization, isPHPObjectDeserialization, isPythonObjectDeserialization
+from lib.core.plugins import PluginBase
+from lib.core.output import ResultObject
+from lib.core.enums import WEB_PLATFORM, PLACE, HTTPMETHOD, VulType
+from lib.core.data import conf, KB, path, logger
+from lib.core.common import generateResponse
+from lib.parse.parse_request import FakeReq
+from lib.parse.parse_responnse import FakeResp
+from lib.controller.controller import task_push_from_name, task_push, start
+from w13scan import modulePath
 import requests
 
-from W13SCAN.lib.const import Level
-from W13SCAN.lib.controller import run_threads, printProgress
-from W13SCAN.lib.data import KB, conf
-from W13SCAN.lib.option import init
-from W13SCAN.plugins.loader import FakeReq, FakeResp
-from queue import Queue
+__all__ = [
+    'isJavaObjectDeserialization', 'isPHPObjectDeserialization', 'isPythonObjectDeserialization',
+    'PluginBase', 'ResultObject', 'WEB_PLATFORM', 'conf', 'KB',
+    'path', 'logger', 'PLACE', 'HTTPMETHOD', 'VulType', 'generateResponse', 'task_push_from_name', 'task_push', 'start'
+]
 
 
-class Scanner(object):
+def scan(url, module_name, conf={}):
+    root = modulePath()
+    cmdline = {
+        "level": 5
+    }
+    cmdline.update(conf)
+    init(root, cmdline)
+    r = requests.get(url)
+    req = FakeReq(url, {}, HTTPMETHOD.GET)
+    resp = FakeResp(r.status_code, r.content, r.headers)
 
-    def __init__(self, **kwargs):
-        self.url_queue = Queue()
-        root = os.path.dirname(os.path.abspath(os.path.join(__file__, os.path.pardir)))
-        init(root, kwargs)
-
-    def _task_run(self):
-        while not KB["task_queue"].empty() or not self.url_queue.empty():
-            poc_module_name, request, response = KB["task_queue"].get()
-            KB["lock"].acquire()
-            KB["running"] += 1
-            KB["lock"].release()
-            poc_module = copy.deepcopy(KB["registered"][poc_module_name])
-
-            poc_module.execute(request, response)
-
-            KB["lock"].acquire()
-            KB["finished"] += 1
-            KB["running"] -= 1
-            KB["lock"].release()
-            printProgress()
-        printProgress()
-
-    def custom_url(self):
-        while not self.url_queue.empty():
-            url = self.url_queue.get()
-            self.put(url)
-
-    def run(self):
-        if not self.url_queue.empty():
-            thread = threading.Thread(target=self.custom_url, )
-            thread.setDaemon(True)
-            thread.start()
-            time.sleep(5)
-        run_threads(conf["threads"], self._task_run)
-        # scanner = threading.Thread(target=self._start)
-        # scanner.setDaemon(True)
-        # scanner.start()
-
-    def put_nodelay(self, url):
-        self.url_queue.put(url)
-
-    def put(self, url):
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/538"
-        }
-        try:
-            r = requests.get(url, headers=headers)
-        except:
-            return
-        # print(r.status_code,len(r.text))
-        req = FakeReq(url, headers)
-        resp = FakeResp(r)
-        KB['task_queue'].put(('loader', req, resp))
-
-
-__all__ = (
-    Level, Scanner
-)
+    poc_module = copy.deepcopy(KB["registered"][module_name])
+    poc_module.execute(req, resp)

@@ -3,9 +3,13 @@ certifi==2019.6.16
 cffi==1.12.3
 chardet==3.0.4
 colorama==0.4.1
+cowpy==1.1.0
 cryptography==2.7
+cssselect==1.1.0
 idna==2.8
+lxml==4.5.0
 pycparser==2.19
+pyjsparser==2.7.1
 pyOpenSSL==18.0.0
 requests==2.22.0
 six==1.12.0

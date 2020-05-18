@@ -4,8 +4,10 @@
 # @Author  : w8ay
 # @File    : test_api.py
 import unittest
+import socket
+import time
 
-from W13SCAN.api import Scanner
+from lib.api.dnslog import DnsLogApi
 
 
 class TestCase(unittest.TestCase):
@@ -15,19 +17,12 @@ class TestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_api_get(self):
-        self.scanner = Scanner(threads=10)
-        self.scanner.put("http://emlog6.demo/?post=1")
-        self.scanner.run()
-
-    def test_http_smuggling(self):
-        url = "https://acfe1f111e6d561480049808007c0038.web-security-academy.net/"
-        scan = Scanner(include_plugins=['http_smuggling.py'])
-        scan.put(url)
-        scan.run()
-
-    def test_retireJs(self):
-        url = 'http://discuz.demo/1.html'
-        scan = Scanner(include_plugins=['retireJS.py'])
-        scan.put(url)
-        scan.run()
+    def test_dnslog(self):
+        dnslog = DnsLogApi()
+        subdomain = dnslog.new_domain()
+        print(subdomain)
+        socket.gethostbyname("testapi." + subdomain)
+        time.sleep(1.5)
+        result = dnslog.check()
+        print(result)
+        self.assertTrue(len(result) > 0)

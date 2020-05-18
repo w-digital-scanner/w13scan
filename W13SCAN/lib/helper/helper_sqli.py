@@ -6,7 +6,7 @@
 # refer:https://github.com/boy-hack/poc-t/blob/2.0/script/vulscan.py
 import re
 
-from W13SCAN.lib.const import DBMS
+from lib.core.enums import DBMS
 
 
 def Get_sql_errors():
