@@ -49,7 +49,7 @@ class W13SCAN(PluginBase):
                     result = ResultObject(self)
                     result.init_info(self.requests.url, "js文件中存在敏感信息", VulType.SENSITIVE)
                     result.add_detail("payload探测", self.requests.raw, self.response.raw,
-                                      "发现敏感信息:{}".format(text), "", "", PLACE.GET)
+                                      "根据正则:{} 发现敏感信息:{}".format(_,text), "", "", PLACE.GET)
                     self.success(result)
                     issuc = True
                     break
