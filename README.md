@@ -4,7 +4,7 @@
 
 [![GitHub issues](https://img.shields.io/github/issues/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/issues)  [![GitHub stars](https://img.shields.io/github/stars/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/stargazers) [![GitHub forks](https://img.shields.io/github/forks/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/network) [![GitHub license](https://img.shields.io/github/license/boy-hack/w13scan)](https://github.com/boy-hack/w13scan/blob/master/LICENSE)
 
-![Jietu20200516-184214](./doc/Jietu20200516-184214.jpg)
+![Jietu20200516-184214](./doc/logo.jpg)
 
 ## 声明
 
