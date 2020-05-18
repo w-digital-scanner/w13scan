@@ -46,10 +46,20 @@ class W13SCAN(PluginBase):
             issuc = False
             if texts:
                 for text in set(texts):
+                    ignores = ['function', 'encodeURIComponent']
+                    iscontinue = True
+
+                    for i in ignores:
+                        if i in text:
+                            iscontinue = False
+                            break
+                    if not iscontinue:
+                        continue
+
                     result = ResultObject(self)
                     result.init_info(self.requests.url, "js文件中存在敏感信息", VulType.SENSITIVE)
                     result.add_detail("payload探测", self.requests.raw, self.response.raw,
-                                      "根据正则:{} 发现敏感信息:{}".format(_,text), "", "", PLACE.GET)
+                                      "根据正则:{} 发现敏感信息:{}".format(_, text), "", "", PLACE.GET)
                     self.success(result)
                     issuc = True
                     break
