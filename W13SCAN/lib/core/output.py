@@ -76,7 +76,7 @@ class OutPut(object):
         if self.ishtml:
             # 写入html
             if not os.path.exists(self.html_filename):
-                with open(os.path.join(path.data, "templates.html")) as f:
+                with open(os.path.join(path.data, "templates.tpl")) as f:
                     with open(self.html_filename, 'w') as f2:
                         content = f.read()
                         content = content.replace('^w13scan_version^', VERSION)
