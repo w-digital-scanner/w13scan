@@ -46,7 +46,7 @@ class W13SCAN(PluginBase):
             issuc = False
             if texts:
                 for text in set(texts):
-                    ignores = ['function', 'encodeURIComponent']
+                    ignores = ['function', 'encodeURIComponent', 'XMLHttpRequest']
                     iscontinue = True
 
                     for i in ignores:
