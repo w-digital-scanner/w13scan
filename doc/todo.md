@@ -50,6 +50,10 @@
         - index.zip
     - [ ] 敏感文件
         - https://xz.aliyun.com/t/3677#toc-0
+- [ ] baseproxy ua头小写问题
+- [ ] jquery poc 
+    - https://mksben.l0.cm/2020/05/jquery3.5.0-xss.html
+
 
 ## Useage
 
