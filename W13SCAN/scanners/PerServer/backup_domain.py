@@ -64,7 +64,11 @@ class W13SCAN(PluginBase):
                     content = r.raw.read(10)
                 except:
                     continue
+
                 if r.status_code == 200 and self._check(content):
+                    if int(r.headers.get('Content-Length', 0)) == 0:
+                        continue
+
                     rarsize = int(r.headers.get('Content-Length')) // 1024 // 1024
                     result = self.new_result()
                     result.init_info(self.requests.url, "备份文件下载", VulType.BRUTE_FORCE)

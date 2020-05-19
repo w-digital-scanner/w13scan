@@ -63,7 +63,7 @@ class W13SCAN(PluginBase):
             r = requests.get(test_url, headers=headers, allow_redirects=False, stream=True)
             content = r.raw.read(10)
             if r.status_code == 200 and self._check(content):
-                if int(r.headers.get('Content-Length')) == 0:
+                if int(r.headers.get('Content-Length', 0)) == 0:
                     continue
 
                 rarsize = int(r.headers.get('Content-Length')) // 1024 // 1024
