@@ -12,6 +12,7 @@ from urllib.parse import unquote
 import requests
 
 from lib.core.common import random_str, generateResponse, url_dict2str
+from lib.core.data import conf
 from lib.core.enums import HTTPMETHOD, PLACE, VulType
 from lib.core.output import ResultObject
 from lib.core.plugins import PluginBase
@@ -93,8 +94,10 @@ class W13SCAN(PluginBase):
                 if not re.search(xsschecker, r1.text, re.I):
                     continue
                 html_type = r1.headers.get("Content-Type", "").lower()
-                # if 'html' not in html_type:
-                #     continue
+
+                XSS_LIMIT_CONTENT_TYPE = conf.XSS_LIMIT_CONTENT_TYPE
+                if XSS_LIMIT_CONTENT_TYPE and 'html' not in html_type:
+                    continue
 
                 # 反射位置查找
                 locations = SearchInputInResponse(xsschecker, r1.text)

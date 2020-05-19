@@ -13,7 +13,7 @@ from cowpy.cow import milk_random_cow
 
 from config import DEBUG, EXCLUDES, THREAD_NUM, LEVEL, \
     TIMEOUT, \
-    RETRY, PROXY_CONFIG, PROXY_CONFIG_BOOL, DISABLE, ABLE
+    RETRY, PROXY_CONFIG, PROXY_CONFIG_BOOL, DISABLE, ABLE, XSS_LIMIT_CONTENT_TYPE
 from lib.core.common import dataToStdout, ltrim, random_colorama
 from lib.core.data import path, KB, logger, conf
 from lib.core.exection import PluginCheckError
@@ -120,6 +120,7 @@ def _init_conf():
     conf.able = ABLE
     # not in cmd parser params
     conf.excludes = EXCLUDES
+    conf.XSS_LIMIT_CONTENT_TYPE = XSS_LIMIT_CONTENT_TYPE
 
 
 def _merge_options(input_options):

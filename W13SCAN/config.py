@@ -22,6 +22,8 @@ PROXY_CONFIG = {
 ABLE = []  # 允许使用的插件
 DISABLE = []  # 不允许使用的插件
 
+XSS_LIMIT_CONTENT_TYPE = True  # 限制xss的content-type，为True时限制content-type为html，为False不限制
+
 # DEBUG
 DEBUG = False
 
