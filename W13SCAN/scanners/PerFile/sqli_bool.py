@@ -61,7 +61,7 @@ class W13SCAN(PluginBase):
         is_inject = False
 
         data[k] = payload_false
-        r2 = self.req(positon, url_dict2str(data))
+        r2 = self.req(positon, url_dict2str(data,positon))
         falsePage = self.removeDynamicContent(r2.text)
 
         try:
@@ -75,7 +75,7 @@ class W13SCAN(PluginBase):
 
         # true page
         data[k] = payload_true
-        r = self.req(positon, url_dict2str(data))
+        r = self.req(positon, url_dict2str(data,positon))
         truePage = self.removeDynamicContent(r.text)
 
         if truePage == falsePage:
