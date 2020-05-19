@@ -51,13 +51,14 @@ def session_request(self, method, url,
 
     raw = ''
     if prep.body:
-        raw = "{}\n{}\n\n{}".format(
-            prep.method + ' ' + prep.url,
+
+        raw = "{}\n{}\n\n{}\n\n".format(
+            prep.method + ' ' + prep.url + ' HTTP/1.1',
             '\n'.join('{}: {}'.format(k, v) for k, v in prep.headers.items()),
             prep.body)
     else:
-        raw = "{}\n{}".format(
-            prep.method + ' ' + prep.url,
+        raw = "{}\n{}\n\n".format(
+            prep.method + ' ' + prep.url + ' HTTP/1.1',
             '\n'.join('{}: {}'.format(k, v) for k, v in prep.headers.items()))
 
     proxies = proxies or {}
