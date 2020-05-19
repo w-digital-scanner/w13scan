@@ -93,7 +93,7 @@ class HttpTransfer(object):
         for k, v in headers.items():
             if k == "Accept-Encoding" and "br" in v:
                 v = v.replace("br", "")
-            headers_tmp[k.lower()] = v
+            headers_tmp[k] = v
         self._headers = headers_tmp
 
     def build_headers(self):
@@ -109,7 +109,7 @@ class HttpTransfer(object):
 
     def get_header(self, key):
         if isinstance(key, str):
-            return self._headers.get(key.lower(), None)
+            return self._headers.get(key, None)
         raise Exception("parameter should be str")
 
     def get_headers(self):
@@ -127,7 +127,7 @@ class HttpTransfer(object):
         :return:
         '''
         if isinstance(key, str) and isinstance(value, str):
-            self._headers[key.lower()] = value
+            self._headers[key] = value
             return
         raise Exception("parameter should be str")
 
