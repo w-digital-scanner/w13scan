@@ -5,7 +5,7 @@ boy-hack <https://github.com/boy-hack>
 @LoRexxar'
 * 给了很多修改意见
 
-@Garlic
+@Jinone
 * 提供了用于寻找更多参数的提取思路
 
 @longgo
