@@ -86,7 +86,7 @@ def get_links(content, domain, limit=True):
     return urls
 
 
-def random_str(length=10, chars=string.ascii_lowercase + string.digits):
+def random_str(length=10, chars=string.ascii_lowercase):
     return ''.join(random.sample(chars, length))
 
 

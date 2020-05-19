@@ -116,5 +116,5 @@ w13scan是开源的，我们也希望安全研究人员将w13scan集成到自己
 - [CONTRIBUTORS](CONTRIBUTORS.md)
 
 ## 关注
-- 微信公众号搜索"Hacking就是好玩"
+- 微信公众号搜索"Hacking就是好玩",可订阅更新动态。
 - 有关w13scan 2.0的介绍 https://mp.weixin.qq.com/s?__biz=MzU2NzcwNTY3Mg==&mid=2247483743&idx=1&sn=b8c7288dd0e77ecd8b615808e9fef589&chksm=fc986878cbefe16e94fffbb58318177b719d27649fa07f8d124811b7cdae365e6d12ed75439e&token=1791849119&lang=zh_CN#rd
