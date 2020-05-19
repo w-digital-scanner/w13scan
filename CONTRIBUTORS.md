@@ -2,6 +2,9 @@
 boy-hack <https://github.com/boy-hack>
 * for contributing core code
 
+@LoRexxar'
+* 给了很多修改意见
+
 @Garlic
 * 提供了用于寻找更多参数的提取思路
 
