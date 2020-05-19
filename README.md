@@ -59,8 +59,9 @@ w13scan测试了多个扫描平台，以下为扫描平台的测试报告
 安装w13scan需要依赖Python3.6以上环境.
 ```bash
 git clone https://github.com/w-digital-scanner/w13scan.git
+cd w13scan # 进入git目录
 pip3 install -r requirements.txt
-cd W13SCAN
+cd W13SCAN # 进入源码目录
 python3 w13scan.py -h
 ```
 ### 被动扫描
