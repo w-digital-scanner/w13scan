@@ -1,7 +1,7 @@
 ## 资源整合能力
 w13scan整合了许多开源扫描器，但并不是直接拿来用，而是充分学习了开源扫描器的精华后，将其先进的扫描技术与payload整合到了其中。下列列表详细列举了整合的扫描器：
 - sqlmap(https://github.com/sqlmapproject/sqlmap) w13scan sql注入模块(报错注入，布尔注入)
-- wascan() 一些指纹识别数据
+- wascan 一些指纹识别数据
 
 ## fingprints指纹数据
 `W13SCAN/fingprints`目录下按照指纹类别定义有`framework`,`os`,`programing`,`webserver`
@@ -12,9 +12,7 @@ w13scan整合了许多开源扫描器，但并不是直接拿来用，而是充�
 #
 # @name:    Python
 # @author:  w8ay
-
 from re import search, I, compile, error
-
 def _prepare_pattern(pattern):
     """
     Strip out key:value pairs from the pattern and compile the regular
@@ -25,17 +23,15 @@ def _prepare_pattern(pattern):
         return compile(regex, I)
     except error as e:
         return compile(r'(?!x)x')
-
 def fingerprint(headers:dict, content:str):
     _ = False
     if 'server' in headers.keys():
         _ |= search(r"(?:^|\s)Python(?:/([\d.]+))?\;version:\1", headers["server"], I) is not None
-
     if _: return "Python"
 ```
 
 ## 漏洞插件
-
+继承`PluginBase`类的插件可以使用`self.requests`和`self.response`来获取请求包和返回包，它们分别是`FakeReq`与`FakeResp`类型，定义如下
 ### FakeReq
 
 | 属性      | 返回类型 | 作用                                                 |
@@ -52,6 +48,17 @@ def fingerprint(headers:dict, content:str):
 | post_hint | str      | post文件上传类型                                     |
 | post_data | dict     |                                                      |
 | data      | str      | 原始请求头
+| netloc    | str      | url域名形如 http://xxx.com
+
+### FakeResp 
+
+| 属性      | 返回类型 | 作用                                                 |
+| --------- | -------- | ---------------------------------------------------- |
+| status_code       | int      | 返回状态码
+| content     | byte      | 返回字节类型                                         |
+| headers    | dict      | 返回请求头                                                     |
+| raw    | str      | 返回包的http返回文本 |
+| text   | str     |   返回文本                                                  |
 
 ## Result格式
 w13scan的结果文件以json格式为主。
@@ -79,9 +86,4 @@ w13scan的结果文件以json格式为主。
     }
 }
 ```
-## 内置反连平台
-w13scan已经自身集成了反连平台,支持`dns`,`http`,`rmi`三种方式反连,也带有第三方反连平台`dnslog.cn`，
 
-
-## 一些编程tips
-- `request`模块如果用requests.get(params=params)提交，params为`dict`类型时，会自动url编码参数，有时候我们不需要它转义，使用`build_payload`函数将`params为`转换为str类型即可。

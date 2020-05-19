@@ -7,7 +7,7 @@
 # Default setting
 THREAD_NUM = 31  # 线程数量
 
-EXCLUDES = ["google", "lastpass", '.gov.cn']  # 扫描排除网址
+EXCLUDES = ["google", "lastpass", '.gov.']  # 扫描排除网址
 
 RETRY = 2  # 超时重试次数
 TIMEOUT = 10  # 超时时间

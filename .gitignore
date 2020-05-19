@@ -104,3 +104,4 @@ venv.bak/
 .idea/
 certs/
 tests/test/
+todo.md

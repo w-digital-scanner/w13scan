@@ -56,19 +56,22 @@ class PluginBase(object):
     def audit(self):
         raise NotImplementedError
 
-    def generateItemdatas(self):
+    def generateItemdatas(self, params=None):
         iterdatas = []
         if self.requests.method == HTTPMETHOD.GET:
-            iterdatas.append((self.requests.params, PLACE.GET))
+            params = params or self.requests.params
+            iterdatas.append((params, PLACE.GET))
         elif self.requests.method == HTTPMETHOD.POST:
-            iterdatas.append((self.requests.post_data, PLACE.POST))
+            params = params or self.requests.post_data
+            iterdatas.append((params, PLACE.POST))
         if conf.level >= 3:
-            iterdatas.append((self.requests.cookies, PLACE.COOKIE))
+            params = params or self.requests.cookies
+            iterdatas.append((params, PLACE.COOKIE))
         # if conf.level >= 4:
         #     # for uri
         #     iterdatas.append((self.requests.url, PLACE.URI))
         return iterdatas
-    
+
     def paramsCombination(self, data: dict, place=PLACE.GET, payloads=[], hint=POST_HINT.NORMAL, urlsafe='/\\'):
         """
         组合dict参数,将相关类型参数组合成requests认识的,防止request将参数进行url转义
@@ -208,9 +211,8 @@ class PluginBase(object):
                 errMsg += '\n\nrequest raw:\n'
                 errMsg += request.raw
             excMsg = traceback.format_exc()
-            if conf.debug:
-                dataToStdout('\r' + errMsg + '\n\r')
-                dataToStdout('\r' + excMsg + '\n\r')
+            dataToStdout('\r' + errMsg + '\n\r')
+            dataToStdout('\r' + excMsg + '\n\r')
             if createGithubIssue(errMsg, excMsg):
                 dataToStdout('\r' + "[x] a issue has reported" + '\n\r')
 
