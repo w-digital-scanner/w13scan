@@ -31,8 +31,14 @@ def fingerprint(headers:dict, content:str):
 ```
 
 ## 漏洞插件
-继承`PluginBase`类的插件可以使用`self.requests`和`self.response`来获取请求包和返回包，它们分别是`FakeReq`与`FakeResp`类型，定义如下
+### 目录结构
+`scanners`目录为扫描插件库，每个目录的插件会处理不同情形
+- PerFile 针对每个文件，包括参数啥的
+- PerFolder 针对url的目录，会分隔目录分别访问
+- PerServer 对每个domain的
+
 ### FakeReq
+继承`PluginBase`类的插件可以使用`self.requests`和`self.response`来获取请求包和返回包，它们分别是`FakeReq`与`FakeResp`类型，定义如下
 
 | 属性      | 返回类型 | 作用                                                 |
 | --------- | -------- | ---------------------------------------------------- |
@@ -67,7 +73,7 @@ w13scan的结果文件以json格式为主。
     "name": "XSS语义化探测插件", // 插件名称
     "path": "/plugins/PerFile/xss.py", // 插件相对路径
     "url": "https://test.demo/xss.php?a=1", // 测试url
-    "result": "XSS注入发", // 输出结果
+    "result": "XSS注入", // 输出结果
     "type": "xss", // 插件类型
     "createtime": "2020-04-11 11:21:23", // 创建时间
     "detail": {

@@ -60,6 +60,8 @@ class W13SCAN(PluginBase):
 
     def check_sentive_content(self, resp: str) -> set:
         script = resp.strip()
+        if not script:
+            return set()
         if script[0] == "{":
             script = "d=" + script
         try:
