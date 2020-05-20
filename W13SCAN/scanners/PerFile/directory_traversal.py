@@ -105,10 +105,10 @@ class W13SCAN(PluginBase):
             "open_basedir restriction in effect"
         ]
         iterdatas = self.generateItemdatas()
-        payloads = self.generate_payloads()
+        _payloads = self.generate_payloads()
 
         for origin_dict, positon in iterdatas:
-            payloads = self.paramsCombination(origin_dict, positon, payloads)
+            payloads = self.paramsCombination(origin_dict, positon, _payloads)
             for key, value, new_value, payload in payloads:
                 r = self.req(positon, payload)
                 if not r:

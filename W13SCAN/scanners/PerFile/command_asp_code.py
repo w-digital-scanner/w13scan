@@ -21,7 +21,7 @@ class W13SCAN(PluginBase):
         randint2 = random.randint(10000, 90000)
         randint3 = randint1 * randint2
 
-        payloads = [
+        _payloads = [
             'response.write({}*{})'.format(randint1, randint2),
             '\'+response.write({}*{})+\''.format(randint1, randint2),
             '"response.write({}*{})+"'.format(randint1, randint2),
@@ -32,7 +32,7 @@ class W13SCAN(PluginBase):
 
         # 根据原始payload和位置组合新的payload
         for origin_dict, positon in iterdatas:
-            payloads = self.paramsCombination(origin_dict, positon, payloads)
+            payloads = self.paramsCombination(origin_dict, positon, _payloads)
             for key, value, new_value, payload in payloads:
                 r = self.req(positon, payload)
                 if not r:

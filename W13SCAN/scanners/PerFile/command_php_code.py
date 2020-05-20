@@ -25,7 +25,7 @@ class W13SCAN(PluginBase):
         regx = 'Parse error: syntax error,.*?\sin\s'
         randint = random.randint(5120, 10240)
         verify_result = md5(str(randint).encode())
-        payloads = [
+        _payloads = [
             "print(md5({}));",
             ";print(md5({}));",
             "';print(md5({}));$a='",
@@ -41,7 +41,7 @@ class W13SCAN(PluginBase):
         errors_raw = ()
         # 根据原始payload和位置组合新的payload
         for origin_dict, positon in iterdatas:
-            payloads = self.paramsCombination(origin_dict, positon, payloads)
+            payloads = self.paramsCombination(origin_dict, positon, _payloads)
             for key, value, new_value, payload in payloads:
                 r = self.req(positon, payload)
                 if not r:

@@ -59,14 +59,14 @@ class PluginBase(object):
     def generateItemdatas(self, params=None):
         iterdatas = []
         if self.requests.method == HTTPMETHOD.GET:
-            params = params or self.requests.params
-            iterdatas.append((params, PLACE.GET))
+            _params = params or self.requests.params
+            iterdatas.append((_params, PLACE.GET))
         elif self.requests.method == HTTPMETHOD.POST:
-            params = params or self.requests.post_data
-            iterdatas.append((params, PLACE.POST))
+            _params = params or self.requests.post_data
+            iterdatas.append((_params, PLACE.POST))
         if conf.level >= 3:
-            params = params or self.requests.cookies
-            iterdatas.append((params, PLACE.COOKIE))
+            _params = self.requests.cookies
+            iterdatas.append((_params, PLACE.COOKIE))
         # if conf.level >= 4:
         #     # for uri
         #     iterdatas.append((self.requests.url, PLACE.URI))
@@ -128,10 +128,16 @@ class PluginBase(object):
         elif positon == PLACE.POST:
             r = requests.post(self.requests.url, data=params, headers=self.requests.headers)
         elif positon == PLACE.COOKIE:
+            headers = self.requests.headers
+            if 'Cookie' in headers:
+                del headers["Cookie"]
+            if 'cookie' in headers:
+                del headers["cookie"]
+
             if self.requests.method == HTTPMETHOD.GET:
-                r = requests.get(self.requests.url, headers=self.requests.headers, cookies=params)
+                r = requests.get(self.requests.url, headers=headers, cookies=params)
             elif self.requests.method == HTTPMETHOD.POST:
-                r = requests.post(self.requests.url, data=self.requests.post_data, headers=self.requests.headers,
+                r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
                                   cookies=params)
         elif positon == PLACE.URI:
             r = requests.get(params, headers=self.requests.headers)

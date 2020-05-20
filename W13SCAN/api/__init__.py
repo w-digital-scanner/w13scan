@@ -25,15 +25,15 @@ __all__ = [
 ]
 
 
-def scan(url, module_name, conf={}):
+def scan(url, module_name, conf={}, headers={}):
     root = modulePath()
     cmdline = {
         "level": 5
     }
     cmdline.update(conf)
     init(root, cmdline)
-    r = requests.get(url)
-    req = FakeReq(url, {}, HTTPMETHOD.GET)
+    r = requests.get(url, headers=headers)
+    req = FakeReq(url, headers, HTTPMETHOD.GET)
     resp = FakeResp(r.status_code, r.content, r.headers)
 
     poc_module = copy.deepcopy(KB["registered"][module_name])

@@ -76,10 +76,9 @@ def task_run():
             KB.running_plugins[poc_module_name] = 0
         KB.running_plugins[poc_module_name] += 1
         KB.lock.release()
+        printProgress()
         poc_module = copy.deepcopy(KB["registered"][poc_module_name])
-
         poc_module.execute(request, response)
-
         KB.lock.acquire()
         KB.finished += 1
         KB.running -= 1
@@ -95,14 +94,14 @@ def task_run():
 
 
 def printProgress():
+    KB.lock.acquire()
     if conf.debug:
         # 查看当前正在运行的插件
         KB.output.log(repr(KB.running_plugins))
-    msg = '%s success | %d remaining | %s scanned in %.2f seconds' % (
-        KB.output.count(), KB.running, KB.finished, time.time() - KB.start_time)
+    msg = '%d success | %d running | %d remaining | %s scanned in %.2f seconds' % (
+        KB.output.count(), KB.running, KB.task_queue.qsize(), KB.finished, time.time() - KB.start_time)
 
     _ = '\r' + ' ' * (KB['console_width'][0] - len(msg)) + msg
-    KB.lock.acquire()
     dataToStdout(_)
     KB.lock.release()
 

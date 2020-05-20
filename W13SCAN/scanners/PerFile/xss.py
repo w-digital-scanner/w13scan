@@ -81,11 +81,10 @@ class W13SCAN(PluginBase):
             if positon == PLACE.URI:
                 continue
             for k, v in origin_dict.items():
-                data = copy.deepcopy(origin_dict)
                 v = unquote(v)
                 if v not in resp:
                     continue
-
+                data = copy.deepcopy(origin_dict)
                 # 探测回显
                 xsschecker = "0x" + random_str(6, string.digits + "abcdef")
                 data[k] = xsschecker

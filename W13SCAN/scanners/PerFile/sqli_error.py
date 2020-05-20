@@ -15,13 +15,13 @@ class W13SCAN(PluginBase):
     name = '基于报错SQL注入'
 
     def audit(self):
-        payloads = ['鎈\'"\(']
+        _payloads = ['鎈\'"\(']
         # 载入处理位置以及原始payload
         iterdatas = self.generateItemdatas()
 
         # 根据原始payload和位置组合新的payload
         for origin_dict, positon in iterdatas:
-            payloads = self.paramsCombination(origin_dict, positon, payloads)
+            payloads = self.paramsCombination(origin_dict, positon, _payloads)
             for key, value, new_value, payload in payloads:
                 r = self.req(positon, payload)
                 if not r:

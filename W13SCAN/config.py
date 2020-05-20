@@ -11,7 +11,7 @@ EXCLUDES = ["google", "lastpass", '.gov.']  # 扫描排除网址
 
 RETRY = 2  # 超时重试次数
 TIMEOUT = 10  # 超时时间
-LEVEL = 2  # 发包等级
+LEVEL = 3  # 发包等级
 
 # 所有扫描请求可以转发到另外一个代理上
 PROXY_CONFIG_BOOL = False
