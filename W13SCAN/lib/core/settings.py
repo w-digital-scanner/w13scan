@@ -148,7 +148,8 @@ notAcceptedExt = [
     "uff",
     "wav",
     "wma",
-    "zip"
+    "zip",
+    "woff2"
 ]
 
 XSS_EVAL_ATTITUDES = ['onbeforeonload', 'onsubmit', 'ondragdrop', 'oncommand', 'onbeforeeditfocus', 'onkeypress',

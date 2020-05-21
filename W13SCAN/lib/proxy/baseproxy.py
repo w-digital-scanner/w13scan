@@ -3,7 +3,6 @@ import _socket
 import http
 import os
 import platform
-import re
 import select
 import sys
 import time
