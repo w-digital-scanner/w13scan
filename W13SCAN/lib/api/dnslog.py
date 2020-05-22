@@ -5,6 +5,7 @@
 # @File    : api.py
 import string
 import time
+from json import JSONDecodeError
 
 import requests
 
@@ -25,10 +26,16 @@ class DnsLogApi(object):
         返回dns域名
         :return:
         '''
-        resp = self.req.get(self._new_api).text
+        try:
+            resp = self.req.get(self._new_api).text
+        except:
+            resp = ''
         return resp
 
     def check(self) -> list:
         time.sleep(self.sleep)
-        resp = self.req.get(self._check_api).json()
+        try:
+            resp = self.req.get(self._check_api).json()
+        except JSONDecodeError:
+            resp = []
         return list(resp)
