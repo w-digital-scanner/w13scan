@@ -4,7 +4,7 @@
 # @Author  : w8ay
 # @File    : const.py
 
-VERSION = '2.0.1'
+VERSION = '2.0.2'
 
 acceptedExt = [
     '.php', '.php3', '.php4', '.php5', '.php7', '.phtml',
