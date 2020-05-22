@@ -4,6 +4,7 @@
 # @Author  : w8ay
 # @File    : xss.py
 import copy
+import html
 import random
 import re
 import string
@@ -382,38 +383,54 @@ class W13SCAN(PluginBase):
                                             break
 
                 # ssti检测
-                randnum1 = random.randint(50, 500)
-                randnum2 = random.randint(80, 400)
-                checksum = str(randnum1 * randnum2)
-                ssti_payloads = self.getSSTIPayload(randnum1, randnum2)
-                for payload in ssti_payloads:
-                    data[k] = payload
-                    # 不编码请求
-                    r1 = self.req(positon, url_dict2str(data, positon))
-                    if checksum in r1.text:
+                r1 = self.test_ssti(data, k, positon)
+                if r1:
+                    r2 = self.test_ssti(data, k, positon)
+                    if r2:
                         result = self.new_result()
                         result.init_info(self.requests.url, "SSTI模板注入", VulType.XSS)
-                        result.add_detail("payload请求", r1.reqinfo, generateResponse(r1),
-                                          "payload:{} 会回显{} 不编码payload".format(payload, checksum), k, payload, positon)
+                        result.add_detail("第一次payload请求", r1["request"], r1["response"],
+                                          r1["desc"], k, r1["payload"], positon)
+                        result.add_detail("第二次payload请求", r2["request"], r2["response"],
+                                          r2["desc"], k, r2["payload"], positon)
                         self.success(result)
-                    # url编码请求
-                    r1 = self.req(positon, data)
-                    if checksum in r1.text:
-                        result = self.new_result()
-                        result.init_info(self.requests.url, "SSTI模板注入", VulType.XSS)
-                        result.add_detail("payload请求", r1.reqinfo, generateResponse(r1),
-                                          "payload:{} 会回显{} url编码payload".format(payload, checksum), k, payload,
-                                          positon)
-                        self.success(result)
-                    # html编码请求
-                    r1 = self.req(positon, data)
-                    if checksum in r1.text:
-                        result = self.new_result()
-                        result.init_info(self.requests.url, "SSTI模板注入", VulType.XSS)
-                        result.add_detail("payload请求", r1.reqinfo, generateResponse(r1),
-                                          "payload:{} 会回显{} html编码payload".format(payload, checksum), k, payload,
-                                          positon)
-                        self.success(result)
+                        break
 
         if len(self.result.detail) > 0:
             self.success(self.result)
+
+    def test_ssti(self, data, k, positon):
+        randnum1 = random.randint(1000, 10000)
+        randnum2 = random.randint(8888, 20000)
+        checksum = str(randnum1 * randnum2)
+        ssti_payloads = self.getSSTIPayload(randnum1, randnum2)
+        for payload in ssti_payloads:
+            data[k] = payload
+            # 不编码请求
+            r1 = self.req(positon, url_dict2str(data, positon))
+            if checksum in r1.text:
+                return {
+                    "request": r1.reqinfo,
+                    "response": generateResponse(r1),
+                    "desc": "payload:{} 会回显{} 不编码payload".format(payload, checksum),
+                    "payload": payload
+                }
+            # url编码请求
+            r1 = self.req(positon, data)
+            if checksum in r1.text:
+                return {
+                    "request": r1.reqinfo,
+                    "response": generateResponse(r1),
+                    "desc": "payload:{} 会回显{} url编码payload".format(payload, checksum),
+                    "payload": payload
+                }
+            # html编码请求
+            data[k] = html.escape(data[k])
+            r1 = self.req(positon, data)
+            if checksum in r1.text:
+                return {
+                    "request": r1.reqinfo,
+                    "response": generateResponse(r1),
+                    "desc": "payload:{} 会回显{} html编码payload".format(payload, checksum),
+                    "payload": payload
+                }
