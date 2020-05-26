@@ -25,6 +25,8 @@ class W13SCAN(PluginBase):
         headers = self.requests.headers
         url = self.requests.url
         p = urlparse(url)
+        if not p.netloc:
+            return
         for rule in conf.excludes:
             if rule in p.netloc:
                 logger.info("Skip domain:{}".format(url))
