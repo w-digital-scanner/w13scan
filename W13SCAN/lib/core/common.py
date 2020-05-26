@@ -389,14 +389,14 @@ def url_dict2str(d: dict, position=PLACE.GET):
     if isinstance(d, str):
         return d
     temp = ""
-    urlsafe = "!#$%&'()*+,/:;=?@[]~"
-    if position == PLACE.GET:
+    urlsafe = "!$%'()*+,/:;=@[]~"
+    if position == PLACE.GET or position == PLACE.POST:
         for k, v in d.items():
             temp += "{}={}{}".format(k, quote(v, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
         temp = temp.rstrip(DEFAULT_GET_POST_DELIMITER)
     elif position == PLACE.COOKIE:
         for k, v in d.items():
-            temp += "{}={}{}".format(k, quote(v, safe=urlsafe), DEFAULT_COOKIE_DELIMITER)
+            temp += "{}={}{} ".format(k, quote(v, safe=urlsafe), DEFAULT_COOKIE_DELIMITER)
         temp = temp.rstrip(DEFAULT_COOKIE_DELIMITER)
     return temp
 

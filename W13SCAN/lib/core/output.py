@@ -3,7 +3,6 @@
 # @Time    : 2019/6/29 2:28 PM
 # @Author  : w8ay
 # @File    : output.py
-import base64
 import collections
 import json
 import os
@@ -23,7 +22,9 @@ class OutPut(object):
 
     def __init__(self):
         self.collect = []
-        self.lock = Lock()
+        self.lock_count = Lock()
+        self.lock_file = Lock()
+        self.lock_print = Lock()
         self.result_set = set()
 
         folder_name = datetime.today().strftime("%m_%d_%Y")
@@ -58,9 +59,9 @@ class OutPut(object):
         return False
 
     def count(self):
-        self.lock.acquire()
+        self.lock_count.acquire()
         count = len(self.collect)
-        self.lock.release()
+        self.lock_count.release()
         return count
 
     def success(self, output: dict):
@@ -68,7 +69,7 @@ class OutPut(object):
         md5sum = md5(str(output).encode())
         if not self._set(md5sum):
             return
-        self.lock.acquire()
+        self.lock_file.acquire()
         # 写入json
         with open(self.filename, "a+") as f:
             f.write(json.dumps(output) + '\n')
@@ -89,7 +90,7 @@ class OutPut(object):
                     base64=content)
                 f2.write(content)
 
-        self.lock.release()
+        self.lock_file.release()
         self.collect.append(output)
         vultype = output["type"]
         url = output["url"]
@@ -110,9 +111,9 @@ class OutPut(object):
                 line = line[width:]
             outputs.append(line)
         for i in outputs:
-            self.lock.acquire()
+            self.lock_print.acquire()
             dataToStdout('\r' + color + i + ' ' * (width - len(i)) + '\n\r')
-            self.lock.release()
+            self.lock_print.release()
 
 
 class ResultObject(object):

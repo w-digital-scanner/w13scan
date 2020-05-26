@@ -16,7 +16,7 @@ from requests import ConnectTimeout, HTTPError, TooManyRedirects, ConnectionErro
 from urllib3.exceptions import NewConnectionError, PoolError
 
 from lib.core.settings import VERSION
-from lib.core.common import dataToStdout, createGithubIssue
+from lib.core.common import dataToStdout, createGithubIssue, url_dict2str
 from lib.core.data import conf, KB
 from lib.core.exection import PluginCheckError
 from lib.core.output import ResultObject
@@ -98,9 +98,9 @@ class PluginBase(object):
                     temp = ""
                     for k, v in data.items():
                         if k == key:
-                            temp += "{}={}{}".format(k, quote(payload, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
+                            temp += "{}={}{} ".format(k, quote(payload, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
                         else:
-                            temp += "{}={}{}".format(k, quote(v, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
+                            temp += "{}={}{} ".format(k, quote(v, safe=urlsafe), DEFAULT_GET_POST_DELIMITER)
                     temp = temp.rstrip(DEFAULT_GET_POST_DELIMITER)
                     result.append((key, data[key], payload, temp))
         elif place == PLACE.COOKIE:
@@ -133,9 +133,13 @@ class PluginBase(object):
                 del headers["Cookie"]
             if 'cookie' in headers:
                 del headers["cookie"]
+            if isinstance(params, dict):
+                headers["Cookie"] = url_dict2str(params, PLACE.COOKIE)
+            else:
+                headers["Cookie"] = params
 
             if self.requests.method == HTTPMETHOD.GET:
-                r = requests.get(self.requests.url, headers=headers, cookies=params)
+                r = requests.get(self.requests.url, headers=headers)
             elif self.requests.method == HTTPMETHOD.POST:
                 r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
                                   cookies=params)
