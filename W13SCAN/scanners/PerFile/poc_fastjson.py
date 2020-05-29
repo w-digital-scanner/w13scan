@@ -51,34 +51,34 @@ class W13SCAN(PluginBase):
         headers = self.requests.headers
         if self.requests.post_hint == POST_HINT.JSON or self.requests.post_hint == POST_HINT.JSON_LIKE:
             # 第三方平台
-            dnslog = DnsLogApi()
-            dnsdomain = random_str(4) + "." + dnslog.new_domain()
+            # dnslog = DnsLogApi()
+            # dnsdomain = random_str(4) + "." + dnslog.new_domain()
 
             # 检测是否使用fastjson for 1.2.67
             # refer:https://github.com/alibaba/fastjson/issues/3077
-            r = requests.post(self.requests.url, data=self.generate_check_fastjson(dnsdomain), headers=headers)
-            isFastjson = dnslog.check()
-            if isFastjson:
-                result = self.new_result()
-                result.init_info(self.requests.url, "使用了Fastjson", VulType.CODE_INJECTION)
-                result.add_detail("payload", r.reqinfo, generateResponse(r),
-                                  "第三方dnslog有日志回显:{}".format(repr(isFastjson)), "", "", PLACE.GET)
-                self.success(result)
-            else:
-                return
+            # r = requests.post(self.requests.url, data=self.generate_check_fastjson(dnsdomain), headers=headers)
+            # isFastjson = dnslog.check()
+            # if isFastjson:
+            #     result = self.new_result()
+            #     result.init_info(self.requests.url, "使用了Fastjson", VulType.CODE_INJECTION)
+            #     result.add_detail("payload", r.reqinfo, generateResponse(r),
+            #                       "第三方dnslog有日志回显:{}".format(repr(isFastjson)), "", "", PLACE.GET)
+            #     self.success(result)
+            # else:
+            #     return
 
-            reqlist = []
-            for payload in [self.generate_payload_1_2_24(dnsdomain), self.generate_payload_1_2_47(dnsdomain)]:
-                r = requests.post(self.requests.url, data=payload, headers=headers)
-                reqlist.append(r)
-            dnslist = dnslog.check()
-            if dnslist:
-                result = self.new_result()
-                result.init_info(self.requests.url, "Fastjson Poc 1.24-1.27", VulType.CODE_INJECTION)
-                for req in reqlist:
-                    result.add_detail("payload请求", req.reqinfo, generateResponse(req),
-                                      "第三方dnslog有日志回显:{}".format(repr(dnslist)), "", "", PLACE.POST)
-                self.success(result)
+            # reqlist = []
+            # for payload in [self.generate_payload_1_2_24(dnsdomain), self.generate_payload_1_2_47(dnsdomain)]:
+            #     r = requests.post(self.requests.url, data=payload, headers=headers)
+            #     reqlist.append(r)
+            # dnslist = dnslog.check()
+            # if dnslist:
+            #     result = self.new_result()
+            #     result.init_info(self.requests.url, "Fastjson Poc 1.24-1.27", VulType.CODE_INJECTION)
+            #     for req in reqlist:
+            #         result.add_detail("payload请求", req.reqinfo, generateResponse(req),
+            #                           "第三方dnslog有日志回显:{}".format(repr(dnslist)), "", "", PLACE.POST)
+            #     self.success(result)
             # 内置rmi平台
             rmi = reverseApi()
             if rmi.isUseReverse():

