@@ -77,15 +77,15 @@ class OutPut(object):
         if self.ishtml:
             # 写入html
             if not os.path.exists(self.html_filename):
-                with open(os.path.join(path.data, "templates.tpl")) as f:
-                    with open(self.html_filename, 'w') as f2:
+                with open(os.path.join(path.data, "templates.tpl"), encoding='utf-8') as f:
+                    with open(self.html_filename, 'w', encoding='utf-8') as f2:
                         content = f.read()
                         content = content.replace('^w13scan_version^', VERSION)
                         f2.write(content)
 
-            with open(self.html_filename, 'a+') as f2:
+            with open(self.html_filename, 'a+', encoding='utf-8') as f2:
                 # content = base64.b64encode(json.dumps(output).encode()).decode()
-                content = quote(json.dumps(output))
+                content = quote(json.dumps(output), encoding='utf-8')
                 content = "<script class='web-vulns'>webVulns.push(JSON.parse(decodeURIComponent(\"{base64}\")))</script>".format(
                     base64=content)
                 f2.write(content)
