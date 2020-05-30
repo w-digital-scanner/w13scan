@@ -3,9 +3,11 @@
 # @Time    : 2019/6/28 10:59 PM
 # @Author  : w8ay
 # @File    : __init__.py.py
+import copy
 import logging
 
 import ssl
+from urllib.parse import urlparse
 
 from requests.cookies import RequestsCookieJar
 from requests.models import Request
@@ -50,16 +52,20 @@ def session_request(self, method, url,
     prep = self.prepare_request(req)
 
     raw = ''
+    p = urlparse(url)
+    _headers = copy.deepcopy(prep.headers)
+    if "Host" not in _headers:
+        _headers["Host"] = p.netloc
     if prep.body:
-
+        
         raw = "{}\n{}\n\n{}\n\n".format(
             prep.method + ' ' + prep.url + ' HTTP/1.1',
-            '\n'.join('{}: {}'.format(k, v) for k, v in prep.headers.items()),
+            '\n'.join('{}: {}'.format(k, v) for k, v in _headers.items()),
             prep.body)
     else:
         raw = "{}\n{}\n\n".format(
             prep.method + ' ' + prep.url + ' HTTP/1.1',
-            '\n'.join('{}: {}'.format(k, v) for k, v in prep.headers.items()))
+            '\n'.join('{}: {}'.format(k, v) for k, v in _headers.items()))
 
     proxies = proxies or {}
     if conf["proxy_config_bool"] and not proxies:
