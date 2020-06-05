@@ -10,7 +10,7 @@ from re import search,I
 
 def fingerprint(headers,content):
 	_ = False
-	for header in headers:
+	for header in headers.items():
 		_ |= search(r"Nette Framework|Nette|nette-browser=",header[1])is not None
 		if _: break 
 	if _: return "Nette - PHP Framework"

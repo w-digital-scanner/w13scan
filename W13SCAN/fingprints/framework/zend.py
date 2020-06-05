@@ -13,8 +13,8 @@ def fingerprint(headers,content):
 	for header in headers.items():
 		_ |= search("zend",header[1]) is not None
 		if _ : break
-	_ |= search(r"\<meta name\=\"generator\" content\=\"Zend.com CMS ([\d\.]+)\"",content) is not None
-	_ |= search(r"<meta name\=\"vendor\" content\=\"Zend Technologies",content) is not None 
+	_ |= search(r"<meta name=\"generator\" content=\"Zend.com CMS ([\d\.]+)\"",content) is not None
+	_ |= search(r"<meta name=\"vendor\" content=\"Zend Technologies",content) is not None
 	_ |= search(r"\"Powered by Zend Framework\"",content) is not None
-	_ |= search(r" alt\=\"Powered by Zend Framework!\" \/\>",content) is not None
+	_ |= search(r" alt=\"Powered by Zend Framework!\" \/>",content) is not None
 	if _ : return "Zend - PHP Framework"

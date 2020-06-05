@@ -13,5 +13,5 @@ def fingerprint(headers,content):
 	for header in headers.items():
 		_ |= search("web2py",header[1]) is not None
 		if _ : break
-	_ |= search(r"\<div id\=\"serendipityLeftSideBar\"\>",content) is not None
+	_ |= search(r"<div id=\"serendipityLeftSideBar\">",content) is not None
 	if _ : return "Web2Py - Python Framework"

@@ -15,5 +15,5 @@ def fingerprint(headers,content):
 		_ |= search("python/",header[1]) is not None
 		_ |= search("csrftoken=",header[1]) is not None
 		if _ : break
-	_ |= search(r"\<meta name\=\"robots\" content\=\"NONE,NOARCHIVE\"\>\<title\>Welcome to Django\<\/title\>",content) is not None 
+	_ |= search(r"<meta name=\"robots\" content=\"NONE,NOARCHIVE\"><title>Welcome to Django<\/title>",content) is not None
 	if _ : return "Django - Python Framework"
