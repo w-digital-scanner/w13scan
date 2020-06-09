@@ -10,6 +10,8 @@ from config import USE_REVERSE, REVERSE_DNS, REVERSE_HTTP_PORT, REVERSE_HTTP_IP,
 from lib.core.common import random_str
 import requests
 
+from lib.core.data import logger
+
 
 class reverseApi(object):
 
@@ -50,7 +52,12 @@ class reverseApi(object):
     def check(self, token) -> list:
         time.sleep(self.sleep)
         api = self.web_api + "_/search?q=" + token
-        resp = requests.get(api).json()
+        try:
+            resp = requests.get(api).json()
+        except Exception as e:
+            logger.error("dnslog check faild 请检查反连服务器是否开启")
+            resp = {}
+
         return resp
 
     def show_all(self) -> list:
