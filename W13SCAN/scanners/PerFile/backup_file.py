@@ -64,7 +64,7 @@ class W13SCAN(PluginBase):
                     content = r.raw.read(10)
                 except:
                     continue
-                if self._check(content) or "application/octet-stream" in r.headers.get("Content-Type"):
+                if self._check(content) or "application/octet-stream" in r.headers.get("Content-Type", ''):
                     rarsize = int(r.headers.get('Content-Length')) // 1024 // 1024
                     result = self.new_result()
                     result.init_info(self.requests.url, "备份文件下载", VulType.BRUTE_FORCE)
