@@ -59,7 +59,7 @@ class W13SCAN(PluginBase):
             file_dic.append(directory + i)
 
         for payload in file_dic:
-            test_url = os.path.dirname(url) + "/" + payload
+            test_url = url + "/" + payload
             r = requests.get(test_url, headers=headers, allow_redirects=False, stream=True)
             content = r.raw.read(10)
             if r.status_code == 200 and self._check(content):
