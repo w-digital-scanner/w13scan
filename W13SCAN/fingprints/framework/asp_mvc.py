@@ -16,6 +16,5 @@ def fingerprint(headers, content):
         _ |= header[0] == "x-aspnet-version"
         _ |= search(r"asp.net|anonymousID=|chkvalues=|__requestverificationtoken", header[1]) is not None
         if _: break
-    _ |= search(r"Web Settings for Active Server Pages", content) is not None
-    _ |= search(r"name=\"__VIEWSTATEENCRYPTED\" id=\"__VIEWSTATEENCRYPTED\"", content) is not None
+    _ |= search(r"Web Settings for Active Server Pages|name=\"__VIEWSTATEENCRYPTED\" id=\"__VIEWSTATEENCRYPTED\"", content) is not None
     if _: return "ASP.NET Framework"
