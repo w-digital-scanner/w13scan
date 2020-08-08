@@ -21,7 +21,7 @@ import requests
 __all__ = [
     'isJavaObjectDeserialization', 'isPHPObjectDeserialization', 'isPythonObjectDeserialization',
     'PluginBase', 'ResultObject', 'WEB_PLATFORM', 'conf', 'KB',
-    'path', 'logger', 'PLACE', 'HTTPMETHOD', 'VulType', 'generateResponse', 'task_push_from_name', 'task_push', 'start'
+    'path', 'logger', 'PLACE', 'HTTPMETHOD', 'VulType', 'generateResponse', 'task_push_from_name', 'task_push', 'start',
 ]
 
 
