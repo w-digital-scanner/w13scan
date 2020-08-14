@@ -146,7 +146,7 @@ class W13SCAN(PluginBase):
                         if details["content"] == "key":
                             # test html
                             flag = random_str(7)
-                            payload = "><{}".format(flag)
+                            payload = "><{} ".format(flag)
                             truepayload = "><svg onload=alert`1`>"
                             data[k] = payload
                             req = self.req(positon, data)
@@ -177,7 +177,7 @@ class W13SCAN(PluginBase):
                         else:
                             # test attibutes
                             flag = random_str(5)
-                            for _payload in ["'", "\"", ""]:
+                            for _payload in ["'", "\"", " "]:
                                 payload = _payload + flag + "=" + _payload
                                 truepayload = "{payload} onmouseover=prompt(1){payload}".format(payload=_payload)
                                 data[k] = payload
@@ -383,18 +383,18 @@ class W13SCAN(PluginBase):
                                             break
 
                 # ssti检测
-                r1 = self.test_ssti(data, k, positon)
-                if r1:
-                    r2 = self.test_ssti(data, k, positon)
-                    if r2:
-                        result = self.new_result()
-                        result.init_info(self.requests.url, "SSTI模板注入", VulType.XSS)
-                        result.add_detail("第一次payload请求", r1["request"], r1["response"],
-                                          r1["desc"], k, r1["payload"], positon)
-                        result.add_detail("第二次payload请求", r2["request"], r2["response"],
-                                          r2["desc"], k, r2["payload"], positon)
-                        self.success(result)
-                        break
+                # r1 = self.test_ssti(data, k, positon)
+                # if r1:
+                #     r2 = self.test_ssti(data, k, positon)
+                #     if r2:
+                #         result = self.new_result()
+                #         result.init_info(self.requests.url, "SSTI模板注入", VulType.XSS)
+                #         result.add_detail("第一次payload请求", r1["request"], r1["response"],
+                #                           r1["desc"], k, r1["payload"], positon)
+                #         result.add_detail("第二次payload请求", r2["request"], r2["response"],
+                #                           r2["desc"], k, r2["payload"], positon)
+                #         self.success(result)
+                #         break
 
         if len(self.result.detail) > 0:
             self.success(self.result)
