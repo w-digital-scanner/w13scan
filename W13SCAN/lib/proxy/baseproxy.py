@@ -208,7 +208,9 @@ class Response(HttpTransfer):
 
         try:
             data = h.read()
-            body_data = self._decode_content_body(data, self.get_header('Content-Encoding'))
+            encoding = self.get_header("Content-Encoding")
+            encoding = encoding or self.get_header("content-encoding")
+            body_data = self._decode_content_body(data, encoding)
         except http.client.IncompleteRead:
             body_data = b''
         except zlib.error:
