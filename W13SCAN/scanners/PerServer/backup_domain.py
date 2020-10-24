@@ -56,7 +56,8 @@ class W13SCAN(PluginBase):
             return
 
         for payload in payloads:
-
+            if not payload:
+                continue
             for i in ['.rar', '.zip']:
                 test_url = domain + payload + i
                 r = requests.get(test_url, headers=headers, allow_redirects=False, stream=True)
