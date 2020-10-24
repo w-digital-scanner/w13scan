@@ -10,7 +10,6 @@ import traceback
 import zlib
 from http.client import HTTPResponse
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from socket import socket
 from socketserver import ThreadingMixIn
 from ssl import wrap_socket, SSLError
 from urllib.parse import urlparse, ParseResult, urlunparse
@@ -26,6 +25,8 @@ from lib.core.enums import HTTPMETHOD
 from lib.core.settings import notAcceptedExt
 from lib.parse.parse_request import FakeReq
 from lib.parse.parse_responnse import FakeResp
+from socket import socket
+import socks as socks5
 
 __author__ = 'qiye'
 __date__ = '2018/6/15 11:45'
@@ -414,6 +415,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
     def __init__(self, request, client_addr, server):
         self.is_connected = False
         self._target = None
+        self._proxy_sock = None
         BaseHTTPRequestHandler.__init__(self, request, client_addr, server)
 
     def do_CONNECT(self):
@@ -444,6 +446,27 @@ class ProxyHandle(BaseHTTPRequestHandler):
                 break
 
         return ret
+
+    def proxy_connect(self):
+        if not conf["proxy_config_bool"]:
+            self._proxy_sock = socket()
+        else:
+            self._proxy_sock = socks5.socksocket()
+            proxy = conf["proxy"]
+            if "socks5" in proxy.keys():
+                hostname, port = proxy["socks5"].split(":", 1)
+                self._proxy_sock.set_proxy(socks5.SOCKS5, hostname, int(port))
+            elif "socks4" in proxy.keys():
+                hostname, port = proxy["socks4"].split(":", 1)
+                self._proxy_sock.set_proxy(socks5.SOCKS4, hostname, int(port))
+            elif "http" in proxy.keys():
+                hostname, port = proxy["http"].split(":", 1)
+                self._proxy_sock.set_proxy(socks5.HTTP, hostname, int(port))
+            elif "https" in proxy.keys():
+                hostname, port = proxy["https"].split(":", 1)
+                self._proxy_sock.set_proxy(socks5.HTTP, hostname, int(port))
+        self._proxy_sock.settimeout(10)
+        self._proxy_sock.connect((self.hostname, int(self.port)))
 
     def do_GET(self):
         '''
@@ -554,9 +577,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
         # 如果之前经历过connect
         # CONNECT www.baidu.com:443 HTTP 1.1
         self.hostname, self.port = self.path.split(':')
-        self._proxy_sock = socket()
-        self._proxy_sock.settimeout(10)
-        self._proxy_sock.connect((self.hostname, int(self.port)))
+        self.proxy_connect()
         # 进行SSL包裹
         self._proxy_sock = wrap_socket(self._proxy_sock)
 
@@ -572,9 +593,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
         self._target = self.path
         self.path = urlunparse(
             ParseResult(scheme='', netloc='', params=u.params, path=u.path or '/', query=u.query, fragment=u.fragment))
-        self._proxy_sock = socket()
-        self._proxy_sock.settimeout(10)
-        self._proxy_sock.connect((self.hostname, int(self.port)))
+        self.proxy_connect()
 
     def connect_intercept(self):
         '''
@@ -612,9 +631,7 @@ class ProxyHandle(BaseHTTPRequestHandler):
 
         self.hostname, self.port = self.path.split(':')
         try:
-            self._proxy_sock = socket()
-            self._proxy_sock.settimeout(10)
-            self._proxy_sock.connect((self.hostname, int(self.port)))
+            self.proxy_connect()
         except Exception as e:
             self.send_error(500)
             return

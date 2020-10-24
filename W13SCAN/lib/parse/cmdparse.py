@@ -43,7 +43,7 @@ def cmd_line_parser(argv=None):
     # Requests options
     request = parser.add_argument_group("Request", "Network request options")
     request.add_argument("--proxy", dest="proxy",
-                         help="Use a proxy to connect to the target URL eg:http@127.0.0.1:8080")
+                         help="Use a proxy to connect to the target URL,Support http,https,socks5,socks4 eg:http@127.0.0.1:8080 or socks5@127.0.0.1:1080")
     request.add_argument("--timeout", dest="timeout", help="Seconds to wait before timeout connection (default 30)",
                          type=int)
     request.add_argument("--retry", dest="retry", type=int, help="Time out retrials times.")
@@ -67,7 +67,7 @@ def cmd_line_parser(argv=None):
 
     args = parser.parse_args()
     dd = args.__dict__
-    if not any((dd.get("server_addr"), dd.get("url"), dd.get("url_file"),dd.get("version"))):
+    if not any((dd.get("server_addr"), dd.get("url"), dd.get("url_file"), dd.get("version"))):
         errMsg = "missing a mandatory option (-s, --server-addr, -u, -f, -r, --url, --file). "
         errMsg += "Use -h for basic and -hh for advanced help\n"
         parser.error(errMsg)

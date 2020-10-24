@@ -164,7 +164,7 @@ def _set_conf():
         conf["proxy_config_bool"] = True
         method, ip = conf["proxy"].split("@")
         conf["proxy"] = {
-            method: ip
+            method.lower(): ip
         }
 
 

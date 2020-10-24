@@ -57,7 +57,7 @@ def session_request(self, method, url,
     if "Host" not in _headers:
         _headers["Host"] = p.netloc
     if prep.body:
-        
+
         raw = "{}\n{}\n\n{}\n\n".format(
             prep.method + ' ' + prep.url + ' HTTP/1.1',
             '\n'.join('{}: {}'.format(k, v) for k, v in _headers.items()),
@@ -70,6 +70,20 @@ def session_request(self, method, url,
     proxies = proxies or {}
     if conf["proxy_config_bool"] and not proxies:
         proxies = conf["proxy"]
+        if "socks4" in proxies.keys():
+            _tmp_str = "socks4://" + proxies["socks4"]
+            _tmp_proxy = {
+                "http": _tmp_str,
+                "https": _tmp_str
+            }
+            proxies = _tmp_proxy
+        elif "socks5" in proxies.keys():
+            _tmp_str = "socks5://" + proxies["socks5"]
+            _tmp_proxy = {
+                "http": _tmp_str,
+                "https": _tmp_str
+            }
+            proxies = _tmp_proxy
 
     # prep.url = prep.url.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore')
     # fix https://github.com/boy-hack/w13scan/issues/64

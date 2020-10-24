@@ -81,7 +81,7 @@ Request:
   Network request options
 
   --proxy PROXY         Use a proxy to connect to the target URL
-                        eg:http@127.0.0.1:8080
+                        eg:http@127.0.0.1:8080 or socks5@127.0.0.1:1080
   --timeout TIMEOUT     Seconds to wait before timeout connection (default 30)
   --retry RETRY         Time out retrials times.
 
