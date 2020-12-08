@@ -4,7 +4,9 @@
 # @Author  : w8ay
 # @File    : const.py
 
-VERSION = '2.1.0'
+VERSION = '2.1.1'
+SITE = 'https://github.com/w-digital-scanner/w13scan'
+DEFAULT_USER_AGENT = "w13scan/#v%s (%s)" % (VERSION, SITE)
 
 acceptedExt = [
     '.php', '.php3', '.php4', '.php5', '.php7', '.phtml',

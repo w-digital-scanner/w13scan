@@ -47,6 +47,8 @@ def cmd_line_parser(argv=None):
     request.add_argument("--timeout", dest="timeout", help="Seconds to wait before timeout connection (default 30)",
                          type=int)
     request.add_argument("--retry", dest="retry", type=int, help="Time out retrials times.")
+    request.add_argument("--random-agent", dest="random_agent", action="store_true", default=False,
+                         help="Use randomly selected HTTP User-Agent header value")
 
     # Outout options
     output = parser.add_argument_group("Output", "output")

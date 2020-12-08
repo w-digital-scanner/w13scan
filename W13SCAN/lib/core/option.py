@@ -19,7 +19,7 @@ from lib.core.data import path, KB, logger, conf
 from lib.core.exection import PluginCheckError
 from lib.core.loader import load_file_to_module
 from lib.core.output import OutPut
-from lib.core.settings import VERSION
+from lib.core.settings import VERSION, DEFAULT_USER_AGENT
 from lib.core.spiderset import SpiderSet
 from thirdpart.console import getTerminalSize
 from thirdpart.requests import patch_all
@@ -115,6 +115,8 @@ def _init_conf():
     conf.retry = RETRY
     conf.html = False
     conf.json = False
+    conf.random_agent = False
+    conf.agent = DEFAULT_USER_AGENT
     conf.threads = THREAD_NUM
     conf.disable = DISABLE
     conf.able = ABLE
@@ -166,6 +168,10 @@ def _set_conf():
         conf["proxy"] = {
             method.lower(): ip
         }
+
+    # user-agent
+    if conf.random_agent:
+        conf.agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
 
 
 def _init_stdout():
