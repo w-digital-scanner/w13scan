@@ -61,14 +61,14 @@ class W13SCAN(PluginBase):
         if KB["spiderset"].add(url, 'PerFile'):
             task_push('PerFile', self.requests, self.response)
 
-        # Send PerServe
+        # Send PerServer
         p = urlparse(url)
         domain = "{}://{}".format(p.scheme, p.netloc)
-        if KB["spiderset"].add(domain, 'PerServe'):
+        if KB["spiderset"].add(domain, 'PerServer'):
             req = requests.get(domain, headers=headers, allow_redirects=False)
             fake_req = FakeReq(domain, headers, HTTPMETHOD.GET, "")
             fake_resp = FakeResp(req.status_code, req.content, req.headers)
-            task_push('PerServe', fake_req, fake_resp)
+            task_push('PerServer', fake_req, fake_resp)
 
         # Collect directory from response
         urls = set(get_parent_paths(url))
