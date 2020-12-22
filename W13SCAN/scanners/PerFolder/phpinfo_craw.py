@@ -38,5 +38,5 @@ class W13SCAN(PluginBase):
                     result = self.new_result()
                     result.init_info(self.requests.url, "phpinfo发现", VulType.SENSITIVE)
                     result.add_detail("payload请求", r.reqinfo, generateResponse(r),
-                                      "匹配到关键词:{} information:{}".format(flag, repr(info)), "", "", PLACE.GET)
+                                      '\n'.join(info), "", "", PLACE.GET)
                     self.success(result)
