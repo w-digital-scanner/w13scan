@@ -6,6 +6,8 @@
 
 from re import search, I, compile, error
 
+from lib.core.common import md5
+
 
 def _prepare_pattern(pattern):
     """
@@ -35,7 +37,7 @@ def fingerprint_assign(url, filter):
     return None
 
 
-def fingerprint_url(url):
+def fingerprint_url(url, resp=None):
     payload = url + "/robots.txt"
     resp = resp.get(payload).text
     if md5(resp) == "xxxxxxx" or "emlog" in resp:

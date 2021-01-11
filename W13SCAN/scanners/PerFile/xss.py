@@ -29,32 +29,6 @@ class W13SCAN(PluginBase):
         self.result = ResultObject(self)
         self.result.init_info(self.requests.url, "XSS脚本注入", VulType.XSS)
 
-    def getSSTIPayload(self, randint1=444, randint2=666) -> list:
-        '''
-        顺便检测下模板注入～
-        return ['{123*1111}', '<%=123*1111%>', '#{123*1111}', '${{123*1111}}', '{{123*1111}}', '{{= 123*1111}}', '<# 123*1111>', '{@123*1111}', '[[123*1111]]', '${{"{{"}}123*1111{{"}}"}}']
-
-        :return: list
-        '''
-        r = []
-        payloads = [
-            "{%d*%d}",
-            "<%%=%d*%d%%>",
-            "#{%d*%d}",
-            "${{%d*%d}}",
-            "{{%d*%d}}",
-            "{{= %d*%d}}",
-            "<# %d*%d>",
-            "{@%d*%d}",
-            "[[%d*%d]]",
-            "${{\"{{\"}}%d*%d{{\"}}\"}}",
-        ]
-        for item in payloads:
-            r.append(
-                item % (randint1, randint2)
-            )
-        return r
-
     def audit(self):
 
         parse_params = set(getParamsFromHtml(self.response.text))
@@ -382,55 +356,5 @@ class W13SCAN(PluginBase):
                                                                    data[k], positon)
                                             break
 
-                # ssti检测
-                # r1 = self.test_ssti(data, k, positon)
-                # if r1:
-                #     r2 = self.test_ssti(data, k, positon)
-                #     if r2:
-                #         result = self.new_result()
-                #         result.init_info(self.requests.url, "SSTI模板注入", VulType.XSS)
-                #         result.add_detail("第一次payload请求", r1["request"], r1["response"],
-                #                           r1["desc"], k, r1["payload"], positon)
-                #         result.add_detail("第二次payload请求", r2["request"], r2["response"],
-                #                           r2["desc"], k, r2["payload"], positon)
-                #         self.success(result)
-                #         break
-
         if len(self.result.detail) > 0:
             self.success(self.result)
-
-    def test_ssti(self, data, k, positon):
-        randnum1 = random.randint(1000, 10000)
-        randnum2 = random.randint(8888, 20000)
-        checksum = str(randnum1 * randnum2)
-        ssti_payloads = self.getSSTIPayload(randnum1, randnum2)
-        for payload in ssti_payloads:
-            data[k] = payload
-            # 不编码请求
-            r1 = self.req(positon, url_dict2str(data, positon))
-            if checksum in r1.text:
-                return {
-                    "request": r1.reqinfo,
-                    "response": generateResponse(r1),
-                    "desc": "payload:{} 会回显{} 不编码payload".format(payload, checksum),
-                    "payload": payload
-                }
-            # url编码请求
-            r1 = self.req(positon, data)
-            if checksum in r1.text:
-                return {
-                    "request": r1.reqinfo,
-                    "response": generateResponse(r1),
-                    "desc": "payload:{} 会回显{} url编码payload".format(payload, checksum),
-                    "payload": payload
-                }
-            # html编码请求
-            data[k] = html.escape(data[k])
-            r1 = self.req(positon, data)
-            if checksum in r1.text:
-                return {
-                    "request": r1.reqinfo,
-                    "response": generateResponse(r1),
-                    "desc": "payload:{} 会回显{} html编码payload".format(payload, checksum),
-                    "payload": payload
-                }

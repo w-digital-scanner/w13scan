@@ -90,6 +90,10 @@ def random_str(length=10, chars=string.ascii_lowercase):
     return ''.join(random.sample(chars, length))
 
 
+def random_num(nums):
+    return int(''.join(random.sample("123456789" * (int(nums // 9) + 1), int(nums))))
+
+
 def md5(src):
     m2 = hashlib.md5()
     m2.update(src)
