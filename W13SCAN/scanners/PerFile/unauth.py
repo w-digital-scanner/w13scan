@@ -25,7 +25,6 @@ class W13SCAN(PluginBase):
 
     def audit(self):
         resp = self.response.text
-        self.seqMatcher.set_seq1(resp)
         ret = False
         for k, v in self.requests.headers.items():
             if k.lower() in ["cookie", "token", "auth"]:
@@ -39,7 +38,14 @@ class W13SCAN(PluginBase):
                 for k, v in origin_dict.items():
                     request_headers_for_payload = self.del_cookie_token()
                     r = self.req(position, origin_dict, headers=request_headers_for_payload)
-                    self.seqMatcher.set_seq2(r.text)
+                    if r is None:
+                        continue
+                    # self.seqMatcher.set_seq1(resp)
+                    # self.seqMatcher.set_seq2(r.text)
+                    # ratio = round(self.seqMatcher.quick_ratio(), 3)
+                    # 减少内存开销
+                    min_len = min(len(resp), len(r.text))
+                    self.seqMatcher = difflib.SequenceMatcher(None, resp[:min_len], r.text[:min_len])
                     ratio = round(self.seqMatcher.quick_ratio(), 3)
                     if ratio > self.SIMILAR_MIN:
                         result = self.new_result()

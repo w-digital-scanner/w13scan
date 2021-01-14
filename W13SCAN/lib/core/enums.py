@@ -101,3 +101,4 @@ class VulType(object):
     SENSITIVE = "sensitive"
     SMUGGLING = 'smuggling'
     SSTI = 'ssti'
+    UNAUTH = 'unauth'
