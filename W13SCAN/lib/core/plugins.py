@@ -121,13 +121,15 @@ class PluginBase(object):
                     result.append(("", "", payload, uri))
         return result
 
-    def req(self, positon, params):
+    def req(self, position, params, headers=None):
         r = False
-        if positon == PLACE.GET:
-            r = requests.get(self.requests.netloc, params=params, headers=self.requests.headers)
-        elif positon == PLACE.POST:
-            r = requests.post(self.requests.url, data=params, headers=self.requests.headers)
-        elif positon == PLACE.COOKIE:
+        if headers is None:
+            headers = self.requests.headers
+        if position == PLACE.GET:
+            r = requests.get(self.requests.netloc, params=params, headers=headers)
+        elif position == PLACE.POST:
+            r = requests.post(self.requests.url, data=params, headers=headers)
+        elif position == PLACE.COOKIE:
             headers = self.requests.headers
             if 'Cookie' in headers:
                 del headers["Cookie"]
@@ -143,7 +145,7 @@ class PluginBase(object):
             elif self.requests.method == HTTPMETHOD.POST:
                 r = requests.post(self.requests.url, data=self.requests.post_data, headers=headers,
                                   cookies=params)
-        elif positon == PLACE.URI:
+        elif position == PLACE.URI:
             r = requests.get(params, headers=self.requests.headers)
         return r
 

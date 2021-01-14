@@ -14,7 +14,7 @@ from cowpy.cow import milk_random_cow
 from config import DEBUG, EXCLUDES, THREAD_NUM, LEVEL, \
     TIMEOUT, \
     RETRY, PROXY_CONFIG, PROXY_CONFIG_BOOL, DISABLE, ABLE, XSS_LIMIT_CONTENT_TYPE
-from lib.core.common import dataToStdout, ltrim, random_colorama
+from lib.core.common import random_UA, dataToStdout, ltrim, random_colorama
 from lib.core.data import path, KB, logger, conf
 from lib.core.exection import PluginCheckError
 from lib.core.loader import load_file_to_module
@@ -171,7 +171,7 @@ def _set_conf():
 
     # user-agent
     if conf.random_agent:
-        conf.agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
+        conf.agent = random_UA()
 
 
 def _init_stdout():
