@@ -28,6 +28,7 @@
 - [x] sql注入
     - 基于报错SQL注入检测
     - 基于网页相似度布尔类型的SQL注入检测
+    - 基于时间SQL注入检测
 - [x] http smuggling 走私攻击
 - [x] Fastjson检测与利用
 - [x] .Net通杀Xss检测
