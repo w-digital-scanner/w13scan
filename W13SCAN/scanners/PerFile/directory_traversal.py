@@ -77,6 +77,7 @@ class W13SCAN(PluginBase):
                 "../../../../../../../../../../etc/passwd{}".format(unquote("%00")) + default_extension)
         if OS.WINDOWS in self.response.os:
             payloads.append("../../../../../../../../../../windows/win.ini")
+            payloads.append("C:\\boot.ini")
             # if origin:
             #     payloads.append(dirname + "/../../../../../../../../../../windows/win.ini")
             payloads.append("C:\\WINDOWS\\system32\\drivers\\etc\\hosts")
@@ -102,7 +103,9 @@ class W13SCAN(PluginBase):
             "<b>Warning<\/b>:\s\sDOMDocument::load\(\)\s\[<a\shref='domdocument.load'>domdocument.load<\/a>\]:\s(Start tag expected|I\/O warning : failed to load external entity).*(Windows\/win.ini|\/etc\/passwd).*\sin\s<b>.*?<\/b>\son\sline\s<b>\d+<\/b>",
             "(<web-app[\s\S]+<\/web-app>)",
             "Warning: fopen\(",
-            "open_basedir restriction in effect"
+            "open_basedir restriction in effect",
+            '/bin/(bash|sh)[^\r\n<>]*[\r\n]',
+            '\[boot loader\][^\r\n<>]*[\r\n]'
         ]
         iterdatas = self.generateItemdatas()
         _payloads = self.generate_payloads()

