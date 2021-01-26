@@ -86,9 +86,9 @@ class W13SCAN(PluginBase):
                     continue
                 data = copy.deepcopy(origin_dict)
                 # ssti检测
-                r1 = self.test_ssti(data, k, positon)
+                r1 = self.test_ssti(data, k, position)
                 if r1:
-                    r2 = self.test_ssti(data, k, positon)
+                    r2 = self.test_ssti(data, k, position)
                     if r2:
                         result = self.new_result()
                         result.init_info(self.requests.url, "SSTI模板注入", VulType.XSS)
