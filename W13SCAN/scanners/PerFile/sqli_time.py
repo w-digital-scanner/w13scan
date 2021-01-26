@@ -98,7 +98,7 @@ class W13SCAN(PluginBase):
                     if r1 is not None and flag == self.verify_count:
                         result = self.new_result()
                         result.init_info(self.requests.url, "SQL注入", VulType.SQLI)
-                        for key, payload in new_dict:
+                        for key, payload in new_dict.items():
                             result.add_detail("payload探测", r1.reqinfo, generateResponse(r1),
                                               "DBMS_TYPE:{}，时间相差:{}s".format(dbms_type, delta), key, payload,
                                               position)
