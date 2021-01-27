@@ -138,10 +138,9 @@ def _merge_options(input_options):
         # if key not in conf or not value:
         if key not in conf:
             conf[key] = value
-        else:
-            _ = conf[key]
-            if not _:
-                conf[key] = value
+            continue
+        if value:
+            conf[key] = value
 
 
 def _set_conf():
