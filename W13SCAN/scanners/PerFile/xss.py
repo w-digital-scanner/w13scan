@@ -169,7 +169,7 @@ class W13SCAN(PluginBase):
                                             break
                             # test html
                             flag = random_str(7)
-                            for _payload in [r"'><{}>", "\"><{}>", " ><{}>"]:
+                            for _payload in [r"'><{}>", "\"><{}>", "><{}>"]:
                                 payload = _payload.format(flag)
                                 data[k] = payload
                                 req = self.req(positon, data)

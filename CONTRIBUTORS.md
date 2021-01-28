@@ -22,6 +22,10 @@ Evilran <https://github.com/Evilran>
 * 新增未授权访问插件
 * 修复部分bug
 
+moonD4rk <https://github.com/moonD4rk>
+* add xss payload output in attribute unquoted
+
+
 ## Links
 - https://github.com/amcai/myscan 
     - @amcai的被动扫描器，部分内容在它的启发下完成
