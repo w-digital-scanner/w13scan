@@ -91,11 +91,11 @@ class W13SCAN(PluginBase):
                     r2 = self.test_ssti(data, k, position)
                     if r2:
                         result = self.new_result()
-                        result.init_info(self.requests.url, "SSTI模板注入", VulType.XSS)
+                        result.init_info(self.requests.url, "SSTI模板注入", VulType.SSTI)
                         result.add_detail("第一次payload请求", r1["request"], r1["response"],
-                                          r1["desc"], k, r1["payload"], positon)
+                                          r1["desc"], k, r1["payload"], position)
                         result.add_detail("第二次payload请求", r2["request"], r2["response"],
-                                          r2["desc"], k, r2["payload"], positon)
+                                          r2["desc"], k, r2["payload"], position)
                         self.success(result)
                         break
 
