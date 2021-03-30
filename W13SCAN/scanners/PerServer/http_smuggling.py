@@ -16,6 +16,10 @@ class W13SCAN(PluginBase):
     desc = '''由于前后端处理http协议时的差异，造成走私攻击，或由此获取敏感信息，本插件只有检测功能'''
 
     def audit(self):
+        # bug太多了 后面再修吧
+        # https://github.com/w-digital-scanner/w13scan/issues/459
+        # https://github.com/w-digital-scanner/w13scan/issues/457
+        return 
         url = self.requests.url
         headers = self.requests.headers
         cycle = 5
