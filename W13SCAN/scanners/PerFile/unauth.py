@@ -38,7 +38,7 @@ class W13SCAN(PluginBase):
                 for k, v in origin_dict.items():
                     request_headers_for_payload = self.del_cookie_token()
                     r = self.req(position, origin_dict, headers=request_headers_for_payload)
-                    if r is None:
+                    if not r:
                         continue
                     # self.seqMatcher.set_seq1(resp)
                     # self.seqMatcher.set_seq2(r.text)
