@@ -141,7 +141,7 @@ class HttpTransfer(object):
     def set_body_data(self, body):
         if isinstance(body, bytes):
             self._body = body
-            self.set_header("Content-length", str(len(body)))
+            self.set_header("Content-Length", str(len(body)))
             return
         raise Exception("parameter should be bytes")
 
