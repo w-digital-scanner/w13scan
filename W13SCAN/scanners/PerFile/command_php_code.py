@@ -26,13 +26,13 @@ class W13SCAN(PluginBase):
         randint = random.randint(5120, 10240)
         verify_result = md5(str(randint).encode())
         _payloads = [
-            "print(md5({}));",
-            ";print(md5({}));",
-            "';print(md5({}));$a='",
-            "\";print(md5({}));$a=\"",
-            "${{@print(md5({}))}}",
-            "${{@print(md5({}))}}\\",
-            "'.print(md5({})).'"
+            "print(md5({}));".format(randint),
+            ";print(md5({}));".format(randint),
+            "';print(md5({}));$a='".format(randint),
+            "\";print(md5({}));$a=\"".format(randint),
+            "${{@print(md5({}))}}".format(randint),
+            "${{@print(md5({}))}}\\".format(randint),
+            "'.print(md5({})).'".format(randint)
         ]
         # 载入处理位置以及原始payload
         iterdatas = self.generateItemdatas()
