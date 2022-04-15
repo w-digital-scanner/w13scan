@@ -35,8 +35,8 @@ class W13SCAN(PluginBase):
             if place == PLACE.POST:
                 if hint == POST_HINT.NORMAL:
                     for key, value in data.items():
-                        new_data = copy.deepcopy(data)
                         for payload in payloads:
+                            new_data = copy.deepcopy(data)
                             new_data[key] = spli + payload
                             result.append((key, value, payload, new_data, url_flag[payload]))
                 elif hint == POST_HINT.JSON:
