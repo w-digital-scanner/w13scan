@@ -65,12 +65,12 @@ def cmd_line_parser(argv=None):
     optimization.add_argument('--disable', dest='disable', nargs='+', default=[],
                               help="Disable some plugins (e.g. --disable xss sqli_error webpack)")
     optimization.add_argument('--able', dest='able', nargs='+', default=[],
-                              help="Enable some moudle (e.g. --enable xss webpack)")
+                              help="Enable some moudle (e.g. --able xss webpack)")
 
     args = parser.parse_args()
     dd = args.__dict__
     if not any((dd.get("server_addr"), dd.get("url"), dd.get("url_file"), dd.get("version"))):
-        errMsg = "missing a mandatory option (-s, --server-addr, -u, -f, -r, --url, --file). "
+        errMsg = "missing a mandatory option (-s, --server-addr, -u, -f, -v, --url, --file, --version). "
         errMsg += "Use -h for basic and -hh for advanced help\n"
         parser.error(errMsg)
     return dd
