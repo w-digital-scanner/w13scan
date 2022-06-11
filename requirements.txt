@@ -4,7 +4,7 @@ cffi==1.15.0
 chardet==3.0.4
 colorama==0.4.1
 cowpy==1.1.0
-cryptography==2.7
+cryptography==37.0.2
 cssselect==1.1.0
 idna==2.8
 lxml==4.9.0
