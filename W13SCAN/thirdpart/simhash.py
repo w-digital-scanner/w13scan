@@ -88,7 +88,7 @@ class Simhash(object):
                 h = self.hashfunc(f.encode('utf-8'))
                 w = 1
             else:
-                assert isinstance(f, collections.Iterable)
+                # assert isinstance(f, collections.Iterable)
                 h = self.hashfunc(f[0].encode('utf-8'))
                 w = f[1]
             for i in range(self.f):

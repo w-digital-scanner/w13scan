@@ -35,6 +35,5 @@ def scan(url, module_name, conf={}, headers={}):
     r = requests.get(url, headers=headers)
     req = FakeReq(url, headers, HTTPMETHOD.GET)
     resp = FakeResp(r.status_code, r.content, r.headers)
-
     poc_module = copy.deepcopy(KB["registered"][module_name])
     poc_module.execute(req, resp)
