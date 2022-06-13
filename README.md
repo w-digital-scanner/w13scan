@@ -6,6 +6,8 @@
 
 ![Jietu20200516-184214](./doc/logo.jpg)
 
+html模板源码:[w13scan-report](https://github.com/boy-hack/w13scan-report)
+
 ## 声明
 
 使用W13Scan前请遵守当地法律,W13Scan仅提供给教育行为使用。
