@@ -91,8 +91,9 @@ class HttpTransfer(object):
     def set_headers(self, headers):
         headers_tmp = {}
         for k, v in headers.items():
-            if k == "Accept-Encoding" and "br" in v:
-                v = v.replace("br", "")
+            if k.lower() == "accept-encoding" and "br" in v:
+                vl = [x.strip(" ") for x in v.split(",")]
+                v = ", ".join(list(filter(lambda x: x != "br", vl)))
             headers_tmp[k] = v
         self._headers = headers_tmp
 
