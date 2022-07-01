@@ -11,18 +11,17 @@ import requests
 import json
 import subprocess
 
-from lib.core.data import KB
-
 root = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(root, "../"))
 sys.path.append(os.path.join(root, "../", "W13SCAN"))
 from api import modulePath, init, FakeReq, FakeResp, HTTPMETHOD, task_push_from_name, start, logger
+from lib.core.data import KB
 
 # 爬虫文件路径
-Excvpath = "/Users/boyhack/tools/crawlergo/crawlergo_darwin"
+Excvpath = "crawlergo"
 
 # Chrome 路径
-Chromepath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+Chromepath = "/home/opc/chrome-linux/chrome"
 
 
 def read_test():
@@ -128,9 +127,19 @@ def init_w13scan():
     }
     init(root, configure)
 
+def scan_domain():
+    # 扫描文件路径
+    domain_path = "/home/opc/domain.txt"
+    file = open(domain_path)
+    for target in file.readlines():
+        vulscan(target.strip('\n'))
+        f = open("complete.txt","a")
+        f.write(target)
+        f.close()
+    file.close()
+    logger.info("所有扫描完成")
 
 if __name__ == '__main__':
-    target = "http://testphp.vulnweb.com/"
     init_w13scan()
-    vulscan(target)
+    scan_domain()
     # read_test()
