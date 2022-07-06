@@ -18,7 +18,7 @@ from lib.core.option import init
 
 
 def version_check():
-    if sys.version.split()[0] < "3.6":
+    if sys.version.split()[0][0] == "2":
         logger.error(
             "incompatible Python version detected ('{}'). To successfully run sqlmap you'll have to use version >= 3.6 (visit 'https://www.python.org/downloads/')".format(
                 sys.version.split()[0]))
