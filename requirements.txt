@@ -7,7 +7,7 @@ cowpy==1.1.0
 cryptography==37.0.2
 cssselect==1.1.0
 idna==2.8
-lxml==4.9.0
+lxml==4.9.1
 pycparser==2.19
 pyjsparser==2.7.1
 pyOpenSSL==18.0.0
