@@ -159,7 +159,7 @@ def paramToDict(parameters, place=PLACE.GET, hint=POST_HINT.NORMAL) -> dict:
         for element in splitParams:
             parts = element.split("=")
             if len(parts) >= 2:
-                testableParameters[parts[0]] = ''.join(parts[1:])
+                testableParameters[parts[0].replace(" ", "")] = ''.join(parts[1:])
     elif place == PLACE.GET:
         splitParams = parameters.split(DEFAULT_GET_POST_DELIMITER)
         for element in splitParams:
